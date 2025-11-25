@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Eastern Shore Auction House</title>
+    <style>
+        :root { --primary-color: #2563eb; --header-bg: #111827; --text-color: #1f2937; --bg-color: #f3f4f6; }
+        body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg-color); color: var(--text-color); margin: 0; }
+        
+        /* HEADER */
+        header { background: var(--header-bg); color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .brand { font-family: "Georgia", serif; font-size: 1.5rem; font-weight: bold; }
+        .nav-links button { background: transparent; border: 1px solid #4b5563; color: white; padding: 8px 15px; cursor: pointer; border-radius: 4px; margin-left: 10px; }
+        .nav-links button.active { background: var(--primary-color); border-color: var(--primary-color); }
+        .nav-links button:hover { background: #374151; }
+
+        /* CONTAINER */
+        .container { max-width: 1200px; margin: 30px auto; padding: 20px; }
+        
+        /* TABLES */
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #e5e7eb; }
+        th { background: #f9fafb; font-weight: bold; color: #6b7280; font-size: 0.85rem; text-transform: uppercase; }
+        tr:hover { background: #f9fafb; }
+        
+        /* FORMS */
+        .form-card { background: white; padding: 30px; border-radius: 8px; max-width: 600px; margin: 0 auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9rem; }
+        .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        
+        /* ACTIONS */
+        .btn { padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9rem; font-weight: bold; color: white; }
+        .btn-queue { background: #16a34a; } /* Green */
+        .btn-edit { background: #2563eb; } /* Blue */
+        .btn-delete { background: #dc2626; } /* Red */
+        .btn-save { background: #111827; width: 100%; padding: 12px; margin-top: 10px; }
+
+        .status-pill { padding: 4px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; }
+        .status-new { background: #dbeafe; color: #1e40af; }
+        .status-run { background: #f3f4f6; color: #374151; }
+        
+        /* VIEWS */
+        .view-section { display: none; }
+        .view-section.active { display: block; }
+
+        .img-preview { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; vertical-align: middle; margin-right: 10px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand">Admin Dashboard</div>
+        <div class="nav-links">
+            <button onclick="switchView('inventory')" class="active">Inventory & Queue</button>
+            <button onclick="switchView('add')">Add New Lot</button>
+            <button onclick="switchView('history')">Sales History</button>
+            <button onclick="location.href='auction.html'" style="border-color:white;">Go to Live Auction &rarr;</button>
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <div id="inventoryView" class="view-section active">
+            <h2>Item Inventory</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Lot #</th>
+                        <th>Item</th>
+                        <th>Seller</th>
+                        <th>Start Price</th>
+                        <th>Times Run</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="inventoryTableBody">
+                    <tr><td colspan="6" style="text-align:center;">Loading inventory...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="addView" class="view-section">
+            <h2 id="formTitle">Add New Lot</h2>
+            <div class="form-card">
+                <form onsubmit="event.preventDefault(); saveItem();">
+                    <input type="hidden" id="editKey"> <div class="form-group">
+                        <label>Lot Number (Sort Order):</label>
+                        <input type="number" id="inpLot" required placeholder="e.g. 101">
+                    </div>
+                    <div class="form-group">
+                        <label>Title:</label>
+                        <input type="text" id="inpTitle" required placeholder="Item Name">
+                    </div>
+                    <div class="form-group">
+                        <label>Subtitle:</label>
+                        <input type="text" id="inpSub" placeholder="Condition / Category">
+                    </div>
+                    <div class="form-group">
+                        <label>Seller Email (Private):</label>
+                        <input type="email" id="inpSeller" placeholder="seller@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Starting Price ($):</label>
+                        <input type="number" id="inpPrice" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Main Image URL:</label>
+                        <input type="text" id="inpImg" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Description:</label>
+                        <textarea id="inpDesc" rows="4"></textarea>
+                    </div>
+                    
+                    <h3>Extra Images (Optional)</h3>
+                    <div class="form-group"><input type="text" id="inpThumb1" placeholder="URL 1"></div>
+                    <div class="form-group"><input type="text" id="inpThumb2" placeholder="URL 2"></div>
+                    <div class="form-group"><input type="text" id="inpThumb3" placeholder="URL 3"></div>
+                    <div class="form-group"><input type="text" id="inpThumb4" placeholder="URL 4"></div>
+
+                    <button type="submit" class="btn btn-save">Save Item to Inventory</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="historyView" class="view-section">
+            <h2>Sales History</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Item</th>
+                        <th>Winner</th>
+                        <th>Winning Bid</th>
+                        <th>Seller</th>
+                    </tr>
+                </thead>
+                <tbody id="historyTableBody">
+                    </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getDatabase, ref, onValue, set, push, remove, update, child, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        // --- PASTE KEYS HERE ---
+        const firebaseConfig = {
+  apiKey: "AIzaSyCt0i8a7ZVRlNmSts9yM4uGwV7ghPU59rk",
+  authDomain: "eastern-shore-auction.firebaseapp.com",
+  databaseURL: "https://eastern-shore-auction-default-rtdb.firebaseio.com",
+  projectId: "eastern-shore-auction",
+  storageBucket: "eastern-shore-auction.firebasestorage.app",
+  messagingSenderId: "771348898846",
+  appId: "1:771348898846:web:3b6371e8f826747fdcba0f"
+};
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+
+        // --- 1. AUTH CHECK (Security) ---
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // Check if Admin
+                get(child(ref(db), `admins/${user.uid}`)).then((snapshot) => {
+                    if (!snapshot.exists() || snapshot.val() !== true) {
+                        alert("Access Denied.");
+                        window.location.href = "index.html";
+                    } else {
+                        // Load Data
+                        loadInventory();
+                        loadHistory();
+                    }
+                });
+            } else {
+                window.location.href = "index.html";
+            }
+        });
+
+        // --- 2. VIEW SWITCHER ---
+        window.switchView = function(viewName) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.getElementById(viewName + 'View').classList.add('active');
+            
+            // Reset form if switching to Add
+            if(viewName === 'add') {
+                document.querySelector('form').reset();
+                document.getElementById('editKey').value = "";
+                document.getElementById('formTitle').innerText = "Add New Lot";
+            }
+        }
+
+        // --- 3. INVENTORY LOGIC ---
+        function loadInventory() {
+            const invRef = ref(db, 'inventory');
+            onValue(invRef, (snapshot) => {
+                const tbody = document.getElementById('inventoryTableBody');
+                tbody.innerHTML = "";
+                const data = snapshot.val();
+
+                if(!data) { tbody.innerHTML = "<tr><td colspan='6'>No items in inventory.</td></tr>"; return; }
+
+                // Convert to array and sort by Lot #
+                const items = Object.entries(data).map(([key, val]) => ({ ...val, key }));
+                items.sort((a, b) => a.lot - b.lot);
+
+                items.forEach(item => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><strong>#${item.lot}</strong></td>
+                        <td><img src="${item.image_url}" class="img-preview">${item.title}</td>
+                        <td>${item.seller_email || "N/A"}</td>
+                        <td>$${item.start_price}</td>
+                        <td><span class="status-pill ${item.times_run > 0 ? 'status-run' : 'status-new'}">${item.times_run || 0} Times</span></td>
+                        <td>
+                            <button class="btn btn-queue" onclick="queueItem('${item.key}')">📢 Queue</button>
+                            <button class="btn btn-edit" onclick="editItem('${item.key}')">✏️ Edit</button>
+                            <button class="btn btn-delete" onclick="deleteItem('${item.key}')">🗑️</button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            });
+        }
+
+        window.saveItem = function() {
+            const key = document.getElementById('editKey').value;
+            const data = {
+                lot: parseInt(document.getElementById('inpLot').value),
+                title: document.getElementById('inpTitle').value,
+                subtitle: document.getElementById('inpSub').value,
+                seller_email: document.getElementById('inpSeller').value,
+                start_price: parseInt(document.getElementById('inpPrice').value),
+                image_url: document.getElementById('inpImg').value,
+                description: document.getElementById('inpDesc').value,
+                times_run: 0, // Default
+                images: {
+                    thumb1: document.getElementById('inpThumb1').value,
+                    thumb2: document.getElementById('inpThumb2').value,
+                    thumb3: document.getElementById('inpThumb3').value,
+                    thumb4: document.getElementById('inpThumb4').value
+                }
+            };
+
+            if(key) {
+                // Update Existing
+                // Keep the old 'times_run' count if editing
+                get(ref(db, `inventory/${key}/times_run`)).then((snap) => {
+                    data.times_run = snap.val() || 0;
+                    update(ref(db, `inventory/${key}`), data);
+                    alert("Item Updated");
+                    switchView('inventory');
+                });
+            } else {
+                // Create New
+                push(ref(db, 'inventory'), data);
+                alert("Item Added to Inventory");
+                switchView('inventory');
+            }
+        }
+
+        window.deleteItem = function(key) {
+            if(confirm("Delete this item permanently?")) {
+                remove(ref(db, `inventory/${key}`));
+            }
+        }
+
+        window.editItem = function(key) {
+            get(ref(db, `inventory/${key}`)).then((snapshot) => {
+                const data = snapshot.val();
+                document.getElementById('editKey').value = key;
+                document.getElementById('inpLot').value = data.lot;
+                document.getElementById('inpTitle').value = data.title;
+                document.getElementById('inpSub').value = data.subtitle;
+                document.getElementById('inpSeller').value = data.seller_email;
+                document.getElementById('inpPrice').value = data.start_price;
+                document.getElementById('inpImg').value = data.image_url;
+                document.getElementById('inpDesc').value = data.description;
+                
+                if(data.images) {
+                    document.getElementById('inpThumb1').value = data.images.thumb1 || "";
+                    document.getElementById('inpThumb2').value = data.images.thumb2 || "";
+                    document.getElementById('inpThumb3').value = data.images.thumb3 || "";
+                    document.getElementById('inpThumb4').value = data.images.thumb4 || "";
+                }
+
+                document.getElementById('formTitle').innerText = "Edit Item";
+                switchView('add');
+            });
+        }
+
+        // --- 4. QUEUE TO LIVE BLOCK ---
+        window.queueItem = function(key) {
+            if(!confirm("Put this item on the LIVE Auction Block right now? (This ends any current auction)")) return;
+
+            get(ref(db, `inventory/${key}`)).then((snapshot) => {
+                const item = snapshot.val();
+                
+                // 1. Prepare data for Active Auction
+                const auctionData = {
+                    title: item.title,
+                    subtitle: item.subtitle,
+                    description: item.description,
+                    current_bid: item.start_price,
+                    image_url: item.image_url,
+                    end_time: Date.now() + (6 * 60 * 1000), // 6 Minutes from now
+                    images: item.images,
+                    
+                    // Reset bidding data
+                    high_bidder_max: 0,
+                    high_bidder_name: "",
+                    high_bidder_uid: "",
+                    bid_history: null,
+                    
+                    // Link back to inventory for history tracking
+                    inventory_key: key,
+                    seller_email: item.seller_email
+                };
+
+                // 2. Push to Active Auction
+                set(ref(db, 'active_auction'), auctionData);
+
+                // 3. Increment "Times Run" in Inventory
+                update(ref(db, `inventory/${key}`), {
+                    times_run: (item.times_run || 0) + 1
+                });
+
+                alert("Item is LIVE on the auction block!");
+            });
+        }
+
+        // --- 5. SALES HISTORY ---
+        function loadHistory() {
+            // NOTE: In a real app, we would write a "winner" entry to a 'sales' node when auction ends.
+            // For now, this is a placeholder where you would list completed sales.
+            const tbody = document.getElementById('historyTableBody');
+            tbody.innerHTML = "<tr><td colspan='5' style='text-align:center; color:#999;'>History tracking requires backend trigger logic. Currently viewing live data only.</td></tr>";
+        }
+    </script>
+</body>
+</html>
