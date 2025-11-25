@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eastern Shore Auction House</title>
+    <style>
+        /* --- CSS STYLES --- */
+        :root {
+            --primary-color: #2563eb;
+            --urgent-color: #dc2626;
+            --bg-color: #f3f4f6;
+            --text-color: #1f2937;
+            --border-color: #e5e7eb;
+            --header-bg: #111827;
+            --header-text: #f9fafb;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* --- HEADER --- */
+        .site-header {
+            width: 100%;
+            background-color: var(--header-bg);
+            color: var(--header-text);
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 40px;
+        }
+
+        .brand-name {
+            font-family: "Georgia", "Times New Roman", serif;
+            font-size: 1.8rem;
+            letter-spacing: 1.5px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        /* --- MAIN LAYOUT --- */
+        .auction-container {
+            background: white;
+            max-width: 1000px;
+            width: 90%;
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 40px;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            margin-bottom: 40px;
+        }
+
+        /* Left Side: Images */
+        .gallery-section {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .main-image-wrapper {
+            width: 100%;
+            height: 400px;
+            background-color: #eee;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .main-image-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: opacity 0.2s ease;
+        }
+
+        /* Right Side: Details */
+        .details-section {
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1 { margin: 0 0 10px 0; font-size: 2rem; line-height: 1.1; }
+        .subtitle { color: #6b7280; font-size: 0.9rem; margin-bottom: 20px; }
+
+        /* Timer Block */
+        .timer-block {
+            background-color: #fee2e2;
+            color: var(--urgent-color);
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            font-weight: bold;
+            border: 1px solid #fca5a5;
+        }
+        .countdown { font-size: 1.5rem; font-variant-numeric: tabular-nums; }
+
+        /* Pricing & Bidding */
+        .pricing-card {
+            background-color: #f9fafb;
+            padding: 25px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 30px;
+        }
+        .current-bid-label { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; color: #6b7280; }
+        .current-price { font-size: 2.5rem; font-weight: 800; color: var(--text-color); margin: 5px 0 20px 0; }
+        .bid-actions { display: flex; gap: 10px; }
+
+        input[type="number"] { padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 1rem; flex: 1; }
+        
+        button.bid-btn {
+            background-color: var(--primary-color); color: white; border: none; padding: 12px 24px;
+            border-radius: 6px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s; flex: 1;
+        }
+        button.bid-btn:hover { background-color: #1d4ed8; }
+
+        /* Description */
+        .description-block h3 { border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px; }
+        .description-text { line-height: 1.6; color: #4b5563; }
+
+        /* --- ADMIN MODAL STYLES --- */
+        .admin-footer { margin-top: 20px; font-size: 0.8rem; color: #9ca3af; cursor: pointer; text-decoration: underline; }
+        
+        #adminModal {
+            display: none; /* Hidden by default */
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 1000;
+            justify-content: center; align-items: center;
+        }
+
+        .modal-content {
+            background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 500px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-content h2 { margin-top: 0; }
+        
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9rem; }
+        .form-group input, .form-group textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;}
+        
+        .admin-btn { width: 100%; padding: 10px; background: #111827; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 10px;}
+        .close-btn { background: #ccc; color: #333; margin-top: 10px; }
+
+        @media (max-width: 768px) {
+            .auction-container { grid-template-columns: 1fr; padding: 20px; }
+            .main-image-wrapper { height: 300px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="site-header">
+        <div class="brand-name">Eastern Shore Auction House</div>
+    </header>
+
+    <div class="auction-container">
+        <div class="gallery-section">
+            <div class="main-image-wrapper">
+                <img id="mainImage" src="" alt="Auction Item">
+            </div>
+            </div>
+
+        <div class="details-section">
+            <h1 id="itemTitle">Loading Item...</h1>
+            <div class="subtitle" id="itemSubtitle">...</div>
+
+            <div class="timer-block">
+                <span>TIME REMAINING</span>
+                <span class="countdown" id="countdown">--:--</span>
+            </div>
+
+            <div class="pricing-card">
+                <div class="current-bid-label">Current Bid</div>
+                <div class="current-price" id="priceDisplay">Loading...</div>
+                
+                <form class="bid-actions" onsubmit="event.preventDefault(); placeBid();">
+                    <input type="number" id="bidInput" placeholder="Enter amount" required>
+                    <button type="submit" class="bid-btn">Place Bid</button>
+                </form>
+            </div>
+
+            <div class="description-block">
+                <h3>Description</h3>
+                <div class="description-text" id="itemDescription">
+                    Loading description...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="admin-footer" onclick="openAdminPanel()">Admin Login</div>
+
+    <div id="adminModal">
+        <div class="modal-content">
+            <h2 id="modalTitle">Admin Access</h2>
+            
+            <div id="loginView">
+                <div class="form-group">
+                    <label>Password:</label>
+                    <input type="password" id="adminPassword">
+                </div>
+                <button class="admin-btn" onclick="checkPassword()">Login</button>
+            </div>
+
+            <div id="dashboardView" style="display:none;">
+                <h3>Queue Next Item</h3>
+                <div class="form-group">
+                    <label>Item Title:</label>
+                    <input type="text" id="newTitle" placeholder="e.g. 1960s Rolex">
+                </div>
+                <div class="form-group">
+                    <label>Subtitle / Lot #:</label>
+                    <input type="text" id="newSubtitle" placeholder="e.g. Lot #99 Condition: Fair">
+                </div>
+                <div class="form-group">
+                    <label>Image URL:</label>
+                    <input type="text" id="newImage" placeholder="https://...">
+                </div>
+                <div class="form-group">
+                    <label>Starting Price ($):</label>
+                    <input type="number" id="newPrice" placeholder="100">
+                </div>
+                <div class="form-group">
+                    <label>Description:</label>
+                    <textarea id="newDesc" rows="3"></textarea>
+                </div>
+                <button class="admin-btn" style="background-color: var(--urgent-color);" onclick="startNewAuction()">START 6 MIN TIMER</button>
+            </div>
+
+            <button class="admin-btn close-btn" onclick="closeAdminPanel()">Close</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, onValue, set, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        // --- PASTE YOUR FIREBASE CONFIG HERE ---
+        const firebaseConfig = {
+  apiKey: "AIzaSyCt0i8a7ZVRlNmSts9yM4uGwV7ghPU59rk",
+  authDomain: "eastern-shore-auction.firebaseapp.com",
+  projectId: "eastern-shore-auction",
+  storageBucket: "eastern-shore-auction.firebasestorage.app",
+  messagingSenderId: "771348898846",
+  appId: "1:771348898846:web:3b6371e8f826747fdcba0f"
+};
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const auctionId = "active_auction"; 
+        const dbRef = ref(db, auctionId);
+
+        // --- 1. DATA SYNC (Listen for changes) ---
+        onValue(dbRef, (snapshot) => {
+            const data = snapshot.val();
+            
+            if (data) {
+                // Update Text Content
+                document.getElementById('itemTitle').innerText = data.title;
+                document.getElementById('itemSubtitle').innerText = data.subtitle;
+                document.getElementById('itemDescription').innerText = data.description;
+                document.getElementById('priceDisplay').innerText = "$" + data.current_bid.toLocaleString();
+                
+                // Update Image
+                document.getElementById('mainImage').src = data.image_url;
+
+                // Update Timer
+                updateTimer(data.end_time);
+            } else {
+                // Initial Seeding if DB is empty
+                set(dbRef, {
+                    title: "Waiting for Auction...",
+                    subtitle: "---",
+                    description: "Admin needs to queue the next item.",
+                    current_bid: 0,
+                    image_url: "https://placehold.co/600x400?text=Waiting",
+                    end_time: Date.now()
+                });
+            }
+        });
+
+        // --- 2. TIMER LOGIC ---
+        let timerInterval;
+        function updateTimer(endTime) {
+            if (timerInterval) clearInterval(timerInterval);
+
+            timerInterval = setInterval(() => {
+                const now = Date.now();
+                const distance = endTime - now;
+                const timerElement = document.getElementById('countdown');
+                const bidBtn = document.querySelector('.bid-btn');
+
+                if (distance < 0) {
+                    clearInterval(timerInterval);
+                    timerElement.textContent = "ENDED";
+                    bidBtn.disabled = true;
+                    bidBtn.textContent = "Auction Closed";
+                    bidBtn.style.backgroundColor = "#9ca3af";
+                    return;
+                } else {
+                    // Re-enable button if new auction started
+                    bidBtn.disabled = false;
+                    bidBtn.textContent = "Place Bid";
+                    bidBtn.style.backgroundColor = ""; 
+                }
+
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                timerElement.textContent = (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds < 10 ? "0" + seconds : seconds);
+            }, 1000);
+        }
+
+        // --- 3. BIDDING LOGIC ---
+        window.placeBid = function() {
+            const input = document.getElementById('bidInput');
+            const newBid = parseInt(input.value);
+            
+            get(dbRef).then((snapshot) => {
+                const currentData = snapshot.val();
+                
+                // Check if auction is ended
+                if (Date.now() > currentData.end_time) {
+                    alert("Auction has ended!");
+                    return;
+                }
+
+                if (newBid > currentData.current_bid) {
+                    set(dbRef, { ...currentData, current_bid: newBid })
+                    .then(() => {
+                        alert("Bid Placed!");
+                        input.value = '';
+                    });
+                } else {
+                    alert("Bid must be higher than $" + currentData.current_bid);
+                }
+            });
+        };
+
+        // --- 4. ADMIN PANEL FUNCTIONS ---
+        window.openAdminPanel = function() {
+            document.getElementById('adminModal').style.display = 'flex';
+        }
+
+        window.closeAdminPanel = function() {
+            document.getElementById('adminModal').style.display = 'none';
+        }
+
+        window.checkPassword = function() {
+            const pass = document.getElementById('adminPassword').value;
+            if (pass === "esa2014") {
+                document.getElementById('loginView').style.display = 'none';
+                document.getElementById('dashboardView').style.display = 'block';
+            } else {
+                alert("Incorrect Password");
+            }
+        }
+
+        window.startNewAuction = function() {
+            const title = document.getElementById('newTitle').value;
+            const subtitle = document.getElementById('newSubtitle').value;
+            const img = document.getElementById('newImage').value;
+            const price = parseInt(document.getElementById('newPrice').value);
+            const desc = document.getElementById('newDesc').value;
+
+            if(!title || !price) {
+                alert("Please fill in at least Title and Price");
+                return;
+            }
+
+            // 6 Minutes from NOW
+            const sixMinutesFromNow = Date.now() + (6 * 60 * 1000);
+
+            set(dbRef, {
+                title: title,
+                subtitle: subtitle,
+                image_url: img,
+                current_bid: price,
+                description: desc,
+                end_time: sixMinutesFromNow
+            }).then(() => {
+                alert("New Item Queued & Timer Started!");
+                closeAdminPanel();
+            });
+        }
+    </script>
+</body>
+</html>
