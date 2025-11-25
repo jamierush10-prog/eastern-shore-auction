@@ -14,7 +14,6 @@
         
         .auction-container { background: white; max-width: 1000px; width: 90%; display: grid; grid-template-columns: 1.2fr 1fr; gap: 40px; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin-bottom: 40px; }
         
-        /* Gallery */
         .gallery-section { display: flex; flex-direction: column; gap: 15px; }
         .main-image-wrapper { width: 100%; height: 400px; background-color: #eee; border-radius: 8px; overflow: hidden; border: 1px solid var(--border-color); position: relative; }
         .main-image-wrapper img { width: 100%; height: 100%; object-fit: contain; background: #fff; transition: opacity 0.2s ease; }
@@ -23,13 +22,11 @@
         .thumbnail:hover { border-color: var(--primary-color); }
         .thumbnail img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* History */
         .history-section { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color); }
         .history-title { font-size: 0.9rem; font-weight: bold; text-transform: uppercase; color: #6b7280; margin-bottom: 10px; }
         .bid-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f3f4f6; font-size: 0.95rem; }
         .bid-item:first-child { color: var(--primary-color); font-weight: bold; }
 
-        /* Right Side */
         .details-section { display: flex; flex-direction: column; }
         h1 { margin: 0 0 10px 0; font-size: 2rem; line-height: 1.1; }
         .subtitle { color: #6b7280; font-size: 0.9rem; margin-bottom: 20px; }
@@ -47,13 +44,13 @@
         button.bid-btn:hover { background-color: #1d4ed8; }
 
         .user-badge { background: #e0f2fe; color: #0369a1; padding: 10px; border-radius: 6px; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border: 1px solid #bae6fd; }
-        .user-badge strong { font-size: 1rem; }
-        .change-user { font-size: 0.8rem; text-decoration: underline; cursor: pointer; }
-
+        
         .description-block h3 { border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px; }
         .description-text { line-height: 1.6; color: #4b5563; }
 
-        /* ADMIN MODAL */
+        /* LOADING SPINNER */
+        #pageLoading { position: fixed; top:0; left:0; width:100%; height:100%; background:white; display:flex; justify-content:center; align-items:center; z-index:9999; }
+
         .admin-footer { margin-top: 20px; font-size: 0.8rem; color: #9ca3af; cursor: pointer; text-decoration: underline; }
         #adminModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
@@ -68,16 +65,16 @@
 </head>
 <body>
 
+    <div id="pageLoading">Authenticating...</div>
+
     <header class="site-header">
-        <div onclick="logout()" style="position: absolute; left: 20px; color: white; text-decoration: none; font-size: 0.9rem; top: 25px; cursor: pointer;">&larr; Exit to Lobby</div>
+        <div onclick="logout()" style="position: absolute; left: 20px; color: white; text-decoration: none; font-size: 0.9rem; top: 25px; cursor: pointer;">&larr; Sign Out</div>
         <div class="brand-name">Eastern Shore Auction House</div>
     </header>
 
     <div class="auction-container">
         <div class="gallery-section">
-            <div class="main-image-wrapper">
-                <img id="mainImage" src="" alt="Auction Item" onerror="this.src='https://placehold.co/600x400?text=No+Image'">
-            </div>
+            <div class="main-image-wrapper"><img id="mainImage" src="" alt="Auction Item" onerror="this.src='https://placehold.co/600x400?text=No+Image'"></div>
             <div class="thumbnails">
                 <div class="thumbnail" onclick="changeImage(this)"><img id="thumb1" src="" onerror="this.style.display='none'"></div>
                 <div class="thumbnail" onclick="changeImage(this)"><img id="thumb2" src="" onerror="this.style.display='none'"></div>
@@ -86,36 +83,24 @@
             </div>
             <div class="history-section">
                 <div class="history-title">Top 3 Bids</div>
-                <div id="bidHistoryList">
-                    <div class="bid-item" style="color:#9ca3af;">No bids yet...</div>
-                </div>
+                <div id="bidHistoryList"></div>
             </div>
         </div>
 
         <div class="details-section">
-            <h1 id="itemTitle">Loading Item...</h1>
+            <h1 id="itemTitle">Loading...</h1>
             <div class="subtitle" id="itemSubtitle">...</div>
 
-            <div class="timer-block">
-                <span>TIME REMAINING</span>
-                <span class="countdown" id="countdown">--:--</span>
-            </div>
+            <div class="timer-block"><span>TIME REMAINING</span><span class="countdown" id="countdown">--:--</span></div>
 
             <div class="pricing-card">
                 <div class="current-bid-label">Current Bid</div>
                 <div class="current-price" id="priceDisplay">Loading...</div>
                 
                 <form class="bid-form" onsubmit="event.preventDefault(); placeBid();">
-                    <div id="userInfoDisplay" style="display:none;" class="user-badge">
-                        <span>Logged in as: <strong id="displayUsername">User</strong></span>
-                        <span class="change-user" onclick="logout()">Log Out</span>
+                    <div class="user-badge">
+                        <span>Bidder: <strong id="displayUsername">...</strong></span>
                     </div>
-
-                    <div id="guestInputs">
-                        <input type="text" id="bidName" placeholder="Your Name" required>
-                        <input type="email" id="bidEmail" placeholder="Email Address" required>
-                    </div>
-
                     <input type="number" id="bidInput" placeholder="Enter bid amount ($)" required>
                     <button type="submit" class="bid-btn">Place Bid</button>
                 </form>
@@ -123,7 +108,7 @@
 
             <div class="description-block">
                 <h3>Description</h3>
-                <div class="description-text" id="itemDescription">Loading description...</div>
+                <div class="description-text" id="itemDescription">Loading...</div>
             </div>
         </div>
     </div>
@@ -156,12 +141,14 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, onValue, set, get, push, update, onDisconnect, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getDatabase, ref, onValue, set, get, push, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // --- PASTE YOUR FIREBASE CONFIG HERE ---
+        // --- PASTE YOUR FIREBASE KEYS HERE ---
         const firebaseConfig = {
   apiKey: "AIzaSyCt0i8a7ZVRlNmSts9yM4uGwV7ghPU59rk",
   authDomain: "eastern-shore-auction.firebaseapp.com",
+  databaseURL: "https://eastern-shore-auction-default-rtdb.firebaseio.com",
   projectId: "eastern-shore-auction",
   storageBucket: "eastern-shore-auction.firebasestorage.app",
   messagingSenderId: "771348898846",
@@ -169,45 +156,34 @@
 };
 
         const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
         const db = getDatabase(app);
         const auctionId = "active_auction"; 
         const dbRef = ref(db, auctionId);
-        let currentUserRef = null;
 
-        // --- 0. LOAD USER DATA & CLAIM NAME ---
-        window.onload = function() {
-            const savedName = localStorage.getItem('esa_username');
-            
-            if(savedName) {
-                // UI Updates
-                document.getElementById('guestInputs').style.display = 'none';
-                document.getElementById('userInfoDisplay').style.display = 'flex';
-                document.getElementById('displayUsername').innerText = savedName;
-                document.getElementById('bidName').removeAttribute('required');
-                document.getElementById('bidEmail').removeAttribute('required');
+        let currentUser = null;
 
-                // CLAIM NAME IN DB
-                currentUserRef = ref(db, `active_users/${savedName}`);
-                
-                // Write "true" to claim it
-                set(currentUserRef, { status: "online", email: localStorage.getItem('esa_email') });
-
-                // If user closes tab/disconnects, REMOVE the name automatically
-                onDisconnect(currentUserRef).remove();
+        // --- 1. SECURITY CHECK ---
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // User is signed in.
+                currentUser = user;
+                document.getElementById('displayUsername').innerText = user.displayName || "Bidder";
+                document.getElementById('pageLoading').style.display = 'none'; // Reveal Page
+            } else {
+                // User is NOT signed in. Kick them out.
+                window.location.href = "index.html";
             }
-        }
+        });
 
+        // --- 2. LOGOUT ---
         window.logout = function() {
-            // Remove name from DB before leaving
-            if(currentUserRef) remove(currentUserRef);
-            
-            localStorage.removeItem('esa_username');
-            localStorage.removeItem('esa_email');
-            localStorage.removeItem('esa_phone');
-            window.location.href = 'index.html';
+            signOut(auth).then(() => {
+                window.location.href = "index.html";
+            });
         }
 
-        // --- 1. DATA SYNC ---
+        // --- 3. DATA SYNC ---
         onValue(dbRef, (snapshot) => {
             const data = snapshot.val();
             if (data) {
@@ -218,29 +194,30 @@
                 
                 const mainImg = document.getElementById('mainImage');
                 if(!mainImg.getAttribute('data-locked')) mainImg.src = data.image_url;
-
-                document.getElementById('thumb1').src = data.images?.thumb1 || "";
-                document.getElementById('thumb1').parentElement.style.display = data.images?.thumb1 ? 'block' : 'none';
-                document.getElementById('thumb2').src = data.images?.thumb2 || "";
-                document.getElementById('thumb2').parentElement.style.display = data.images?.thumb2 ? 'block' : 'none';
-                document.getElementById('thumb3').src = data.images?.thumb3 || "";
-                document.getElementById('thumb3').parentElement.style.display = data.images?.thumb3 ? 'block' : 'none';
-                document.getElementById('thumb4').src = data.images?.thumb4 || "";
-                document.getElementById('thumb4').parentElement.style.display = data.images?.thumb4 ? 'block' : 'none';
-
+                
+                updateThumbs(data.images);
                 updateTimer(data.end_time);
                 renderBidHistory(data.bid_history);
             } else {
-                set(dbRef, { title: "Waiting...", subtitle: "---", current_bid: 0, image_url: "https://placehold.co/600x400?text=Waiting", end_time: Date.now() });
+                set(dbRef, { title: "Waiting...", current_bid: 0, image_url: "https://placehold.co/600x400?text=Waiting", end_time: Date.now() });
             }
         });
 
-        window.changeImage = function(thumbnailDiv) {
-            const img = thumbnailDiv.querySelector('img');
-            const mainImg = document.getElementById('mainImage');
+        function updateThumbs(images) {
+            if(!images) return;
+            ['thumb1','thumb2','thumb3','thumb4'].forEach(id => {
+                const el = document.getElementById(id);
+                el.src = images[id] || "";
+                el.parentElement.style.display = images[id] ? 'block' : 'none';
+            });
+        }
+
+        window.changeImage = function(div) {
+            const img = div.querySelector('img');
+            const main = document.getElementById('mainImage');
             if(img.src) {
-                mainImg.style.opacity = 0;
-                setTimeout(() => { mainImg.src = img.src; mainImg.style.opacity = 1; mainImg.setAttribute('data-locked', 'true'); }, 200);
+                main.style.opacity = 0;
+                setTimeout(() => { main.src = img.src; main.style.opacity = 1; main.setAttribute('data-locked', 'true'); }, 200);
             }
         }
 
@@ -251,8 +228,7 @@
             const bidsArray = Object.values(historyObj);
             bidsArray.sort((a, b) => b.amount - a.amount);
             
-            const top3 = bidsArray.slice(0, 3);
-            top3.forEach(bid => {
+            bidsArray.slice(0, 3).forEach(bid => {
                 const row = document.createElement('div');
                 row.className = 'bid-item';
                 row.innerHTML = `<span>${bid.name}</span><span>$${bid.amount.toLocaleString()}</span>`;
@@ -282,33 +258,31 @@
             }, 1000);
         }
 
-        // --- BIDDING LOGIC ---
+        // --- 4. SECURE BIDDING ---
         window.placeBid = function() {
+            if(!currentUser) return; // Security check
+
             const input = document.getElementById('bidInput');
             const newBid = parseInt(input.value);
             
-            let name = localStorage.getItem('esa_username');
-            let email = localStorage.getItem('esa_email');
-            let phone = localStorage.getItem('esa_phone');
-
-            if(!name) { name = document.getElementById('bidName').value; email = document.getElementById('bidEmail').value; phone = "Guest"; }
-
-            if(!name) { alert("Please enter your name"); return; }
-
             get(dbRef).then((snapshot) => {
                 const currentData = snapshot.val();
                 if (Date.now() > currentData.end_time) { alert("Auction has ended!"); return; }
+                
                 if (newBid > currentData.current_bid) {
                     update(dbRef, { current_bid: newBid });
                     const historyRef = ref(db, auctionId + '/bid_history');
+                    
+                    // Uses Firebase Auth data, not form inputs!
                     push(historyRef, {
-                        name: name,
-                        email: email,
-                        phone: phone, 
+                        name: currentUser.displayName,
+                        email: currentUser.email,
+                        uid: currentUser.uid, 
                         amount: newBid,
                         timestamp: Date.now()
                     });
-                    alert("Bid Placed! Good luck, " + name);
+                    
+                    alert("Bid Placed Successfully!");
                     input.value = ''; 
                 } else {
                     alert("Bid must be higher than $" + currentData.current_bid);
@@ -316,7 +290,7 @@
             });
         };
 
-        // Admin (Same as before)
+        // Admin Functions
         window.openAdminPanel = function() { document.getElementById('adminModal').style.display = 'flex'; }
         window.closeAdminPanel = function() { document.getElementById('adminModal').style.display = 'none'; }
         window.checkPassword = function() {
