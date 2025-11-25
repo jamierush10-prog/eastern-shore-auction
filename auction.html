@@ -14,7 +14,6 @@
         
         .auction-container { background: white; max-width: 1000px; width: 90%; display: grid; grid-template-columns: 1.2fr 1fr; gap: 40px; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin-bottom: 40px; }
         
-        /* Gallery */
         .gallery-section { display: flex; flex-direction: column; gap: 15px; }
         .main-image-wrapper { width: 100%; height: 400px; background-color: #eee; border-radius: 8px; overflow: hidden; border: 1px solid var(--border-color); position: relative; }
         .main-image-wrapper img { width: 100%; height: 100%; object-fit: contain; background: #fff; transition: opacity 0.2s ease; }
@@ -23,13 +22,11 @@
         .thumbnail:hover { border-color: var(--primary-color); }
         .thumbnail img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* History */
         .history-section { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color); }
         .history-title { font-size: 0.9rem; font-weight: bold; text-transform: uppercase; color: #6b7280; margin-bottom: 10px; }
         .bid-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f3f4f6; font-size: 0.95rem; }
         .bid-item:first-child { color: var(--primary-color); font-weight: bold; }
 
-        /* Right Side */
         .details-section { display: flex; flex-direction: column; }
         h1 { margin: 0 0 10px 0; font-size: 2rem; line-height: 1.1; }
         .subtitle { color: #6b7280; font-size: 0.9rem; margin-bottom: 20px; }
@@ -41,7 +38,7 @@
         .current-bid-label { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; color: #6b7280; }
         .current-price { font-size: 2.5rem; font-weight: 800; color: var(--text-color); margin: 5px 0 20px 0; }
         
-        /* NEW BID CONTROLS */
+        /* BID CONTROLS */
         .bid-controls { display: flex; flex-direction: column; gap: 15px; }
         
         .increment-buttons { display: flex; gap: 10px; }
@@ -53,10 +50,22 @@
         
         button.bid-btn { background-color: var(--primary-color); color: white; border: none; padding: 12px 24px; border-radius: 6px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s; width: 100%; }
         button.bid-btn:hover { background-color: #1d4ed8; }
+        
+        /* NEW MAX BID DISPLAY */
+        #userMaxBidDisplay {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: var(--primary-color);
+            text-align: center;
+            display: none; /* Hidden by default */
+            background: #dbeafe;
+            padding: 8px;
+            border-radius: 4px;
+        }
 
         .user-badge { background: #e0f2fe; color: #0369a1; padding: 10px; border-radius: 6px; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border: 1px solid #bae6fd; }
 
-        /* CONFIRMATION MODAL */
+        /* MODALS */
         #confirmModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; }
         .confirm-content { background: white; padding: 30px; border-radius: 8px; text-align: center; width: 90%; max-width: 350px; box-shadow: 0 20px 25px rgba(0,0,0,0.2); }
         .confirm-amount { font-size: 2rem; font-weight: 800; color: var(--primary-color); margin: 10px 0; }
@@ -72,6 +81,7 @@
         .form-group { margin-bottom: 15px; }
         .form-group input, .form-group textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
         .admin-btn { width: 100%; padding: 10px; background: #111827; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 10px; }
+        .close-btn { background: #ccc; color: #333; margin-top: 10px; }
 
         @media (max-width: 768px) { .auction-container { grid-template-columns: 1fr; padding: 20px; } .main-image-wrapper { height: 300px; } }
     </style>
@@ -126,6 +136,10 @@
                     </div>
                     
                     <button class="bid-btn" onclick="openConfirm()">Place Max Bid</button>
+                    
+                    <div id="userMaxBidDisplay">
+                        Your current max bid is set to: <strong id="userMaxVal">...</strong>
+                    </div>
                 </div>
             </div>
 
@@ -200,9 +214,8 @@
         const dbRef = ref(db, auctionId);
 
         let currentUser = null;
-        let globalCurrentBid = 0; // Tracks current database price
+        let globalCurrentBid = 0;
 
-        // --- 1. SECURITY & LOAD ---
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 currentUser = user;
@@ -215,32 +228,32 @@
 
         window.logout = function() { signOut(auth).then(() => { window.location.href = "index.html"; }); }
 
-        // --- 2. DATA SYNC ---
         onValue(dbRef, (snapshot) => {
             const data = snapshot.val();
             if (data) {
-                // Update UI Texts
                 document.getElementById('itemTitle').innerText = data.title;
                 document.getElementById('itemSubtitle').innerText = data.subtitle;
                 document.getElementById('itemDescription').innerText = data.description;
                 document.getElementById('priceDisplay').innerText = "$" + data.current_bid.toLocaleString();
-                
-                // Track global price for calculations
                 globalCurrentBid = data.current_bid;
                 
-                // Update Inputs: If input is empty or lower than current, set to current + 1
                 const input = document.getElementById('bidInput');
-                if(document.activeElement !== input) {
-                    input.value = globalCurrentBid + 1;
-                }
+                if(document.activeElement !== input) input.value = globalCurrentBid + 1;
 
-                // Images
                 const mainImg = document.getElementById('mainImage');
                 if(!mainImg.getAttribute('data-locked')) mainImg.src = data.image_url;
                 updateThumbs(data.images);
-                
                 updateTimer(data.end_time);
                 renderBidHistory(data.bid_history);
+
+                // --- NEW LOGIC: SHOW MAX BID IF CURRENT USER IS LEADER ---
+                if (currentUser && data.high_bidder_uid === currentUser.uid) {
+                    document.getElementById('userMaxBidDisplay').style.display = 'block';
+                    document.getElementById('userMaxVal').innerText = "$" + data.high_bidder_max.toLocaleString();
+                } else {
+                    document.getElementById('userMaxBidDisplay').style.display = 'none';
+                }
+
             } else {
                 set(dbRef, { title: "Waiting...", current_bid: 0, image_url: "https://placehold.co/600x400?text=Waiting", end_time: Date.now() });
             }
@@ -269,7 +282,7 @@
             list.innerHTML = ""; 
             if (!historyObj) { list.innerHTML = '<div class="bid-item" style="color:#9ca3af;">No bids yet...</div>'; return; }
             const bidsArray = Object.values(historyObj);
-            bidsArray.sort((a, b) => b.amount - a.amount); // Show high to low
+            bidsArray.sort((a, b) => b.amount - a.amount);
             bidsArray.slice(0, 3).forEach(bid => {
                 const row = document.createElement('div');
                 row.className = 'bid-item';
@@ -303,29 +316,22 @@
             }, 1000);
         }
 
-        // --- 3. UI HELPER FUNCTIONS ---
         window.addToBid = function(amount) {
             const input = document.getElementById('bidInput');
             let currentVal = parseInt(input.value) || (globalCurrentBid);
-            // Ensure we are adding to at least the current bid
             if(currentVal <= globalCurrentBid) currentVal = globalCurrentBid;
-            
             input.value = currentVal + amount;
         }
 
         window.openConfirm = function() {
             const amount = parseInt(document.getElementById('bidInput').value);
-            if(!amount || amount <= globalCurrentBid) {
-                alert("Bid must be higher than current price of $" + globalCurrentBid);
-                return;
-            }
+            if(!amount || amount <= globalCurrentBid) { alert("Bid must be higher than current price of $" + globalCurrentBid); return; }
             document.getElementById('confirmAmountDisplay').innerText = "$" + amount.toLocaleString();
             document.getElementById('confirmModal').style.display = 'flex';
         }
 
         window.closeConfirm = function() { document.getElementById('confirmModal').style.display = 'none'; }
 
-        // --- 4. PROXY BIDDING LOGIC (The Complex Part) ---
         window.submitFinalBid = function() {
             if(!currentUser) return;
             const myMaxBid = parseInt(document.getElementById('bidInput').value);
@@ -339,9 +345,7 @@
                 const currentLeaderUID = data.high_bidder_uid || "";
                 const currentPrice = data.current_bid;
 
-                // LOGIC 1: Am I already the leader?
                 if (currentUser.uid === currentLeaderUID) {
-                    // Just update my max bid
                     if (myMaxBid > currentLeaderMax) {
                         update(dbRef, { high_bidder_max: myMaxBid });
                         alert("Your max bid has been increased to $" + myMaxBid);
@@ -351,14 +355,8 @@
                     return;
                 }
 
-                // LOGIC 2: Is my max bid HIGHER than the current leader's secret max?
                 if (myMaxBid > currentLeaderMax) {
-                    // I take the lead!
-                    // New price is Leader's Max + 1 (or my bid if I'm the first)
-                    // But price cannot exceed MY max.
                     let newPrice = (currentLeaderMax > 0) ? (currentLeaderMax + 1) : (currentPrice + 1);
-                    
-                    // Edge case: If current price was already higher than leader max (shouldn't happen but safety check)
                     if(newPrice < currentPrice + 1) newPrice = currentPrice + 1;
 
                     update(dbRef, { 
@@ -368,49 +366,26 @@
                         high_bidder_name: currentUser.displayName
                     });
 
-                    // Add to history
                     const historyRef = ref(db, auctionId + '/bid_history');
                     push(historyRef, {
                         name: currentUser.displayName,
-                        amount: newPrice, // Show the visible price, not the max
+                        amount: newPrice,
                         timestamp: Date.now()
                     });
-
                     alert("You are now the highest bidder!");
-                
                 } else {
-                    // LOGIC 3: My max bid is LOWER than the leader's secret max.
-                    // The leader stays leader, but I force the price up.
-                    // New price = My Max + 1.
-                    
                     let newPrice = myMaxBid + 1;
-                    
-                    // Edge case: Tie? If my max == leader max, leader wins, price = my max.
                     if (myMaxBid === currentLeaderMax) newPrice = myMaxBid;
 
                     update(dbRef, { current_bid: newPrice });
-
-                    // Add history for ME (the loser, showing I bid)
                     const historyRef = ref(db, auctionId + '/bid_history');
-                    push(historyRef, {
-                        name: currentUser.displayName, // My name
-                        amount: myMaxBid, // My bid
-                        timestamp: Date.now()
-                    });
-                    
-                    // Add history for LEADER (showing they defended)
-                    push(historyRef, {
-                        name: data.high_bidder_name, // Leader name
-                        amount: newPrice, // The new auto-bid price
-                        timestamp: Date.now() + 1 // 1ms later
-                    });
-
+                    push(historyRef, { name: currentUser.displayName, amount: myMaxBid, timestamp: Date.now() });
+                    push(historyRef, { name: data.high_bidder_name, amount: newPrice, timestamp: Date.now() + 1 });
                     alert("You were outbid by an automatic proxy bid.");
                 }
             });
         };
 
-        // Admin
         window.openAdminPanel = function() { document.getElementById('adminModal').style.display = 'flex'; }
         window.closeAdminPanel = function() { document.getElementById('adminModal').style.display = 'none'; }
         window.checkPassword = function() {
@@ -434,10 +409,7 @@
             set(dbRef, {
                 title: title, subtitle: subtitle, image_url: imgMain,
                 images: { thumb1: t1, thumb2: t2, thumb3: t3, thumb4: t4 },
-                current_bid: price, 
-                high_bidder_max: 0, // Reset Max
-                high_bidder_uid: "", 
-                high_bidder_name: "",
+                current_bid: price, high_bidder_max: 0, high_bidder_uid: "", high_bidder_name: "",
                 description: desc, end_time: sixMinutesFromNow, bid_history: null
             }).then(() => { alert("New Item Queued!"); closeAdminPanel(); });
         }
