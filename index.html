@@ -25,11 +25,21 @@
         .section-title { font-family: "Georgia", serif; font-size: 1.8rem; margin: 0; }
         .sell-btn { font-size: 0.9rem; color: var(--text-color); text-decoration: none; border: 1px solid #d1d5db; padding: 8px 16px; border-radius: 4px; background: white; transition: background 0.2s; }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
-        .card { background: white; border-radius: 8px; overflow: hidden; border: 1px solid #e5e7eb; transition: transform 0.2s; }
+        
+        /* CARD STYLES */
+        .card { background: white; border-radius: 8px; overflow: hidden; border: 1px solid #e5e7eb; transition: transform 0.2s; display: flex; flex-direction: column; }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         .card img { width: 100%; height: 200px; object-fit: cover; }
-        .card-body { padding: 15px; }
-        .card-title { font-weight: bold; margin-bottom: 5px; }
-        .card-lot { font-size: 0.85rem; color: #6b7280; }
+        .card-body { padding: 15px; flex: 1; display: flex; flex-direction: column; }
+        .card-title { font-weight: bold; margin-bottom: 5px; font-size: 1.1rem; }
+        
+        /* UPDATED CARD LOT STYLE */
+        .card-lot { 
+            font-size: 0.9rem; 
+            color: #6b7280; 
+            margin-top: auto; /* Pushes to bottom if title is long */
+        }
+        .card-lot strong { color: #374151; }
 
         /* AUTH MODAL STYLES */
         #authModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
@@ -140,11 +150,18 @@
                 featuredItems.forEach(item => {
                     const card = document.createElement('div');
                     card.className = 'card';
+                    
+                    // --- HERE IS THE CHANGE: SHOW SUBTITLE INSTEAD OF PRICE ---
+                    const subtitleText = item.subtitle ? item.subtitle : "No details";
+
                     card.innerHTML = `
                         <img src="${item.image_url}" alt="${item.title}">
                         <div class="card-body">
                             <div class="card-title">${item.title}</div>
-                            <div class="card-lot">Lot #${item.lot} • Start: $${item.start_price}</div>
+                            <div class="card-lot">
+                                <strong>Lot #${item.lot}</strong> <br>
+                                ${subtitleText}
+                            </div>
                         </div>
                     `;
                     grid.appendChild(card);
@@ -155,7 +172,7 @@
         // Run immediately
         loadFeaturedItems();
 
-        // --- AUTH LOGIC (Same as before) ---
+        // --- AUTH LOGIC ---
         window.openAuthModal = function() {
             if(auth.currentUser) { window.location.href = "auction.html"; }
             else { document.getElementById('authModal').style.display = 'flex'; }
