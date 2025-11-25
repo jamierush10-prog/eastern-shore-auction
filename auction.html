@@ -9,8 +9,25 @@
         :root { --primary-color: #2563eb; --urgent-color: #dc2626; --bg-color: #f3f4f6; --text-color: #1f2937; --border-color: #e5e7eb; --header-bg: #111827; --header-text: #f9fafb; --success-color: #16a34a; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
         
-        .site-header { width: 100%; background-color: var(--header-bg); color: var(--header-text); padding: 20px 0; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 40px; position: relative; }
+        /* HEADER UPDATED TO HOLD ADMIN BUTTON */
+        .site-header { width: 100%; background-color: var(--header-bg); color: var(--header-text); padding: 20px 0; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 40px; position: relative; display: flex; justify-content: center; align-items: center; }
         .brand-name { font-family: "Georgia", "Times New Roman", serif; font-size: 1.8rem; letter-spacing: 1.5px; font-weight: bold; text-transform: uppercase; }
+        
+        .header-left { position: absolute; left: 20px; font-size: 0.9rem; cursor: pointer; }
+        .header-right { position: absolute; right: 20px; } /* For Admin Button */
+
+        /* ADMIN BUTTON (Hidden by default) */
+        #adminPanelBtn {
+            display: none; /* Secret! */
+            background-color: var(--urgent-color);
+            color: white;
+            border: 1px solid white;
+            padding: 8px 15px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            font-weight: bold;
+        }
         
         .auction-container { background: white; max-width: 1000px; width: 90%; display: grid; grid-template-columns: 1.2fr 1fr; gap: 40px; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin-bottom: 40px; }
         
@@ -22,19 +39,10 @@
         .thumbnail:hover { border-color: var(--primary-color); }
         .thumbnail img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* HISTORY SECTION UPDATED */
         .history-section { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color); }
         .history-title { font-size: 0.9rem; font-weight: bold; text-transform: uppercase; color: #6b7280; margin-bottom: 10px; }
         
-        /* NEW SCROLLABLE LIST */
-        #bidHistoryList { 
-            max-height: 300px; 
-            overflow-y: auto; 
-            border: 1px solid #f3f4f6; 
-            border-radius: 6px; 
-            padding: 0 10px;
-        }
-
+        #bidHistoryList { max-height: 300px; overflow-y: auto; border: 1px solid #f3f4f6; border-radius: 6px; padding: 0 10px; }
         .bid-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f3f4f6; font-size: 0.95rem; }
         .bid-item:first-child { color: var(--primary-color); font-weight: bold; background-color: #eff6ff; padding-left:5px; padding-right:5px; border-radius:4px; }
 
@@ -76,6 +84,7 @@
         #winnerDetail { font-size: 1.1rem; color: #6b7280; margin-bottom: 20px; }
         .winner-card { border-top: 5px solid var(--success-color); }
 
+        /* ADMIN MODAL */
         .admin-footer { margin-top: 20px; font-size: 0.8rem; color: #9ca3af; cursor: pointer; text-decoration: underline; text-align: center; }
         .form-group { margin-bottom: 15px; }
         .form-group input, .form-group textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
@@ -90,8 +99,11 @@
     <div id="pageLoading" style="position:fixed; top:0; left:0; width:100%; height:100%; background:white; display:flex; justify-content:center; align-items:center; z-index:9999;">Authenticating...</div>
 
     <header class="site-header">
-        <div onclick="logout()" style="position: absolute; left: 20px; color: white; text-decoration: none; font-size: 0.9rem; top: 25px; cursor: pointer;">&larr; Sign Out</div>
+        <div class="header-left" onclick="logout()">&larr; Sign Out</div>
         <div class="brand-name">Eastern Shore Auction House</div>
+        <div class="header-right">
+            <button id="adminPanelBtn" onclick="openAdminPanel()">ADMIN DASHBOARD</button>
+        </div>
     </header>
 
     <div class="auction-container">
@@ -149,8 +161,6 @@
         </div>
     </div>
 
-    <div class="admin-footer" onclick="openAdminPanel()">Admin Login</div>
-
     <div id="winnerModal" class="modal-overlay">
         <div class="modal-content winner-card">
             <div id="winnerIcon">🏆</div>
@@ -175,13 +185,9 @@
 
     <div id="adminModal" class="modal-overlay">
         <div class="modal-content" style="max-width: 600px; max-height: 90vh; overflow-y: auto;">
-            <h2 style="margin-top:0; text-align:center;">Admin Access</h2>
-            <div id="loginView">
-                <div class="form-group"><label>Password:</label><input type="password" id="adminPassword"></div>
-                <button class="admin-btn" onclick="checkPassword()">Login</button>
-                <button class="admin-btn close-btn" onclick="closeAdminPanel()">Cancel</button>
-            </div>
-            <div id="dashboardView" style="display:none;">
+            <h2 style="margin-top:0; text-align:center;">Admin Dashboard</h2>
+            
+            <div id="dashboardView">
                 <h3>Queue Next Item</h3>
                 <div class="form-group"><label>Item Title:</label><input type="text" id="newTitle"></div>
                 <div class="form-group"><label>Subtitle:</label><input type="text" id="newSubtitle"></div>
@@ -202,7 +208,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getDatabase, ref, onValue, set, get, push, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, onValue, set, get, push, update, child } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
         // --- PASTE YOUR FIREBASE KEYS HERE ---
         const firebaseConfig = {
@@ -230,11 +236,25 @@
             if (user) {
                 currentUser = user;
                 document.getElementById('displayUsername').innerText = user.displayName || "Bidder";
+                
+                // --- CHECK IF ADMIN ---
+                checkAdminStatus(user.uid);
+
                 document.getElementById('pageLoading').style.display = 'none';
             } else {
                 window.location.href = "index.html";
             }
         });
+
+        // Function to check if user is on the VIP list
+        function checkAdminStatus(uid) {
+            get(child(ref(db), `admins/${uid}`)).then((snapshot) => {
+                if (snapshot.exists() && snapshot.val() === true) {
+                    // Show Admin Button
+                    document.getElementById('adminPanelBtn').style.display = 'block';
+                }
+            });
+        }
 
         window.logout = function() { signOut(auth).then(() => { window.location.href = "index.html"; }); }
 
@@ -296,7 +316,6 @@
             const bidsArray = Object.values(historyObj);
             bidsArray.sort((a, b) => b.amount - a.amount);
             
-            // SHOW ALL BIDS (Removed Slice)
             bidsArray.forEach(bid => {
                 const row = document.createElement('div');
                 row.className = 'bid-item';
@@ -424,12 +443,7 @@
 
         window.openAdminPanel = function() { document.getElementById('adminModal').style.display = 'flex'; }
         window.closeAdminPanel = function() { document.getElementById('adminModal').style.display = 'none'; }
-        window.checkPassword = function() {
-            if (document.getElementById('adminPassword').value === "esa2014") {
-                document.getElementById('loginView').style.display = 'none';
-                document.getElementById('dashboardView').style.display = 'block';
-            } else { alert("Incorrect Password"); }
-        }
+        
         window.startNewAuction = function() {
             const title = document.getElementById('newTitle').value;
             const subtitle = document.getElementById('newSubtitle').value;
