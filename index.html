@@ -118,13 +118,24 @@
         }
         .current-bid-label { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; color: #6b7280; }
         .current-price { font-size: 2.5rem; font-weight: 800; color: var(--text-color); margin: 5px 0 20px 0; }
-        .bid-actions { display: flex; gap: 10px; }
+        
+        /* NEW FORM STYLING */
+        .bid-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
 
-        input[type="number"] { padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 1rem; flex: 1; }
+        .bid-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        input { padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 1rem; width: 100%; box-sizing: border-box; }
         
         button.bid-btn {
             background-color: var(--primary-color); color: white; border: none; padding: 12px 24px;
-            border-radius: 6px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s; flex: 1;
+            border-radius: 6px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s; width: 100%;
         }
         button.bid-btn:hover { background-color: #1d4ed8; }
 
@@ -136,8 +147,7 @@
         .admin-footer { margin-top: 20px; font-size: 0.8rem; color: #9ca3af; cursor: pointer; text-decoration: underline; }
         
         #adminModal {
-            display: none; /* Hidden by default */
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.5); z-index: 1000;
             justify-content: center; align-items: center;
         }
@@ -148,10 +158,8 @@
         }
 
         .modal-content h2 { margin-top: 0; }
-        
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9rem; }
-        .form-group input, .form-group textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;}
         
         .admin-btn { width: 100%; padding: 10px; background: #111827; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 10px;}
         .close-btn { background: #ccc; color: #333; margin-top: 10px; }
@@ -171,9 +179,9 @@
     <div class="auction-container">
         <div class="gallery-section">
             <div class="main-image-wrapper">
-                <img id="mainImage" src="" alt="Auction Item">
+                <img id="mainImage" src="" alt="Auction Item" onerror="this.src='https://placehold.co/600x400?text=Image+Error'">
             </div>
-            </div>
+        </div>
 
         <div class="details-section">
             <h1 id="itemTitle">Loading Item...</h1>
@@ -188,8 +196,14 @@
                 <div class="current-bid-label">Current Bid</div>
                 <div class="current-price" id="priceDisplay">Loading...</div>
                 
-                <form class="bid-actions" onsubmit="event.preventDefault(); placeBid();">
-                    <input type="number" id="bidInput" placeholder="Enter amount" required>
+                <form class="bid-form" onsubmit="event.preventDefault(); placeBid();">
+                    <input type="number" id="bidInput" placeholder="Enter bid amount ($)" required>
+                    
+                    <div class="bid-row">
+                        <input type="text" id="bidName" placeholder="Your Name" required>
+                        <input type="email" id="bidEmail" placeholder="Email Address" required>
+                    </div>
+
                     <button type="submit" class="bid-btn">Place Bid</button>
                 </form>
             </div>
@@ -228,8 +242,8 @@
                     <input type="text" id="newSubtitle" placeholder="e.g. Lot #99 Condition: Fair">
                 </div>
                 <div class="form-group">
-                    <label>Image URL:</label>
-                    <input type="text" id="newImage" placeholder="https://...">
+                    <label>Image URL (Must end in .jpg or .png):</label>
+                    <input type="text" id="newImage" placeholder="https://imgur.com/example.jpg">
                 </div>
                 <div class="form-group">
                     <label>Starting Price ($):</label>
@@ -265,24 +279,28 @@
         const auctionId = "active_auction"; 
         const dbRef = ref(db, auctionId);
 
-        // --- 1. DATA SYNC (Listen for changes) ---
+        // --- 0. LOAD USER DATA ON START ---
+        // This checks if the user has bid before and fills the inputs
+        window.onload = function() {
+            const savedName = localStorage.getItem('esa_username');
+            const savedEmail = localStorage.getItem('esa_email');
+            
+            if(savedName) document.getElementById('bidName').value = savedName;
+            if(savedEmail) document.getElementById('bidEmail').value = savedEmail;
+        }
+
+        // --- 1. DATA SYNC ---
         onValue(dbRef, (snapshot) => {
             const data = snapshot.val();
             
             if (data) {
-                // Update Text Content
                 document.getElementById('itemTitle').innerText = data.title;
                 document.getElementById('itemSubtitle').innerText = data.subtitle;
                 document.getElementById('itemDescription').innerText = data.description;
                 document.getElementById('priceDisplay').innerText = "$" + data.current_bid.toLocaleString();
-                
-                // Update Image
                 document.getElementById('mainImage').src = data.image_url;
-
-                // Update Timer
                 updateTimer(data.end_time);
             } else {
-                // Initial Seeding if DB is empty
                 set(dbRef, {
                     title: "Waiting for Auction...",
                     subtitle: "---",
@@ -313,7 +331,6 @@
                     bidBtn.style.backgroundColor = "#9ca3af";
                     return;
                 } else {
-                    // Re-enable button if new auction started
                     bidBtn.disabled = false;
                     bidBtn.textContent = "Place Bid";
                     bidBtn.style.backgroundColor = ""; 
@@ -325,25 +342,38 @@
             }, 1000);
         }
 
-        // --- 3. BIDDING LOGIC ---
+        // --- 3. BIDDING LOGIC (UPDATED) ---
         window.placeBid = function() {
             const input = document.getElementById('bidInput');
+            const nameInput = document.getElementById('bidName');
+            const emailInput = document.getElementById('bidEmail');
+
             const newBid = parseInt(input.value);
+            const name = nameInput.value;
+            const email = emailInput.value;
             
+            // Save to LocalStorage (Browser Memory)
+            localStorage.setItem('esa_username', name);
+            localStorage.setItem('esa_email', email);
+
             get(dbRef).then((snapshot) => {
                 const currentData = snapshot.val();
                 
-                // Check if auction is ended
                 if (Date.now() > currentData.end_time) {
                     alert("Auction has ended!");
                     return;
                 }
 
                 if (newBid > currentData.current_bid) {
-                    set(dbRef, { ...currentData, current_bid: newBid })
+                    set(dbRef, { 
+                        ...currentData, 
+                        current_bid: newBid,
+                        last_bidder_name: name,  // Store who won in DB
+                        last_bidder_email: email // Store email in DB
+                    })
                     .then(() => {
-                        alert("Bid Placed!");
-                        input.value = '';
+                        alert("Bid Placed! Good luck, " + name);
+                        input.value = ''; // Only clear the amount, keep name/email
                     });
                 } else {
                     alert("Bid must be higher than $" + currentData.current_bid);
@@ -382,7 +412,6 @@
                 return;
             }
 
-            // 6 Minutes from NOW
             const sixMinutesFromNow = Date.now() + (6 * 60 * 1000);
 
             set(dbRef, {
@@ -393,7 +422,7 @@
                 description: desc,
                 end_time: sixMinutesFromNow
             }).then(() => {
-                alert("New Item Queued & Timer Started!");
+                alert("New Item Queued!");
                 closeAdminPanel();
             });
         }
