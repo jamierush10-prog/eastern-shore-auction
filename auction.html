@@ -8,32 +8,13 @@
         /* --- CSS STYLES --- */
         :root { --primary-color: #2563eb; --urgent-color: #dc2626; --bg-color: #f3f4f6; --text-color: #1f2937; --border-color: #e5e7eb; --header-bg: #111827; --header-text: #f9fafb; --success-color: #16a34a; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-        
-        /* HEADER */
         .site-header { width: 100%; background-color: var(--header-bg); color: var(--header-text); padding: 20px 0; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 40px; position: relative; display: flex; justify-content: center; align-items: center; }
         .brand-name { font-family: "Georgia", "Times New Roman", serif; font-size: 1.8rem; letter-spacing: 1.5px; font-weight: bold; text-transform: uppercase; }
-        
         .header-left { position: absolute; left: 20px; font-size: 0.9rem; cursor: pointer; color: #d1d5db; text-decoration: none; }
         .header-left:hover { color: white; text-decoration: underline; }
-        
         .header-right { position: absolute; right: 20px; } 
-
-        /* ADMIN BUTTON (Hidden by default) */
-        #adminPanelBtn {
-            display: none; /* Secret! */
-            background-color: var(--urgent-color);
-            color: white;
-            border: 1px solid white;
-            padding: 8px 15px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        /* LAYOUT */
+        #adminPanelBtn { display: none; background-color: var(--urgent-color); color: white; border: 1px solid white; padding: 8px 15px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; font-weight: bold; }
         .auction-container { background: white; max-width: 1000px; width: 90%; display: grid; grid-template-columns: 1.2fr 1fr; gap: 40px; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin-bottom: 40px; }
-        
         .gallery-section { display: flex; flex-direction: column; gap: 15px; }
         .main-image-wrapper { width: 100%; height: 400px; background-color: #eee; border-radius: 8px; overflow: hidden; border: 1px solid var(--border-color); position: relative; }
         .main-image-wrapper img { width: 100%; height: 100%; object-fit: contain; background: #fff; transition: opacity 0.2s ease; }
@@ -41,28 +22,19 @@
         .thumbnail { aspect-ratio: 1/1; background-color: #f9fafb; border: 2px solid transparent; border-radius: 6px; overflow: hidden; cursor: pointer; transition: all 0.2s; }
         .thumbnail:hover { border-color: var(--primary-color); }
         .thumbnail img { width: 100%; height: 100%; object-fit: cover; }
-
-        /* HISTORY */
         .history-section { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color); }
         .history-title { font-size: 0.9rem; font-weight: bold; text-transform: uppercase; color: #6b7280; margin-bottom: 10px; }
-        
         #bidHistoryList { max-height: 300px; overflow-y: auto; border: 1px solid #f3f4f6; border-radius: 6px; padding: 0 10px; }
         .bid-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f3f4f6; font-size: 0.95rem; }
         .bid-item:first-child { color: var(--primary-color); font-weight: bold; background-color: #eff6ff; padding-left:5px; padding-right:5px; border-radius:4px; }
-
-        /* DETAILS */
         .details-section { display: flex; flex-direction: column; }
         h1 { margin: 0 0 10px 0; font-size: 2rem; line-height: 1.1; }
         .subtitle { color: #6b7280; font-size: 0.9rem; margin-bottom: 20px; }
-        
         .timer-block { background-color: #fee2e2; color: var(--urgent-color); padding: 15px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px; font-weight: bold; border: 1px solid #fca5a5; }
         .countdown { font-size: 1.5rem; font-variant-numeric: tabular-nums; }
-        
         .pricing-card { background-color: #f9fafb; padding: 25px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 30px; }
         .current-bid-label { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; color: #6b7280; }
         .current-price { font-size: 2.5rem; font-weight: 800; color: var(--text-color); margin: 5px 0 20px 0; }
-        
-        /* BID CONTROLS */
         .bid-controls { display: flex; flex-direction: column; gap: 15px; }
         .increment-buttons { display: flex; gap: 10px; }
         .inc-btn { flex: 1; padding: 10px; background: white; border: 1px solid var(--primary-color); color: var(--primary-color); border-radius: 4px; font-weight: bold; cursor: pointer; transition: all 0.2s; }
@@ -71,28 +43,21 @@
         input#bidInput { padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 1.2rem; font-weight: bold; width: 100%; box-sizing: border-box; text-align: center; }
         button.bid-btn { background-color: var(--primary-color); color: white; border: none; padding: 12px 24px; border-radius: 6px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s; width: 100%; }
         button.bid-btn:hover { background-color: #1d4ed8; }
-        
         #userMaxBidDisplay { margin-top: 10px; font-size: 0.9rem; color: var(--primary-color); text-align: center; display: none; background: #dbeafe; padding: 8px; border-radius: 4px; }
         .user-badge { background: #e0f2fe; color: #0369a1; padding: 10px; border-radius: 6px; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border: 1px solid #bae6fd; }
-
         .description-block h3 { border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px; }
         .description-text { line-height: 1.6; color: #4b5563; }
-
-        /* MODALS */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 30px; border-radius: 8px; text-align: center; width: 90%; max-width: 400px; box-shadow: 0 20px 25px rgba(0,0,0,0.2); position: relative; }
-        
         .confirm-amount { font-size: 2rem; font-weight: 800; color: var(--primary-color); margin: 10px 0; }
         .confirm-actions { display: flex; gap: 10px; margin-top: 20px; }
         .confirm-btn { flex: 1; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
         .btn-yes { background: var(--primary-color); color: white; }
         .btn-no { background: #e5e7eb; color: #374151; }
-
         #winnerIcon { font-size: 4rem; margin-bottom: 10px; }
         #winnerText { font-size: 1.8rem; font-weight: bold; margin: 10px 0; color: var(--text-color); }
         #winnerDetail { font-size: 1.1rem; color: #6b7280; margin-bottom: 20px; }
         .winner-card { border-top: 5px solid var(--success-color); }
-
         @media (max-width: 768px) { .auction-container { grid-template-columns: 1fr; padding: 20px; } .main-image-wrapper { height: 300px; } }
     </style>
 </head>
@@ -103,9 +68,7 @@
     <header class="site-header">
         <div class="header-left" onclick="logout()">&larr; Sign Out</div>
         <div class="brand-name">Eastern Shore Auction House</div>
-        <div class="header-right">
-            <button id="adminPanelBtn" onclick="openAdminPanel()">ADMIN DASHBOARD</button>
-        </div>
+        <div class="header-right"><button id="adminPanelBtn" onclick="openAdminPanel()">ADMIN DASHBOARD</button></div>
     </header>
 
     <div class="auction-container">
@@ -126,36 +89,22 @@
         <div class="details-section">
             <h1 id="itemTitle">Loading...</h1>
             <div class="subtitle" id="itemSubtitle">...</div>
-
             <div class="timer-block"><span>TIME REMAINING</span><span class="countdown" id="countdown">--:--</span></div>
-
             <div class="pricing-card">
                 <div class="current-bid-label">Current Bid</div>
                 <div class="current-price" id="priceDisplay">Loading...</div>
-                
                 <div class="bid-controls">
-                    <div class="user-badge">
-                        <span>Bidder: <strong id="displayUsername">...</strong></span>
-                    </div>
-
+                    <div class="user-badge"><span>Bidder: <strong id="displayUsername">...</strong></span></div>
                     <div class="increment-buttons">
                         <button class="inc-btn" onclick="addToBid(1)">+$1</button>
                         <button class="inc-btn" onclick="addToBid(5)">+$5</button>
                         <button class="inc-btn" onclick="addToBid(10)">+$10</button>
                     </div>
-
-                    <div class="bid-input-row">
-                        <input type="number" id="bidInput" placeholder="Total Max Bid" onfocus="this.select()">
-                    </div>
-                    
+                    <div class="bid-input-row"><input type="number" id="bidInput" placeholder="Total Max Bid" onfocus="this.select()"></div>
                     <button class="bid-btn" onclick="openConfirm()">Place Max Bid</button>
-                    
-                    <div id="userMaxBidDisplay">
-                        Your current max bid is set to: <strong id="userMaxVal">...</strong>
-                    </div>
+                    <div id="userMaxBidDisplay">Your current max bid is set to: <strong id="userMaxVal">...</strong></div>
                 </div>
             </div>
-
             <div class="description-block">
                 <h3>Description</h3>
                 <div class="description-text" id="itemDescription">Loading...</div>
@@ -190,7 +139,7 @@
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getDatabase, ref, onValue, set, get, push, update, child } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // --- PASTE YOUR FIREBASE KEYS HERE ---
+        // --- PASTE YOUR KEYS HERE ---
         const firebaseConfig = {
   apiKey: "AIzaSyCt0i8a7ZVRlNmSts9yM4uGwV7ghPU59rk",
   authDomain: "eastern-shore-auction.firebaseapp.com",
@@ -208,18 +157,30 @@
         const dbRef = ref(db, auctionId);
 
         let currentUser = null;
+        let isUserApproved = false; // Track approval status
         let globalCurrentBid = 0;
         let globalAuctionData = null;
         let auctionEndedProcessed = false;
 
-        // --- 1. AUTH CHECK ---
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 currentUser = user;
                 document.getElementById('displayUsername').innerText = user.displayName || "Bidder";
                 
-                // CHECK IF ADMIN
-                checkAdminStatus(user.uid);
+                // 1. Check Admin Status
+                get(child(ref(db), `admins/${user.uid}`)).then((snapshot) => {
+                    if (snapshot.exists() && snapshot.val() === true) {
+                        document.getElementById('adminPanelBtn').style.display = 'block';
+                    }
+                });
+
+                // 2. Check Approval Status
+                get(child(ref(db), `users/${user.uid}`)).then((snapshot) => {
+                    if(snapshot.exists()) {
+                        const userData = snapshot.val();
+                        isUserApproved = userData.is_approved === true;
+                    }
+                });
 
                 document.getElementById('pageLoading').style.display = 'none';
             } else {
@@ -227,22 +188,9 @@
             }
         });
 
-        // Function to check if user is on the VIP list
-        function checkAdminStatus(uid) {
-            get(child(ref(db), `admins/${uid}`)).then((snapshot) => {
-                if (snapshot.exists() && snapshot.val() === true) {
-                    document.getElementById('adminPanelBtn').style.display = 'block';
-                }
-            });
-        }
-
         window.logout = function() { signOut(auth).then(() => { window.location.href = "index.html"; }); }
-        
-        window.openAdminPanel = function() { 
-            window.location.href = 'admin.html';
-        }
+        window.openAdminPanel = function() { window.location.href = 'admin.html'; }
 
-        // --- 2. DATA SYNC ---
         onValue(dbRef, (snapshot) => {
             const data = snapshot.val();
             if (data) {
@@ -255,26 +203,21 @@
                 document.getElementById('priceDisplay').innerText = "$" + data.current_bid.toLocaleString();
                 globalCurrentBid = data.current_bid;
                 
-                // Update input if not focused
                 const input = document.getElementById('bidInput');
                 if(document.activeElement !== input) input.value = globalCurrentBid + 1;
 
-                // Images
                 const mainImg = document.getElementById('mainImage');
                 if(!mainImg.getAttribute('data-locked')) mainImg.src = data.image_url;
                 updateThumbs(data.images);
-                
                 updateTimer(data.end_time);
                 renderBidHistory(data.bid_history);
 
-                // Personal Max Bid Reminder
                 if (currentUser && data.high_bidder_uid === currentUser.uid) {
                     document.getElementById('userMaxBidDisplay').style.display = 'block';
                     document.getElementById('userMaxVal').innerText = "$" + data.high_bidder_max.toLocaleString();
                 } else {
                     document.getElementById('userMaxBidDisplay').style.display = 'none';
                 }
-
             } else {
                 set(dbRef, { title: "Waiting...", current_bid: 0, image_url: "https://placehold.co/600x400?text=Waiting", end_time: Date.now() });
             }
@@ -304,7 +247,6 @@
             if (!historyObj) { list.innerHTML = '<div class="bid-item" style="color:#9ca3af;">No bids yet...</div>'; return; }
             const bidsArray = Object.values(historyObj);
             bidsArray.sort((a, b) => b.amount - a.amount);
-            
             bidsArray.forEach(bid => {
                 const row = document.createElement('div');
                 row.className = 'bid-item';
@@ -328,12 +270,10 @@
                     timerElement.textContent = "ENDED";
                     bidBtn.disabled = true; bidBtn.textContent = "Auction Closed"; bidBtn.style.backgroundColor = "#9ca3af";
                     incBtns.forEach(b => b.disabled = true);
-                    
                     if (!auctionEndedProcessed && globalAuctionData) {
                         showWinnerModal(globalAuctionData);
                         auctionEndedProcessed = true;
                     }
-
                 } else {
                     bidBtn.disabled = false; bidBtn.textContent = "Place Max Bid"; bidBtn.style.backgroundColor = ""; 
                     incBtns.forEach(b => b.disabled = false);
@@ -349,16 +289,11 @@
             const icon = document.getElementById('winnerIcon');
             const text = document.getElementById('winnerText');
             const detail = document.getElementById('winnerDetail');
-
             if (currentUser && data.high_bidder_uid === currentUser.uid) {
-                icon.innerText = "🎉";
-                text.innerText = "Congratulations!";
-                text.style.color = "#16a34a"; 
+                icon.innerText = "🎉"; text.innerText = "Congratulations!"; text.style.color = "#16a34a"; 
                 detail.innerText = "You won this item for $" + data.current_bid.toLocaleString();
             } else {
-                icon.innerText = "🏷️";
-                text.innerText = "Auction Ended";
-                text.style.color = "#1f2937";
+                icon.innerText = "🏷️"; text.innerText = "Auction Ended"; text.style.color = "#1f2937";
                 detail.innerText = "Sold to " + (data.high_bidder_name || "Unknown") + " for $" + data.current_bid.toLocaleString();
             }
             modal.style.display = 'flex';
@@ -380,9 +315,16 @@
 
         window.closeConfirm = function() { document.getElementById('confirmModal').style.display = 'none'; }
 
-        // --- PROXY BIDDING LOGIC ---
         window.submitFinalBid = function() {
             if(!currentUser) return;
+            
+            // --- NEW: APPROVAL CHECK ---
+            if(!isUserApproved) {
+                alert("Your account is pending approval because you are outside the local area. You cannot bid yet.");
+                closeConfirm();
+                return;
+            }
+
             const myMaxBid = parseInt(document.getElementById('bidInput').value);
             closeConfirm();
 
@@ -394,7 +336,6 @@
                 const currentLeaderUID = data.high_bidder_uid || "";
                 const currentPrice = data.current_bid;
 
-                // 1. Am I the leader?
                 if (currentUser.uid === currentLeaderUID) {
                     if (myMaxBid > currentLeaderMax) {
                         update(dbRef, { high_bidder_max: myMaxBid });
@@ -405,26 +346,16 @@
                     return;
                 }
 
-                // 2. Is my bid higher than leader's max?
                 if (myMaxBid > currentLeaderMax) {
                     let newPrice = (currentLeaderMax > 0) ? (currentLeaderMax + 1) : (currentPrice + 1);
                     if(newPrice < currentPrice + 1) newPrice = currentPrice + 1;
-
-                    update(dbRef, { 
-                        current_bid: newPrice,
-                        high_bidder_max: myMaxBid,
-                        high_bidder_uid: currentUser.uid,
-                        high_bidder_name: currentUser.displayName
-                    });
-
+                    update(dbRef, { current_bid: newPrice, high_bidder_max: myMaxBid, high_bidder_uid: currentUser.uid, high_bidder_name: currentUser.displayName });
                     const historyRef = ref(db, auctionId + '/bid_history');
                     push(historyRef, { name: currentUser.displayName, amount: newPrice, timestamp: Date.now() });
                     alert("You are now the highest bidder!");
                 } else {
-                    // 3. I lost to the auto-bid
                     let newPrice = myMaxBid + 1;
                     if (myMaxBid === currentLeaderMax) newPrice = myMaxBid;
-
                     update(dbRef, { current_bid: newPrice });
                     const historyRef = ref(db, auctionId + '/bid_history');
                     push(historyRef, { name: currentUser.displayName, amount: myMaxBid, timestamp: Date.now() });

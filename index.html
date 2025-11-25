@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome | Eastern Shore Auction House</title>
     <style>
-        /* --- LOBBY STYLES --- */
         :root { --primary-color: #2563eb; --header-bg: #111827; --header-text: #f9fafb; --bg-color: #f3f4f6; --text-color: #1f2937; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
         
@@ -26,34 +25,31 @@
         .sell-btn { font-size: 0.9rem; color: var(--text-color); text-decoration: none; border: 1px solid #d1d5db; padding: 8px 16px; border-radius: 4px; background: white; transition: background 0.2s; }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
         
-        /* CARD STYLES */
         .card { background: white; border-radius: 8px; overflow: hidden; border: 1px solid #e5e7eb; transition: transform 0.2s; display: flex; flex-direction: column; }
         .card:hover { transform: translateY(-3px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         .card img { width: 100%; height: 200px; object-fit: cover; }
         .card-body { padding: 15px; flex: 1; display: flex; flex-direction: column; }
         .card-title { font-weight: bold; margin-bottom: 5px; font-size: 1.1rem; }
-        
-        /* UPDATED CARD LOT STYLE */
-        .card-lot { 
-            font-size: 0.9rem; 
-            color: #6b7280; 
-            margin-top: auto; /* Pushes to bottom if title is long */
-        }
+        .card-lot { font-size: 0.9rem; color: #6b7280; margin-top: auto; }
         .card-lot strong { color: #374151; }
 
-        /* AUTH MODAL STYLES */
+        /* AUTH MODAL */
         #authModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-content { background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 380px; box-shadow: 0 20px 25px rgba(0,0,0,0.2); }
+        .modal-content { background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 400px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px rgba(0,0,0,0.2); }
         .tabs { display: flex; margin-bottom: 20px; border-bottom: 2px solid #e5e7eb; }
         .tab { flex: 1; padding: 10px; text-align: center; cursor: pointer; font-weight: bold; color: #6b7280; transition: color 0.2s; }
         .tab.active { color: var(--primary-color); border-bottom: 2px solid var(--primary-color); }
         .form-group { margin-bottom: 15px; }
-        .form-group input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+        .form-group label { font-size: 0.9rem; font-weight: bold; display: block; margin-bottom: 5px; }
+        .form-group input[type="text"], .form-group input[type="email"], .form-group input[type="password"] { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
         .action-btn { width: 100%; padding: 12px; background: var(--header-bg); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1rem; }
         .error-msg { color: #dc2626; font-size: 0.9rem; margin-bottom: 10px; display: none; text-align: center; background: #fee2e2; padding: 8px; border-radius: 4px; }
         .close-reg { text-align: center; margin-top: 15px; cursor: pointer; color: #6b7280; font-size: 0.9rem; text-decoration: underline; }
 
-        @media (max-width: 600px) { .section-header { flex-direction: column; gap: 15px; text-align: center; } }
+        /* LOCAL CHECKBOX STYLES */
+        .radio-group { display: flex; gap: 15px; margin-bottom: 15px; }
+        .radio-label { font-weight: normal; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+        #nonLocalWarning { display: none; background: #fff7ed; border: 1px solid #fed7aa; padding: 10px; border-radius: 6px; margin-bottom: 15px; font-size: 0.85rem; color: #9a3412; }
     </style>
 </head>
 <body>
@@ -75,7 +71,6 @@
             <h2 class="section-title">Upcoming Lots</h2>
             <a href="sell.html" class="sell-btn">Have an item to sell?</a>
         </div>
-        
         <div class="grid" id="upcomingGrid">
             <div style="grid-column: 1/-1; text-align:center; color:#999; padding:40px;">Loading upcoming lots...</div>
         </div>
@@ -85,15 +80,34 @@
         <div class="modal-content">
             <div class="tabs"><div class="tab active" onclick="switchTab('login')">Log In</div><div class="tab" onclick="switchTab('register')">Sign Up</div></div>
             <div id="errorMsg" class="error-msg"></div>
+            
             <form id="loginForm" onsubmit="event.preventDefault(); handleLogin();">
                 <div class="form-group"><input type="email" id="loginEmail" placeholder="Email Address" required></div>
                 <div class="form-group"><input type="password" id="loginPass" placeholder="Password" required></div>
                 <button type="submit" class="action-btn">Log In</button>
             </form>
+
             <form id="registerForm" style="display:none;" onsubmit="event.preventDefault(); handleRegister();">
-                <div class="form-group"><input type="text" id="regName" placeholder="Create Username (Visible to others)" required></div>
+                <div class="form-group"><input type="text" id="regName" placeholder="Username" required></div>
                 <div class="form-group"><input type="email" id="regEmail" placeholder="Email Address" required></div>
-                <div class="form-group"><input type="password" id="regPass" placeholder="Create Password (6+ chars)" required></div>
+                <div class="form-group"><input type="password" id="regPass" placeholder="Password (6+ chars)" required></div>
+                
+                <div class="form-group">
+                    <label>Are you local to Daphne/Fairhope/Spanish Fort?</label>
+                    <div class="radio-group">
+                        <label class="radio-label"><input type="radio" name="isLocal" value="yes" checked onchange="toggleLocalFields(true)"> Yes</label>
+                        <label class="radio-label"><input type="radio" name="isLocal" value="no" onchange="toggleLocalFields(false)"> No</label>
+                    </div>
+                </div>
+
+                <div id="nonLocalWarning">
+                    <strong>Note:</strong> This site is geared for local buy/sell. <br>
+                    Account will require Admin approval before bidding.
+                    <div class="form-group" style="margin-top:10px;">
+                        <input type="text" id="pickupPlan" placeholder="Can you pick up or deliver locally?">
+                    </div>
+                </div>
+
                 <button type="submit" class="action-btn">Create Account</button>
             </form>
             <div class="close-reg" onclick="document.getElementById('authModal').style.display='none'">Cancel</div>
@@ -103,10 +117,10 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // --- PASTE YOUR FIREBASE KEYS HERE ---
-        const firebaseConfig = {
+        // --- PASTE YOUR KEYS HERE ---
+       const firebaseConfig = {
   apiKey: "AIzaSyCt0i8a7ZVRlNmSts9yM4uGwV7ghPU59rk",
   authDomain: "eastern-shore-auction.firebaseapp.com",
   databaseURL: "https://eastern-shore-auction-default-rtdb.firebaseio.com",
@@ -120,59 +134,40 @@
         const auth = getAuth(app);
         const db = getDatabase(app);
 
-        // --- 1. LOAD FEATURED ITEMS ---
+        // --- UI LOGIC ---
+        window.toggleLocalFields = function(isLocal) {
+            const div = document.getElementById('nonLocalWarning');
+            const input = document.getElementById('pickupPlan');
+            if(isLocal) {
+                div.style.display = 'none';
+                input.removeAttribute('required');
+            } else {
+                div.style.display = 'block';
+                input.setAttribute('required', 'true');
+            }
+        }
+
         function loadFeaturedItems() {
             const invRef = ref(db, 'inventory');
             onValue(invRef, (snapshot) => {
                 const grid = document.getElementById('upcomingGrid');
                 grid.innerHTML = "";
                 const data = snapshot.val();
-
-                if (!data) {
-                    grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; color:#999;">No upcoming lots listed yet.</div>';
-                    return;
-                }
-
-                // Convert to array
-                const items = Object.values(data);
-                
-                // Filter only Featured items
-                const featuredItems = items.filter(item => item.is_featured === true);
-                
-                // Sort by Lot #
-                featuredItems.sort((a, b) => a.lot - b.lot);
-
-                if (featuredItems.length === 0) {
-                    grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; color:#999;">Stay tuned! New lots coming soon.</div>';
-                    return;
-                }
-
-                featuredItems.forEach(item => {
+                if (!data) { grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; color:#999;">No upcoming lots listed yet.</div>'; return; }
+                const items = Object.values(data).filter(item => item.is_featured === true);
+                items.sort((a, b) => a.lot - b.lot);
+                if (items.length === 0) { grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; color:#999;">Stay tuned! New lots coming soon.</div>'; return; }
+                items.forEach(item => {
+                    const subtitleText = item.subtitle ? item.subtitle : "No details";
                     const card = document.createElement('div');
                     card.className = 'card';
-                    
-                    // --- HERE IS THE CHANGE: SHOW SUBTITLE INSTEAD OF PRICE ---
-                    const subtitleText = item.subtitle ? item.subtitle : "No details";
-
-                    card.innerHTML = `
-                        <img src="${item.image_url}" alt="${item.title}">
-                        <div class="card-body">
-                            <div class="card-title">${item.title}</div>
-                            <div class="card-lot">
-                                <strong>Lot #${item.lot}</strong> <br>
-                                ${subtitleText}
-                            </div>
-                        </div>
-                    `;
+                    card.innerHTML = `<img src="${item.image_url}" alt="${item.title}"><div class="card-body"><div class="card-title">${item.title}</div><div class="card-lot"><strong>Lot #${item.lot}</strong> <br> ${subtitleText}</div></div>`;
                     grid.appendChild(card);
                 });
             });
         }
-
-        // Run immediately
         loadFeaturedItems();
 
-        // --- AUTH LOGIC ---
         window.openAuthModal = function() {
             if(auth.currentUser) { window.location.href = "auction.html"; }
             else { document.getElementById('authModal').style.display = 'flex'; }
@@ -203,17 +198,39 @@
             .catch((error) => { showError(error.message); btn.disabled = false; btn.innerText = "Log In"; });
         }
 
+        // --- UPDATED REGISTRATION LOGIC ---
         window.handleRegister = function() {
             const name = document.getElementById('regName').value;
             const email = document.getElementById('regEmail').value;
             const pass = document.getElementById('regPass').value;
+            
+            // Get Local Status
+            const isLocal = document.querySelector('input[name="isLocal"]:checked').value === "yes";
+            const pickupPlan = document.getElementById('pickupPlan').value;
+
             const btn = document.querySelector('#registerForm button');
             if(pass.length < 6) { showError("Password must be at least 6 characters"); return; }
             btn.disabled = true; btn.innerText = "Creating Account...";
+
             createUserWithEmailAndPassword(auth, email, pass)
             .then((userCredential) => {
-                updateProfile(userCredential.user, { displayName: name })
-                .then(() => { window.location.href = "auction.html"; });
+                const user = userCredential.user;
+                
+                // 1. Update Auth Profile
+                updateProfile(user, { displayName: name })
+                .then(() => {
+                    // 2. Create Database Record for Approval Status
+                    set(ref(db, 'users/' + user.uid), {
+                        name: name,
+                        email: email,
+                        is_local: isLocal,
+                        pickup_plan: isLocal ? "Local" : pickupPlan,
+                        is_approved: isLocal ? true : false, // Auto-approve if local, else false
+                        joined_at: Date.now()
+                    }).then(() => {
+                        window.location.href = "auction.html";
+                    });
+                });
             })
             .catch((error) => { showError(error.message); btn.disabled = false; btn.innerText = "Create Account"; });
         }

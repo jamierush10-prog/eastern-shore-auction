@@ -7,56 +7,39 @@
     <style>
         :root { --primary-color: #2563eb; --header-bg: #111827; --text-color: #1f2937; --bg-color: #f3f4f6; --success-color: #10b981; --live-color: #dc2626; --ended-color: #f59e0b; }
         body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg-color); color: var(--text-color); margin: 0; }
-        
-        /* HEADER */
         header { background: var(--header-bg); color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
         .brand { font-family: "Georgia", serif; font-size: 1.5rem; font-weight: bold; }
         .nav-links button { background: transparent; border: 1px solid #4b5563; color: white; padding: 8px 15px; cursor: pointer; border-radius: 4px; margin-left: 10px; }
         .nav-links button.active { background: var(--primary-color); border-color: var(--primary-color); }
         .nav-links button:hover { background: #374151; }
-
-        /* CONTAINER */
         .container { max-width: 1200px; margin: 30px auto; padding: 20px; }
-        
-        /* TABLES */
         table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         th, td { padding: 15px; text-align: left; border-bottom: 1px solid #e5e7eb; }
         th { background: #f9fafb; font-weight: bold; color: #6b7280; font-size: 0.85rem; text-transform: uppercase; }
         tr { transition: all 0.3s ease; }
         tr:hover { background: #f9fafb; }
-        
-        /* LIVE STATES */
         tr.live-active-row { background-color: #ecfdf5 !important; border-left: 5px solid var(--success-color); }
         tr.live-ended-row { background-color: #fffbeb !important; border-left: 5px solid var(--ended-color); }
-
         .live-badge { display: inline-block; background: var(--live-color); color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; margin-right: 8px; vertical-align: middle; text-transform: uppercase; animation: pulse 1.5s infinite; }
         .ended-badge { display: inline-block; background: var(--text-color); color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; margin-right: 8px; vertical-align: middle; text-transform: uppercase; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
-
         .live-bid-info { font-weight: bold; font-size: 1rem; display: block; }
         .live-bidder-name { font-size: 0.8rem; color: #6b7280; font-weight: normal; }
-
-        /* CHECKBOX STYLE */
         input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; accent-color: var(--primary-color); }
-
-        /* FORMS */
         .form-card { background: white; padding: 30px; border-radius: 8px; max-width: 600px; margin: 0 auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9rem; }
         .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        
-        /* ACTIONS */
         .btn { padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9rem; font-weight: bold; color: white; }
         .btn-queue { background: #16a34a; }
         .btn-edit { background: #2563eb; }
         .btn-delete { background: #dc2626; }
         .btn-save { background: #111827; width: 100%; padding: 12px; margin-top: 10px; }
-
         .status-pill { padding: 4px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; }
         .status-new { background: #dbeafe; color: #1e40af; }
         .status-run { background: #f3f4f6; color: #374151; }
-        
-        /* VIEWS */
+        .status-approved { background: #dcfce7; color: #166534; }
+        .status-pending { background: #fee2e2; color: #991b1b; }
         .view-section { display: none; }
         .view-section.active { display: block; }
         .img-preview { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; vertical-align: middle; margin-right: 10px; }
@@ -67,10 +50,10 @@
     <header>
         <div class="brand">Admin Dashboard</div>
         <div class="nav-links">
-            <button onclick="switchView('inventory')" class="active">Inventory & Queue</button>
+            <button onclick="switchView('inventory')" class="active">Inventory</button>
+            <button onclick="switchView('users')">User Manager</button>
             <button onclick="switchView('add')">Add New Lot</button>
-            <button onclick="switchView('history')">Sales History</button>
-            <button onclick="location.href='auction.html'" style="border-color:white;">Go to Live Auction &rarr;</button>
+            <button onclick="location.href='auction.html'" style="border-color:white;">Live Auction &rarr;</button>
         </div>
     </header>
 
@@ -79,20 +62,16 @@
         <div id="inventoryView" class="view-section active">
             <h2>Item Inventory</h2>
             <table>
-                <thead>
-                    <tr>
-                        <th style="text-align:center;">Feature</th>
-                        <th>Lot #</th>
-                        <th>Item</th>
-                        <th>Seller</th>
-                        <th>Status / Price</th>
-                        <th>Times Run</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="inventoryTableBody">
-                    <tr><td colspan="7" style="text-align:center;">Loading inventory...</td></tr>
-                </tbody>
+                <thead><tr><th style="text-align:center;">Feat</th><th>Lot #</th><th>Item</th><th>Seller</th><th>Status / Price</th><th>Run</th><th>Actions</th></tr></thead>
+                <tbody id="inventoryTableBody"><tr><td colspan="7" style="text-align:center;">Loading inventory...</td></tr></tbody>
+            </table>
+        </div>
+
+        <div id="usersView" class="view-section">
+            <h2>User Management</h2>
+            <table>
+                <thead><tr><th>Name</th><th>Email</th><th>Local?</th><th>Pickup Plan</th><th>Status</th><th>Action</th></tr></thead>
+                <tbody id="usersTableBody"><tr><td colspan="6" style="text-align:center;">Loading users...</td></tr></tbody>
             </table>
         </div>
 
@@ -116,16 +95,6 @@
                     <button type="submit" class="btn btn-save">Save Item</button>
                 </form>
             </div>
-        </div>
-
-        <div id="historyView" class="view-section">
-            <h2>Sales History</h2>
-            <table>
-                <thead>
-                    <tr><th>Date</th><th>Item</th><th>Winner</th><th>Winning Bid</th><th>Seller</th></tr>
-                </thead>
-                <tbody id="historyTableBody"><tr><td colspan="5" style="text-align:center; color:#999;">History log...</td></tr></tbody>
-            </table>
         </div>
     </div>
 
@@ -156,6 +125,7 @@
                         alert("Access Denied."); window.location.href = "index.html";
                     } else {
                         loadInventory();
+                        loadUsers(); // New User Load
                         monitorActiveAuction();
                     }
                 });
@@ -167,42 +137,62 @@
         window.switchView = function(viewName) {
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
             document.getElementById(viewName + 'View').classList.add('active');
-            if(viewName === 'add') {
-                document.querySelector('form').reset();
-                document.getElementById('editKey').value = "";
-                document.getElementById('formTitle').innerText = "Add New Lot";
+            if(viewName === 'add') { document.querySelector('form').reset(); document.getElementById('editKey').value = ""; document.getElementById('formTitle').innerText = "Add New Lot"; }
+        }
+
+        // --- USER MANAGEMENT LOGIC ---
+        function loadUsers() {
+            const userRef = ref(db, 'users');
+            onValue(userRef, (snapshot) => {
+                const tbody = document.getElementById('usersTableBody');
+                tbody.innerHTML = "";
+                const data = snapshot.val();
+                if(!data) { tbody.innerHTML = "<tr><td colspan='6'>No registered users.</td></tr>"; return; }
+
+                Object.entries(data).forEach(([key, user]) => {
+                    const isApproved = user.is_approved === true;
+                    const tr = document.createElement('tr');
+                    
+                    tr.innerHTML = `
+                        <td><strong>${user.name}</strong></td>
+                        <td>${user.email}</td>
+                        <td>${user.is_local ? 'Yes' : 'No'}</td>
+                        <td>${user.pickup_plan || "N/A"}</td>
+                        <td><span class="status-pill ${isApproved ? 'status-approved' : 'status-pending'}">${isApproved ? 'Active' : 'Pending'}</span></td>
+                        <td>
+                            ${!isApproved ? `<button class="btn btn-queue" onclick="approveUser('${key}')">Approve</button>` : ''}
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            });
+        }
+
+        window.approveUser = function(uid) {
+            if(confirm("Approve this user to bid?")) {
+                update(ref(db, `users/${uid}`), { is_approved: true });
             }
         }
 
-        // --- 2. INVENTORY LOGIC (UPDATED WITH CHECKBOX) ---
+        // --- INVENTORY LOGIC ---
         function loadInventory() {
             const invRef = ref(db, 'inventory');
             onValue(invRef, (snapshot) => {
                 const tbody = document.getElementById('inventoryTableBody');
                 tbody.innerHTML = "";
                 const data = snapshot.val();
-
                 if(!data) { tbody.innerHTML = "<tr><td colspan='7'>No items.</td></tr>"; return; }
-
                 const items = Object.entries(data).map(([key, val]) => ({ ...val, key }));
                 items.sort((a, b) => a.lot - b.lot);
-
                 items.forEach(item => {
                     const tr = document.createElement('tr');
                     tr.id = `row-${item.key}`; 
                     tr.dataset.defaultPrice = item.start_price;
-
                     const isChecked = item.is_featured ? 'checked' : '';
-
                     tr.innerHTML = `
-                        <td style="text-align:center;">
-                            <input type="checkbox" ${isChecked} onchange="toggleFeatured('${item.key}', this.checked)" title="Show on Landing Page">
-                        </td>
+                        <td style="text-align:center;"><input type="checkbox" ${isChecked} onchange="toggleFeatured('${item.key}', this.checked)"></td>
                         <td><strong>#${item.lot}</strong></td>
-                        <td class="item-cell">
-                            <img src="${item.image_url}" class="img-preview">
-                            <span class="item-title">${item.title}</span>
-                        </td>
+                        <td class="item-cell"><img src="${item.image_url}" class="img-preview"><span class="item-title">${item.title}</span></td>
                         <td>${item.seller_email || "N/A"}</td>
                         <td class="price-cell">$${item.start_price}</td>
                         <td><span class="status-pill ${item.times_run > 0 ? 'status-run' : 'status-new'}">${item.times_run || 0} Times</span></td>
@@ -217,14 +207,8 @@
             });
         }
 
-        // --- 3. TOGGLE FEATURED (NEW) ---
-        window.toggleFeatured = function(key, status) {
-            update(ref(db, `inventory/${key}`), {
-                is_featured: status
-            });
-        }
+        window.toggleFeatured = function(key, status) { update(ref(db, `inventory/${key}`), { is_featured: status }); }
 
-        // --- 4. LIVE MONITOR ---
         let activeAuctionData = null;
         function monitorActiveAuction() {
             const activeRef = ref(db, 'active_auction');
@@ -266,7 +250,6 @@
             }
         }
 
-        // --- CRUD & QUEUE ---
         window.saveItem = function() {
             const key = document.getElementById('editKey').value;
             const data = {
@@ -277,32 +260,19 @@
                 start_price: parseInt(document.getElementById('inpPrice').value),
                 image_url: document.getElementById('inpImg').value,
                 description: document.getElementById('inpDesc').value,
-                times_run: 0,
-                is_featured: false, // Default
-                images: {
-                    thumb1: document.getElementById('inpThumb1').value,
-                    thumb2: document.getElementById('inpThumb2').value,
-                    thumb3: document.getElementById('inpThumb3').value,
-                    thumb4: document.getElementById('inpThumb4').value
-                }
+                times_run: 0, is_featured: false,
+                images: { thumb1: document.getElementById('inpThumb1').value, thumb2: document.getElementById('inpThumb2').value, thumb3: document.getElementById('inpThumb3').value, thumb4: document.getElementById('inpThumb4').value }
             };
-
             if(key) {
                 get(ref(db, `inventory/${key}`)).then((snap) => {
                     const existing = snap.val();
-                    data.times_run = existing.times_run || 0;
-                    data.is_featured = existing.is_featured || false; // Keep existing status
-                    update(ref(db, `inventory/${key}`), data);
-                    alert("Item Updated"); switchView('inventory');
+                    data.times_run = existing.times_run || 0; data.is_featured = existing.is_featured || false;
+                    update(ref(db, `inventory/${key}`), data); alert("Item Updated"); switchView('inventory');
                 });
-            } else {
-                push(ref(db, 'inventory'), data);
-                alert("Item Added"); switchView('inventory');
-            }
+            } else { push(ref(db, 'inventory'), data); alert("Item Added"); switchView('inventory'); }
         }
 
         window.deleteItem = function(key) { if(confirm("Delete item?")) remove(ref(db, `inventory/${key}`)); }
-
         window.editItem = function(key) {
             get(ref(db, `inventory/${key}`)).then((snapshot) => {
                 const data = snapshot.val();
