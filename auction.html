@@ -22,10 +22,21 @@
         .thumbnail:hover { border-color: var(--primary-color); }
         .thumbnail img { width: 100%; height: 100%; object-fit: cover; }
 
+        /* HISTORY SECTION UPDATED */
         .history-section { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color); }
         .history-title { font-size: 0.9rem; font-weight: bold; text-transform: uppercase; color: #6b7280; margin-bottom: 10px; }
+        
+        /* NEW SCROLLABLE LIST */
+        #bidHistoryList { 
+            max-height: 300px; 
+            overflow-y: auto; 
+            border: 1px solid #f3f4f6; 
+            border-radius: 6px; 
+            padding: 0 10px;
+        }
+
         .bid-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f3f4f6; font-size: 0.95rem; }
-        .bid-item:first-child { color: var(--primary-color); font-weight: bold; }
+        .bid-item:first-child { color: var(--primary-color); font-weight: bold; background-color: #eff6ff; padding-left:5px; padding-right:5px; border-radius:4px; }
 
         .details-section { display: flex; flex-direction: column; }
         h1 { margin: 0 0 10px 0; font-size: 2rem; line-height: 1.1; }
@@ -38,7 +49,6 @@
         .current-bid-label { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; color: #6b7280; }
         .current-price { font-size: 2.5rem; font-weight: 800; color: var(--text-color); margin: 5px 0 20px 0; }
         
-        /* BID CONTROLS */
         .bid-controls { display: flex; flex-direction: column; gap: 15px; }
         .increment-buttons { display: flex; gap: 10px; }
         .inc-btn { flex: 1; padding: 10px; background: white; border: 1px solid var(--primary-color); color: var(--primary-color); border-radius: 4px; font-weight: bold; cursor: pointer; transition: all 0.2s; }
@@ -55,20 +65,17 @@
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 30px; border-radius: 8px; text-align: center; width: 90%; max-width: 400px; box-shadow: 0 20px 25px rgba(0,0,0,0.2); position: relative; }
         
-        /* CONFIRM MODAL SPECIFIC */
         .confirm-amount { font-size: 2rem; font-weight: 800; color: var(--primary-color); margin: 10px 0; }
         .confirm-actions { display: flex; gap: 10px; margin-top: 20px; }
         .confirm-btn { flex: 1; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
         .btn-yes { background: var(--primary-color); color: white; }
         .btn-no { background: #e5e7eb; color: #374151; }
 
-        /* WINNER MODAL SPECIFIC */
         #winnerIcon { font-size: 4rem; margin-bottom: 10px; }
         #winnerText { font-size: 1.8rem; font-weight: bold; margin: 10px 0; color: var(--text-color); }
         #winnerDetail { font-size: 1.1rem; color: #6b7280; margin-bottom: 20px; }
         .winner-card { border-top: 5px solid var(--success-color); }
 
-        /* ADMIN MODAL */
         .admin-footer { margin-top: 20px; font-size: 0.8rem; color: #9ca3af; cursor: pointer; text-decoration: underline; text-align: center; }
         .form-group { margin-bottom: 15px; }
         .form-group input, .form-group textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
@@ -97,7 +104,7 @@
                 <div class="thumbnail" onclick="changeImage(this)"><img id="thumb4" src="" onerror="this.style.display='none'"></div>
             </div>
             <div class="history-section">
-                <div class="history-title">Top 3 Bids</div>
+                <div class="history-title">Full Bid History</div>
                 <div id="bidHistoryList"></div>
             </div>
         </div>
@@ -198,7 +205,7 @@
         import { getDatabase, ref, onValue, set, get, push, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
         // --- PASTE YOUR FIREBASE KEYS HERE ---
-       const firebaseConfig = {
+        const firebaseConfig = {
   apiKey: "AIzaSyCt0i8a7ZVRlNmSts9yM4uGwV7ghPU59rk",
   authDomain: "eastern-shore-auction.firebaseapp.com",
   databaseURL: "https://eastern-shore-auction-default-rtdb.firebaseio.com",
@@ -216,7 +223,7 @@
 
         let currentUser = null;
         let globalCurrentBid = 0;
-        let globalAuctionData = null; // Store data for winner logic
+        let globalAuctionData = null;
         let auctionEndedProcessed = false;
 
         onAuthStateChanged(auth, (user) => {
@@ -235,11 +242,7 @@
             const data = snapshot.val();
             if (data) {
                 globalAuctionData = data;
-                
-                // If auction is active (time added?), reset flag
-                if (data.end_time > Date.now()) {
-                    auctionEndedProcessed = false;
-                }
+                if (data.end_time > Date.now()) { auctionEndedProcessed = false; }
 
                 document.getElementById('itemTitle').innerText = data.title;
                 document.getElementById('itemSubtitle').innerText = data.subtitle;
@@ -292,7 +295,9 @@
             if (!historyObj) { list.innerHTML = '<div class="bid-item" style="color:#9ca3af;">No bids yet...</div>'; return; }
             const bidsArray = Object.values(historyObj);
             bidsArray.sort((a, b) => b.amount - a.amount);
-            bidsArray.slice(0, 3).forEach(bid => {
+            
+            // SHOW ALL BIDS (Removed Slice)
+            bidsArray.forEach(bid => {
                 const row = document.createElement('div');
                 row.className = 'bid-item';
                 row.innerHTML = `<span>${bid.name}</span><span>$${bid.amount.toLocaleString()}</span>`;
@@ -316,7 +321,6 @@
                     bidBtn.disabled = true; bidBtn.textContent = "Auction Closed"; bidBtn.style.backgroundColor = "#9ca3af";
                     incBtns.forEach(b => b.disabled = true);
                     
-                    // --- WINNER LOGIC ---
                     if (!auctionEndedProcessed && globalAuctionData) {
                         showWinnerModal(globalAuctionData);
                         auctionEndedProcessed = true;
@@ -339,16 +343,14 @@
             const detail = document.getElementById('winnerDetail');
 
             if (currentUser && data.high_bidder_uid === currentUser.uid) {
-                // YOU WON
                 icon.innerText = "🎉";
                 text.innerText = "Congratulations!";
-                text.style.color = "#16a34a"; // Green
+                text.style.color = "#16a34a"; 
                 detail.innerText = "You won this item for $" + data.current_bid.toLocaleString();
             } else {
-                // SOMEONE ELSE WON
                 icon.innerText = "🏷️";
                 text.innerText = "Auction Ended";
-                text.style.color = "#1f2937"; // Dark Gray
+                text.style.color = "#1f2937";
                 detail.innerText = "Sold to " + (data.high_bidder_name || "Unknown") + " for $" + data.current_bid.toLocaleString();
             }
             modal.style.display = 'flex';
