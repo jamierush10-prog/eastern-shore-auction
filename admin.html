@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard | Eastern Shore Auction House</title>
     <style>
-        :root { --primary-color: #2563eb; --header-bg: #111827; --text-color: #1f2937; --bg-color: #f3f4f6; --success-color: #10b981; --live-color: #dc2626; }
+        :root { --primary-color: #2563eb; --header-bg: #111827; --text-color: #1f2937; --bg-color: #f3f4f6; --success-color: #10b981; --live-color: #dc2626; --ended-color: #f59e0b; }
         body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg-color); color: var(--text-color); margin: 0; }
         
         /* HEADER */
@@ -25,18 +25,30 @@
         tr { transition: all 0.3s ease; }
         tr:hover { background: #f9fafb; }
         
-        /* --- LIVE ROW STYLING --- */
+        /* --- LIVE / ENDED ROW STYLING --- */
+        
+        /* 1. ACTIVE LIVE ROW (Green) */
         tr.live-active-row { background-color: #ecfdf5 !important; border-left: 5px solid var(--success-color); }
         
+        /* 2. ENDED ROW (Orange/Amber) */
+        tr.live-ended-row { background-color: #fffbeb !important; border-left: 5px solid var(--ended-color); }
+
         .live-badge { 
             display: inline-block; background: var(--live-color); color: white; 
             padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; 
             margin-right: 8px; vertical-align: middle; text-transform: uppercase;
             animation: pulse 1.5s infinite;
         }
+        
+        .ended-badge {
+            display: inline-block; background: var(--text-color); color: white; 
+            padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; 
+            margin-right: 8px; vertical-align: middle; text-transform: uppercase;
+        }
+
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
 
-        .live-bid-info { color: var(--success-color); font-weight: bold; font-size: 1rem; display: block; }
+        .live-bid-info { font-weight: bold; font-size: 1rem; display: block; }
         .live-bidder-name { font-size: 0.8rem; color: #6b7280; font-weight: normal; }
 
         /* FORMS */
@@ -131,7 +143,7 @@
                     </tr>
                 </thead>
                 <tbody id="historyTableBody">
-                    <tr><td colspan="5" style="text-align:center; color:#999;">Sales history logic to be connected.</td></tr>
+                    <tr><td colspan="5" style="text-align:center; color:#999;">Sales history...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -166,7 +178,7 @@
                         alert("Access Denied."); window.location.href = "index.html";
                     } else {
                         loadInventory();
-                        monitorActiveAuction(); // START MONITORING LIVE AUCTION
+                        monitorActiveAuction();
                     }
                 });
             } else {
@@ -199,8 +211,8 @@
 
                 items.forEach(item => {
                     const tr = document.createElement('tr');
-                    tr.id = `row-${item.key}`; // GIVE ROW AN ID FOR LIVE UPDATE
-                    tr.dataset.defaultPrice = item.start_price; // Store default price for revert
+                    tr.id = `row-${item.key}`; 
+                    tr.dataset.defaultPrice = item.start_price;
 
                     tr.innerHTML = `
                         <td><strong>#${item.lot}</strong></td>
@@ -222,51 +234,73 @@
             });
         }
 
-        // 3. MONITOR LIVE AUCTION (THE NEW PART)
+        // 3. MONITOR LIVE AUCTION (SMART ENDED LOGIC)
+        let activeAuctionData = null; // Store data to use in setInterval
+
         function monitorActiveAuction() {
             const activeRef = ref(db, 'active_auction');
             
+            // Listen for data changes
             onValue(activeRef, (snapshot) => {
-                const liveData = snapshot.val();
+                activeAuctionData = snapshot.val();
+                updateActiveRowUI();
+            });
 
-                // Clear previous live indicators
-                document.querySelectorAll('.live-active-row').forEach(row => {
-                    row.classList.remove('live-active-row');
-                    // Remove badge
-                    const titleCell = row.querySelector('.item-title');
-                    const badge = row.querySelector('.live-badge');
-                    if(badge) badge.remove();
-                    // Reset Price
+            // Check time every second (to catch the exact moment it ends)
+            setInterval(updateActiveRowUI, 1000);
+        }
+
+        function updateActiveRowUI() {
+            // Clear all previous indicators first
+            document.querySelectorAll('.live-active-row, .live-ended-row').forEach(row => {
+                row.classList.remove('live-active-row', 'live-ended-row');
+                // Remove badges
+                const titleCell = row.querySelector('.item-title');
+                const badge = row.querySelector('.live-badge, .ended-badge');
+                if(badge) badge.remove();
+                // Reset Price
+                const priceCell = row.querySelector('.price-cell');
+                priceCell.innerHTML = "$" + row.dataset.defaultPrice;
+            });
+
+            if (activeAuctionData && activeAuctionData.inventory_key) {
+                const row = document.getElementById(`row-${activeAuctionData.inventory_key}`);
+                if (row) {
+                    const isEnded = Date.now() > activeAuctionData.end_time;
+                    const bidder = activeAuctionData.high_bidder_name ? activeAuctionData.high_bidder_name : "No Bids";
                     const priceCell = row.querySelector('.price-cell');
-                    priceCell.innerHTML = "$" + row.dataset.defaultPrice;
-                });
+                    const titleCell = row.querySelector('.item-title');
 
-                // If auction is active and matches an item in inventory
-                if (liveData && liveData.inventory_key) {
-                    const row = document.getElementById(`row-${liveData.inventory_key}`);
-                    if (row) {
-                        // 1. Highlight Row
+                    if (isEnded) {
+                        // --- ENDED STATE (Orange) ---
+                        row.classList.add('live-ended-row');
+                        
+                        if (!row.querySelector('.ended-badge')) {
+                            titleCell.insertAdjacentHTML('afterbegin', '<span class="ended-badge">ENDED</span>');
+                        }
+                        
+                        priceCell.innerHTML = `
+                            <span class="live-bid-info" style="color: #b45309;">SOLD: $${activeAuctionData.current_bid.toLocaleString()}</span>
+                            <span class="live-bidder-name">Winner: ${bidder}</span>
+                        `;
+                    } else {
+                        // --- LIVE STATE (Green) ---
                         row.classList.add('live-active-row');
-
-                        // 2. Add Badge
-                        const titleCell = row.querySelector('.item-title');
+                        
                         if (!row.querySelector('.live-badge')) {
                             titleCell.insertAdjacentHTML('afterbegin', '<span class="live-badge">LIVE</span>');
                         }
 
-                        // 3. Show Real-time Price & Bidder
-                        const priceCell = row.querySelector('.price-cell');
-                        const bidder = liveData.high_bidder_name ? liveData.high_bidder_name : "No Bids";
                         priceCell.innerHTML = `
-                            <span class="live-bid-info">$${liveData.current_bid.toLocaleString()}</span>
+                            <span class="live-bid-info" style="color: #10b981;">$${activeAuctionData.current_bid.toLocaleString()}</span>
                             <span class="live-bidder-name">High Bidder: ${bidder}</span>
                         `;
                     }
                 }
-            });
+            }
         }
 
-        // --- CRUD & QUEUE FUNCTIONS (Same as before) ---
+        // --- CRUD & QUEUE FUNCTIONS ---
         window.saveItem = function() {
             const key = document.getElementById('editKey').value;
             const data = {
