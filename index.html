@@ -7,49 +7,38 @@
     <style>
         :root { --primary-color: #2563eb; --header-bg: #111827; --header-text: #f9fafb; --bg-color: #f3f4f6; --text-color: #1f2937; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-        
         header { width: 100%; background-color: var(--header-bg); color: var(--header-text); padding: 40px 20px; text-align: center; }
         .brand-name { font-family: "Georgia", "Times New Roman", serif; font-size: 2.5rem; letter-spacing: 2px; font-weight: bold; text-transform: uppercase; margin-bottom: 10px; }
         .tagline { font-size: 1.1rem; color: #9ca3af; font-style: italic; }
-
-        /* --- INFO CARD --- */
         .info-card { background: white; padding: 30px; margin-top: -30px; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; max-width: 600px; width: 90%; border-bottom: 4px solid var(--primary-color); }
         .schedule-title { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; color: #6b7280; font-weight: bold; }
         .schedule-time { font-size: 1.8rem; font-weight: 800; margin: 10px 0; }
-
         .enter-btn { cursor: pointer; display: inline-block; background-color: var(--primary-color); color: white; border: none; padding: 15px 40px; border-radius: 50px; font-weight: bold; font-size: 1.1rem; margin-top: 20px; transition: transform 0.2s, background 0.2s; box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3); }
         .enter-btn:hover { background-color: #1d4ed8; transform: translateY(-2px); }
-
-        /* --- CATALOG GRID --- */
         .catalog-section { max-width: 1000px; width: 90%; margin: 50px 0; }
         .section-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px; margin-bottom: 30px; }
         .section-title { font-family: "Georgia", serif; font-size: 1.8rem; margin: 0; }
         .sell-btn { font-size: 0.9rem; color: var(--text-color); text-decoration: none; border: 1px solid #d1d5db; padding: 8px 16px; border-radius: 4px; background: white; transition: background 0.2s; }
-        .sell-btn:hover { background-color: #f3f4f6; border-color: #9ca3af; }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
         .card { background: white; border-radius: 8px; overflow: hidden; border: 1px solid #e5e7eb; transition: transform 0.2s; }
-        .card:hover { transform: translateY(-3px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         .card img { width: 100%; height: 200px; object-fit: cover; }
         .card-body { padding: 15px; }
         .card-title { font-weight: bold; margin-bottom: 5px; }
         .card-lot { font-size: 0.85rem; color: #6b7280; }
         
-        /* --- REGISTRATION MODAL --- */
         #regModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 40px; border-radius: 8px; width: 90%; max-width: 400px; box-shadow: 0 20px 25px rgba(0,0,0,0.2); }
-        .modal-content h2 { margin-top: 0; color: var(--primary-color); text-align: center; }
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9rem; }
         .form-group input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
         .submit-reg-btn { width: 100%; padding: 12px; background: var(--header-bg); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 1rem; }
-        .submit-reg-btn:hover { background: #374151; }
+        .submit-reg-btn:disabled { background: #9ca3af; cursor: not-allowed; }
+        .error-msg { color: #dc2626; font-size: 0.9rem; margin-bottom: 10px; display: none; text-align: center; }
         .close-reg { text-align: center; margin-top: 15px; cursor: pointer; color: #6b7280; font-size: 0.9rem; text-decoration: underline; }
-
         @media (max-width: 600px) { .section-header { flex-direction: column; gap: 15px; text-align: center; } }
     </style>
 </head>
 <body>
-
     <header>
         <div class="brand-name">Eastern Shore Auction House</div>
         <div class="tagline">Daphne, Spanish Fort, Fairhope area local Auction</div>
@@ -59,7 +48,6 @@
         <div class="schedule-title">Next Live Auction Begins</div>
         <div class="schedule-time">Tonight at 7:00 PM CST</div>
         <p>Please register to enter the auction floor.</p>
-        
         <button onclick="openRegModal()" class="enter-btn">Enter Auction Room</button>
     </div>
 
@@ -78,45 +66,74 @@
 
     <div id="regModal">
         <div class="modal-content">
-            <h2>Guest Registration</h2>
-            <p style="text-align: center; color: #666; margin-bottom: 20px;">Enter your details to bid.</p>
+            <h2 style="text-align:center; color:#2563eb; margin-top:0;">Guest Registration</h2>
+            <div id="errorDisplay" class="error-msg"></div>
             
-            <form onsubmit="event.preventDefault(); saveAndEnter();">
-                <div class="form-group">
-                    <label>Username (Visible to others):</label>
-                    <input type="text" id="regName" placeholder="e.g. Bidder123" required>
-                </div>
-                <div class="form-group">
-                    <label>Email (Private):</label>
-                    <input type="email" id="regEmail" placeholder="you@email.com" required>
-                </div>
-                <div class="form-group">
-                    <label>Phone Number (Private):</label>
-                    <input type="tel" id="regPhone" placeholder="(555) 555-5555" required>
-                </div>
-                <button type="submit" class="submit-reg-btn">Enter Auction</button>
+            <form onsubmit="event.preventDefault(); checkAndEnter();">
+                <div class="form-group"><label>Username:</label><input type="text" id="regName" placeholder="e.g. Bidder123" required></div>
+                <div class="form-group"><label>Email:</label><input type="email" id="regEmail" placeholder="you@email.com" required></div>
+                <div class="form-group"><label>Phone:</label><input type="tel" id="regPhone" placeholder="(555) 555-5555" required></div>
+                <button type="submit" id="submitBtn" class="submit-reg-btn">Enter Auction</button>
                 <div class="close-reg" onclick="document.getElementById('regModal').style.display='none'">Cancel</div>
             </form>
         </div>
     </div>
 
-    <script>
-        function openRegModal() {
-            document.getElementById('regModal').style.display = 'flex';
-        }
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        function saveAndEnter() {
-            const name = document.getElementById('regName').value;
+        // --- PASTE YOUR FIREBASE CONFIG HERE ---
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY_HERE",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // Expose function to window so HTML can see it
+        window.openRegModal = function() { document.getElementById('regModal').style.display = 'flex'; }
+        
+        window.checkAndEnter = function() {
+            const name = document.getElementById('regName').value.trim();
             const email = document.getElementById('regEmail').value;
             const phone = document.getElementById('regPhone').value;
+            const btn = document.getElementById('submitBtn');
+            const err = document.getElementById('errorDisplay');
 
-            // Save to Browser Memory
-            localStorage.setItem('esa_username', name);
-            localStorage.setItem('esa_email', email);
-            localStorage.setItem('esa_phone', phone);
+            if(!name) return;
 
-            // Go to Auction Room
-            window.location.href = 'auction.html';
+            // 1. Disable button
+            btn.disabled = true;
+            btn.textContent = "Checking availability...";
+            err.style.display = 'none';
+
+            // 2. Check Database for duplicate user
+            const dbRef = ref(db);
+            get(child(dbRef, `active_users/${name}`)).then((snapshot) => {
+                if (snapshot.exists()) {
+                    // Name is taken
+                    err.innerText = "That username is already in the auction room. Please choose another.";
+                    err.style.display = 'block';
+                    btn.disabled = false;
+                    btn.textContent = "Enter Auction";
+                } else {
+                    // Name is free
+                    localStorage.setItem('esa_username', name);
+                    localStorage.setItem('esa_email', email);
+                    localStorage.setItem('esa_phone', phone);
+                    window.location.href = 'auction.html';
+                }
+            }).catch((error) => {
+                console.error(error);
+                btn.disabled = false;
+            });
         }
     </script>
 </body>
