@@ -31,19 +31,15 @@
         .card-title { font-weight: bold; margin-bottom: 5px; }
         .card-lot { font-size: 0.85rem; color: #6b7280; }
 
-        /* --- AUTH MODAL STYLES --- */
+        /* AUTH MODAL STYLES */
         #authModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 380px; box-shadow: 0 20px 25px rgba(0,0,0,0.2); }
-        
         .tabs { display: flex; margin-bottom: 20px; border-bottom: 2px solid #e5e7eb; }
         .tab { flex: 1; padding: 10px; text-align: center; cursor: pointer; font-weight: bold; color: #6b7280; transition: color 0.2s; }
         .tab.active { color: var(--primary-color); border-bottom: 2px solid var(--primary-color); }
-        
         .form-group { margin-bottom: 15px; }
         .form-group input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
         .action-btn { width: 100%; padding: 12px; background: var(--header-bg); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1rem; }
-        .action-btn:hover { background: #374151; }
-        
         .error-msg { color: #dc2626; font-size: 0.9rem; margin-bottom: 10px; display: none; text-align: center; background: #fee2e2; padding: 8px; border-radius: 4px; }
         .close-reg { text-align: center; margin-top: 15px; cursor: pointer; color: #6b7280; font-size: 0.9rem; text-decoration: underline; }
 
@@ -69,43 +65,35 @@
             <h2 class="section-title">Upcoming Lots</h2>
             <a href="sell.html" class="sell-btn">Have an item to sell?</a>
         </div>
-        <div class="grid">
-            <div class="card"><img src="https://placehold.co/400x300?text=Rolex" alt="Item"><div class="card-body"><div class="card-title">Vintage 1960s Rolex</div><div class="card-lot">Lot #101 • Jewelry</div></div></div>
-            <div class="card"><img src="https://placehold.co/400x300?text=Civil+War" alt="Item"><div class="card-body"><div class="card-title">Civil War Cannonball</div><div class="card-lot">Lot #102 • Militaria</div></div></div>
-            <div class="card"><img src="https://placehold.co/400x300?text=Vase" alt="Item"><div class="card-body"><div class="card-title">Ming Dynasty Vase</div><div class="card-lot">Lot #103 • Ceramics</div></div></div>
-            <div class="card"><img src="https://placehold.co/400x300?text=Oil+Painting" alt="Item"><div class="card-body"><div class="card-title">19th C. Oil Painting</div><div class="card-lot">Lot #104 • Art</div></div></div>
+        
+        <div class="grid" id="upcomingGrid">
+            <div style="grid-column: 1/-1; text-align:center; color:#999; padding:40px;">Loading upcoming lots...</div>
         </div>
     </div>
 
     <div id="authModal">
         <div class="modal-content">
-            <div class="tabs">
-                <div class="tab active" onclick="switchTab('login')">Log In</div>
-                <div class="tab" onclick="switchTab('register')">Sign Up</div>
-            </div>
-
+            <div class="tabs"><div class="tab active" onclick="switchTab('login')">Log In</div><div class="tab" onclick="switchTab('register')">Sign Up</div></div>
             <div id="errorMsg" class="error-msg"></div>
-
             <form id="loginForm" onsubmit="event.preventDefault(); handleLogin();">
                 <div class="form-group"><input type="email" id="loginEmail" placeholder="Email Address" required></div>
                 <div class="form-group"><input type="password" id="loginPass" placeholder="Password" required></div>
                 <button type="submit" class="action-btn">Log In</button>
             </form>
-
             <form id="registerForm" style="display:none;" onsubmit="event.preventDefault(); handleRegister();">
                 <div class="form-group"><input type="text" id="regName" placeholder="Create Username (Visible to others)" required></div>
                 <div class="form-group"><input type="email" id="regEmail" placeholder="Email Address" required></div>
                 <div class="form-group"><input type="password" id="regPass" placeholder="Create Password (6+ chars)" required></div>
                 <button type="submit" class="action-btn">Create Account</button>
             </form>
-
             <div class="close-reg" onclick="document.getElementById('authModal').style.display='none'">Cancel</div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
         // --- PASTE YOUR FIREBASE KEYS HERE ---
         const firebaseConfig = {
@@ -120,15 +108,57 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const db = getDatabase(app);
 
-        // --- UI LOGIC ---
+        // --- 1. LOAD FEATURED ITEMS ---
+        function loadFeaturedItems() {
+            const invRef = ref(db, 'inventory');
+            onValue(invRef, (snapshot) => {
+                const grid = document.getElementById('upcomingGrid');
+                grid.innerHTML = "";
+                const data = snapshot.val();
+
+                if (!data) {
+                    grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; color:#999;">No upcoming lots listed yet.</div>';
+                    return;
+                }
+
+                // Convert to array
+                const items = Object.values(data);
+                
+                // Filter only Featured items
+                const featuredItems = items.filter(item => item.is_featured === true);
+                
+                // Sort by Lot #
+                featuredItems.sort((a, b) => a.lot - b.lot);
+
+                if (featuredItems.length === 0) {
+                    grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; color:#999;">Stay tuned! New lots coming soon.</div>';
+                    return;
+                }
+
+                featuredItems.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.innerHTML = `
+                        <img src="${item.image_url}" alt="${item.title}">
+                        <div class="card-body">
+                            <div class="card-title">${item.title}</div>
+                            <div class="card-lot">Lot #${item.lot} • Start: $${item.start_price}</div>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+            });
+        }
+
+        // Run immediately
+        loadFeaturedItems();
+
+        // --- AUTH LOGIC (Same as before) ---
         window.openAuthModal = function() {
-            // If already logged in, go straight to auction
-            if(auth.currentUser) {
-                window.location.href = "auction.html";
-            } else {
-                document.getElementById('authModal').style.display = 'flex';
-            }
+            if(auth.currentUser) { window.location.href = "auction.html"; }
+            else { document.getElementById('authModal').style.display = 'flex'; }
         }
 
         window.switchTab = function(mode) {
@@ -146,20 +176,14 @@
             }
         }
 
-        // --- AUTH LOGIC ---
         window.handleLogin = function() {
             const email = document.getElementById('loginEmail').value;
             const pass = document.getElementById('loginPass').value;
             const btn = document.querySelector('#loginForm button');
-            
             btn.disabled = true; btn.innerText = "Verifying...";
-            
             signInWithEmailAndPassword(auth, email, pass)
             .then(() => { window.location.href = "auction.html"; })
-            .catch((error) => {
-                showError(error.message);
-                btn.disabled = false; btn.innerText = "Log In";
-            });
+            .catch((error) => { showError(error.message); btn.disabled = false; btn.innerText = "Log In"; });
         }
 
         window.handleRegister = function() {
@@ -167,27 +191,20 @@
             const email = document.getElementById('regEmail').value;
             const pass = document.getElementById('regPass').value;
             const btn = document.querySelector('#registerForm button');
-
             if(pass.length < 6) { showError("Password must be at least 6 characters"); return; }
             btn.disabled = true; btn.innerText = "Creating Account...";
-
             createUserWithEmailAndPassword(auth, email, pass)
             .then((userCredential) => {
                 updateProfile(userCredential.user, { displayName: name })
                 .then(() => { window.location.href = "auction.html"; });
             })
-            .catch((error) => {
-                showError(error.message);
-                btn.disabled = false; btn.innerText = "Create Account";
-            });
+            .catch((error) => { showError(error.message); btn.disabled = false; btn.innerText = "Create Account"; });
         }
 
         function showError(msg) {
             const errDiv = document.getElementById('errorMsg');
             errDiv.style.display = 'block';
-            // Clean up error message
             let cleanMsg = msg.replace("Firebase: ", "").replace("auth/", "").replace(/-/g, " ");
-            // Capitalize first letter
             cleanMsg = cleanMsg.charAt(0).toUpperCase() + cleanMsg.slice(1);
             errDiv.innerText = cleanMsg;
         }

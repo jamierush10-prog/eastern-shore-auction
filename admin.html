@@ -25,31 +25,19 @@
         tr { transition: all 0.3s ease; }
         tr:hover { background: #f9fafb; }
         
-        /* --- LIVE / ENDED ROW STYLING --- */
-        
-        /* 1. ACTIVE LIVE ROW (Green) */
+        /* LIVE STATES */
         tr.live-active-row { background-color: #ecfdf5 !important; border-left: 5px solid var(--success-color); }
-        
-        /* 2. ENDED ROW (Orange/Amber) */
         tr.live-ended-row { background-color: #fffbeb !important; border-left: 5px solid var(--ended-color); }
 
-        .live-badge { 
-            display: inline-block; background: var(--live-color); color: white; 
-            padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; 
-            margin-right: 8px; vertical-align: middle; text-transform: uppercase;
-            animation: pulse 1.5s infinite;
-        }
-        
-        .ended-badge {
-            display: inline-block; background: var(--text-color); color: white; 
-            padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; 
-            margin-right: 8px; vertical-align: middle; text-transform: uppercase;
-        }
-
+        .live-badge { display: inline-block; background: var(--live-color); color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; margin-right: 8px; vertical-align: middle; text-transform: uppercase; animation: pulse 1.5s infinite; }
+        .ended-badge { display: inline-block; background: var(--text-color); color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; margin-right: 8px; vertical-align: middle; text-transform: uppercase; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
 
         .live-bid-info { font-weight: bold; font-size: 1rem; display: block; }
         .live-bidder-name { font-size: 0.8rem; color: #6b7280; font-weight: normal; }
+
+        /* CHECKBOX STYLE */
+        input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; accent-color: var(--primary-color); }
 
         /* FORMS */
         .form-card { background: white; padding: 30px; border-radius: 8px; max-width: 600px; margin: 0 auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
@@ -71,7 +59,6 @@
         /* VIEWS */
         .view-section { display: none; }
         .view-section.active { display: block; }
-
         .img-preview { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; vertical-align: middle; margin-right: 10px; }
     </style>
 </head>
@@ -94,6 +81,7 @@
             <table>
                 <thead>
                     <tr>
+                        <th style="text-align:center;">Feature</th>
                         <th>Lot #</th>
                         <th>Item</th>
                         <th>Seller</th>
@@ -103,7 +91,7 @@
                     </tr>
                 </thead>
                 <tbody id="inventoryTableBody">
-                    <tr><td colspan="6" style="text-align:center;">Loading inventory...</td></tr>
+                    <tr><td colspan="7" style="text-align:center;">Loading inventory...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -113,14 +101,14 @@
             <div class="form-card">
                 <form onsubmit="event.preventDefault(); saveItem();">
                     <input type="hidden" id="editKey">
-                    <div class="form-group"><label>Lot Number (Sort Order):</label><input type="number" id="inpLot" required placeholder="e.g. 101"></div>
-                    <div class="form-group"><label>Title:</label><input type="text" id="inpTitle" required placeholder="Item Name"></div>
+                    <div class="form-group"><label>Lot Number:</label><input type="number" id="inpLot" required placeholder="e.g. 101"></div>
+                    <div class="form-group"><label>Title:</label><input type="text" id="inpTitle" required></div>
                     <div class="form-group"><label>Subtitle:</label><input type="text" id="inpSub" placeholder="Condition / Category"></div>
-                    <div class="form-group"><label>Seller Email:</label><input type="email" id="inpSeller" placeholder="seller@email.com"></div>
+                    <div class="form-group"><label>Seller Email:</label><input type="email" id="inpSeller"></div>
                     <div class="form-group"><label>Starting Price ($):</label><input type="number" id="inpPrice" required></div>
                     <div class="form-group"><label>Main Image URL:</label><input type="text" id="inpImg" required></div>
                     <div class="form-group"><label>Description:</label><textarea id="inpDesc" rows="4"></textarea></div>
-                    <h3>Extra Images (Optional)</h3>
+                    <h3>Extra Images</h3>
                     <div class="form-group"><input type="text" id="inpThumb1" placeholder="URL 1"></div>
                     <div class="form-group"><input type="text" id="inpThumb2" placeholder="URL 2"></div>
                     <div class="form-group"><input type="text" id="inpThumb3" placeholder="URL 3"></div>
@@ -134,20 +122,11 @@
             <h2>Sales History</h2>
             <table>
                 <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Item</th>
-                        <th>Winner</th>
-                        <th>Winning Bid</th>
-                        <th>Seller</th>
-                    </tr>
+                    <tr><th>Date</th><th>Item</th><th>Winner</th><th>Winning Bid</th><th>Seller</th></tr>
                 </thead>
-                <tbody id="historyTableBody">
-                    <tr><td colspan="5" style="text-align:center; color:#999;">Sales history...</td></tr>
-                </tbody>
+                <tbody id="historyTableBody"><tr><td colspan="5" style="text-align:center; color:#999;">History log...</td></tr></tbody>
             </table>
         </div>
-
     </div>
 
     <script type="module">
@@ -155,7 +134,7 @@
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getDatabase, ref, onValue, set, push, remove, update, child, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // --- PASTE YOUR KEYS HERE ---
+        // --- PASTE KEYS HERE ---
         const firebaseConfig = {
   apiKey: "AIzaSyCt0i8a7ZVRlNmSts9yM4uGwV7ghPU59rk",
   authDomain: "eastern-shore-auction.firebaseapp.com",
@@ -170,7 +149,6 @@
         const auth = getAuth(app);
         const db = getDatabase(app);
 
-        // 1. AUTH CHECK
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 get(child(ref(db), `admins/${user.uid}`)).then((snapshot) => {
@@ -196,7 +174,7 @@
             }
         }
 
-        // 2. INVENTORY LOGIC
+        // --- 2. INVENTORY LOGIC (UPDATED WITH CHECKBOX) ---
         function loadInventory() {
             const invRef = ref(db, 'inventory');
             onValue(invRef, (snapshot) => {
@@ -204,7 +182,7 @@
                 tbody.innerHTML = "";
                 const data = snapshot.val();
 
-                if(!data) { tbody.innerHTML = "<tr><td colspan='6'>No items.</td></tr>"; return; }
+                if(!data) { tbody.innerHTML = "<tr><td colspan='7'>No items.</td></tr>"; return; }
 
                 const items = Object.entries(data).map(([key, val]) => ({ ...val, key }));
                 items.sort((a, b) => a.lot - b.lot);
@@ -214,7 +192,12 @@
                     tr.id = `row-${item.key}`; 
                     tr.dataset.defaultPrice = item.start_price;
 
+                    const isChecked = item.is_featured ? 'checked' : '';
+
                     tr.innerHTML = `
+                        <td style="text-align:center;">
+                            <input type="checkbox" ${isChecked} onchange="toggleFeatured('${item.key}', this.checked)" title="Show on Landing Page">
+                        </td>
                         <td><strong>#${item.lot}</strong></td>
                         <td class="item-cell">
                             <img src="${item.image_url}" class="img-preview">
@@ -234,31 +217,30 @@
             });
         }
 
-        // 3. MONITOR LIVE AUCTION (SMART ENDED LOGIC)
-        let activeAuctionData = null; // Store data to use in setInterval
+        // --- 3. TOGGLE FEATURED (NEW) ---
+        window.toggleFeatured = function(key, status) {
+            update(ref(db, `inventory/${key}`), {
+                is_featured: status
+            });
+        }
 
+        // --- 4. LIVE MONITOR ---
+        let activeAuctionData = null;
         function monitorActiveAuction() {
             const activeRef = ref(db, 'active_auction');
-            
-            // Listen for data changes
             onValue(activeRef, (snapshot) => {
                 activeAuctionData = snapshot.val();
                 updateActiveRowUI();
             });
-
-            // Check time every second (to catch the exact moment it ends)
             setInterval(updateActiveRowUI, 1000);
         }
 
         function updateActiveRowUI() {
-            // Clear all previous indicators first
             document.querySelectorAll('.live-active-row, .live-ended-row').forEach(row => {
                 row.classList.remove('live-active-row', 'live-ended-row');
-                // Remove badges
                 const titleCell = row.querySelector('.item-title');
                 const badge = row.querySelector('.live-badge, .ended-badge');
                 if(badge) badge.remove();
-                // Reset Price
                 const priceCell = row.querySelector('.price-cell');
                 priceCell.innerHTML = "$" + row.dataset.defaultPrice;
             });
@@ -272,35 +254,19 @@
                     const titleCell = row.querySelector('.item-title');
 
                     if (isEnded) {
-                        // --- ENDED STATE (Orange) ---
                         row.classList.add('live-ended-row');
-                        
-                        if (!row.querySelector('.ended-badge')) {
-                            titleCell.insertAdjacentHTML('afterbegin', '<span class="ended-badge">ENDED</span>');
-                        }
-                        
-                        priceCell.innerHTML = `
-                            <span class="live-bid-info" style="color: #b45309;">SOLD: $${activeAuctionData.current_bid.toLocaleString()}</span>
-                            <span class="live-bidder-name">Winner: ${bidder}</span>
-                        `;
+                        if (!row.querySelector('.ended-badge')) titleCell.insertAdjacentHTML('afterbegin', '<span class="ended-badge">ENDED</span>');
+                        priceCell.innerHTML = `<span class="live-bid-info" style="color: #b45309;">SOLD: $${activeAuctionData.current_bid.toLocaleString()}</span><span class="live-bidder-name">Winner: ${bidder}</span>`;
                     } else {
-                        // --- LIVE STATE (Green) ---
                         row.classList.add('live-active-row');
-                        
-                        if (!row.querySelector('.live-badge')) {
-                            titleCell.insertAdjacentHTML('afterbegin', '<span class="live-badge">LIVE</span>');
-                        }
-
-                        priceCell.innerHTML = `
-                            <span class="live-bid-info" style="color: #10b981;">$${activeAuctionData.current_bid.toLocaleString()}</span>
-                            <span class="live-bidder-name">High Bidder: ${bidder}</span>
-                        `;
+                        if (!row.querySelector('.live-badge')) titleCell.insertAdjacentHTML('afterbegin', '<span class="live-badge">LIVE</span>');
+                        priceCell.innerHTML = `<span class="live-bid-info" style="color: #10b981;">$${activeAuctionData.current_bid.toLocaleString()}</span><span class="live-bidder-name">High Bidder: ${bidder}</span>`;
                     }
                 }
             }
         }
 
-        // --- CRUD & QUEUE FUNCTIONS ---
+        // --- CRUD & QUEUE ---
         window.saveItem = function() {
             const key = document.getElementById('editKey').value;
             const data = {
@@ -312,6 +278,7 @@
                 image_url: document.getElementById('inpImg').value,
                 description: document.getElementById('inpDesc').value,
                 times_run: 0,
+                is_featured: false, // Default
                 images: {
                     thumb1: document.getElementById('inpThumb1').value,
                     thumb2: document.getElementById('inpThumb2').value,
@@ -321,8 +288,10 @@
             };
 
             if(key) {
-                get(ref(db, `inventory/${key}/times_run`)).then((snap) => {
-                    data.times_run = snap.val() || 0;
+                get(ref(db, `inventory/${key}`)).then((snap) => {
+                    const existing = snap.val();
+                    data.times_run = existing.times_run || 0;
+                    data.is_featured = existing.is_featured || false; // Keep existing status
                     update(ref(db, `inventory/${key}`), data);
                     alert("Item Updated"); switchView('inventory');
                 });
@@ -332,9 +301,7 @@
             }
         }
 
-        window.deleteItem = function(key) {
-            if(confirm("Delete item?")) remove(ref(db, `inventory/${key}`));
-        }
+        window.deleteItem = function(key) { if(confirm("Delete item?")) remove(ref(db, `inventory/${key}`)); }
 
         window.editItem = function(key) {
             get(ref(db, `inventory/${key}`)).then((snapshot) => {
