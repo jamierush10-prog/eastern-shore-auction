@@ -6,7 +6,7 @@
     <title>Eastern Shore Auction House</title>
     <style>
         /* --- CSS STYLES --- */
-        :root { --primary-color: #2563eb; --urgent-color: #dc2626; --bg-color: #f3f4f6; --text-color: #1f2937; --border-color: #e5e7eb; --header-bg: #111827; --header-text: #f9fafb; }
+        :root { --primary-color: #2563eb; --urgent-color: #dc2626; --bg-color: #f3f4f6; --text-color: #1f2937; --border-color: #e5e7eb; --header-bg: #111827; --header-text: #f9fafb; --success-color: #16a34a; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
         
         .site-header { width: 100%; background-color: var(--header-bg); color: var(--header-text); padding: 20px 0; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 40px; position: relative; }
@@ -40,43 +40,35 @@
         
         /* BID CONTROLS */
         .bid-controls { display: flex; flex-direction: column; gap: 15px; }
-        
         .increment-buttons { display: flex; gap: 10px; }
         .inc-btn { flex: 1; padding: 10px; background: white; border: 1px solid var(--primary-color); color: var(--primary-color); border-radius: 4px; font-weight: bold; cursor: pointer; transition: all 0.2s; }
         .inc-btn:hover { background: var(--primary-color); color: white; }
-
         .bid-input-row { display: flex; gap: 10px; }
         input#bidInput { padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 1.2rem; font-weight: bold; width: 100%; box-sizing: border-box; text-align: center; }
-        
         button.bid-btn { background-color: var(--primary-color); color: white; border: none; padding: 12px 24px; border-radius: 6px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s; width: 100%; }
         button.bid-btn:hover { background-color: #1d4ed8; }
         
-        /* NEW MAX BID DISPLAY */
-        #userMaxBidDisplay {
-            margin-top: 10px;
-            font-size: 0.9rem;
-            color: var(--primary-color);
-            text-align: center;
-            display: none; /* Hidden by default */
-            background: #dbeafe;
-            padding: 8px;
-            border-radius: 4px;
-        }
-
+        #userMaxBidDisplay { margin-top: 10px; font-size: 0.9rem; color: var(--primary-color); text-align: center; display: none; background: #dbeafe; padding: 8px; border-radius: 4px; }
         .user-badge { background: #e0f2fe; color: #0369a1; padding: 10px; border-radius: 6px; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border: 1px solid #bae6fd; }
 
         /* MODALS */
-        #confirmModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; }
-        .confirm-content { background: white; padding: 30px; border-radius: 8px; text-align: center; width: 90%; max-width: 350px; box-shadow: 0 20px 25px rgba(0,0,0,0.2); }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 30px; border-radius: 8px; text-align: center; width: 90%; max-width: 400px; box-shadow: 0 20px 25px rgba(0,0,0,0.2); position: relative; }
+        
+        /* CONFIRM MODAL SPECIFIC */
         .confirm-amount { font-size: 2rem; font-weight: 800; color: var(--primary-color); margin: 10px 0; }
         .confirm-actions { display: flex; gap: 10px; margin-top: 20px; }
         .confirm-btn { flex: 1; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
         .btn-yes { background: var(--primary-color); color: white; }
         .btn-no { background: #e5e7eb; color: #374151; }
 
+        /* WINNER MODAL SPECIFIC */
+        #winnerIcon { font-size: 4rem; margin-bottom: 10px; }
+        #winnerText { font-size: 1.8rem; font-weight: bold; margin: 10px 0; color: var(--text-color); }
+        #winnerDetail { font-size: 1.1rem; color: #6b7280; margin-bottom: 20px; }
+        .winner-card { border-top: 5px solid var(--success-color); }
+
         /* ADMIN MODAL */
-        #adminModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-content { background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; }
         .admin-footer { margin-top: 20px; font-size: 0.8rem; color: #9ca3af; cursor: pointer; text-decoration: underline; text-align: center; }
         .form-group { margin-bottom: 15px; }
         .form-group input, .form-group textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
@@ -152,8 +144,17 @@
 
     <div class="admin-footer" onclick="openAdminPanel()">Admin Login</div>
 
-    <div id="confirmModal">
-        <div class="confirm-content">
+    <div id="winnerModal" class="modal-overlay">
+        <div class="modal-content winner-card">
+            <div id="winnerIcon">🏆</div>
+            <h2 id="winnerText">Auction Ended</h2>
+            <p id="winnerDetail">The item was sold.</p>
+            <button class="admin-btn" style="background: var(--primary-color);" onclick="document.getElementById('winnerModal').style.display='none'">Close</button>
+        </div>
+    </div>
+
+    <div id="confirmModal" class="modal-overlay">
+        <div class="modal-content">
             <h3>Confirm Max Bid</h3>
             <p>You are setting a maximum bid of:</p>
             <div class="confirm-amount" id="confirmAmountDisplay">$0</div>
@@ -165,8 +166,8 @@
         </div>
     </div>
 
-    <div id="adminModal">
-        <div class="modal-content">
+    <div id="adminModal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 600px; max-height: 90vh; overflow-y: auto;">
             <h2 style="margin-top:0; text-align:center;">Admin Access</h2>
             <div id="loginView">
                 <div class="form-group"><label>Password:</label><input type="password" id="adminPassword"></div>
@@ -197,7 +198,7 @@
         import { getDatabase, ref, onValue, set, get, push, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
         // --- PASTE YOUR FIREBASE KEYS HERE ---
-        const firebaseConfig = {
+       const firebaseConfig = {
   apiKey: "AIzaSyCt0i8a7ZVRlNmSts9yM4uGwV7ghPU59rk",
   authDomain: "eastern-shore-auction.firebaseapp.com",
   databaseURL: "https://eastern-shore-auction-default-rtdb.firebaseio.com",
@@ -215,6 +216,8 @@
 
         let currentUser = null;
         let globalCurrentBid = 0;
+        let globalAuctionData = null; // Store data for winner logic
+        let auctionEndedProcessed = false;
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
@@ -231,6 +234,13 @@
         onValue(dbRef, (snapshot) => {
             const data = snapshot.val();
             if (data) {
+                globalAuctionData = data;
+                
+                // If auction is active (time added?), reset flag
+                if (data.end_time > Date.now()) {
+                    auctionEndedProcessed = false;
+                }
+
                 document.getElementById('itemTitle').innerText = data.title;
                 document.getElementById('itemSubtitle').innerText = data.subtitle;
                 document.getElementById('itemDescription').innerText = data.description;
@@ -246,7 +256,6 @@
                 updateTimer(data.end_time);
                 renderBidHistory(data.bid_history);
 
-                // --- NEW LOGIC: SHOW MAX BID IF CURRENT USER IS LEADER ---
                 if (currentUser && data.high_bidder_uid === currentUser.uid) {
                     document.getElementById('userMaxBidDisplay').style.display = 'block';
                     document.getElementById('userMaxVal').innerText = "$" + data.high_bidder_max.toLocaleString();
@@ -306,6 +315,13 @@
                     timerElement.textContent = "ENDED";
                     bidBtn.disabled = true; bidBtn.textContent = "Auction Closed"; bidBtn.style.backgroundColor = "#9ca3af";
                     incBtns.forEach(b => b.disabled = true);
+                    
+                    // --- WINNER LOGIC ---
+                    if (!auctionEndedProcessed && globalAuctionData) {
+                        showWinnerModal(globalAuctionData);
+                        auctionEndedProcessed = true;
+                    }
+
                 } else {
                     bidBtn.disabled = false; bidBtn.textContent = "Place Max Bid"; bidBtn.style.backgroundColor = ""; 
                     incBtns.forEach(b => b.disabled = false);
@@ -314,6 +330,28 @@
                     timerElement.textContent = (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds < 10 ? "0" + seconds : seconds);
                 }
             }, 1000);
+        }
+
+        function showWinnerModal(data) {
+            const modal = document.getElementById('winnerModal');
+            const icon = document.getElementById('winnerIcon');
+            const text = document.getElementById('winnerText');
+            const detail = document.getElementById('winnerDetail');
+
+            if (currentUser && data.high_bidder_uid === currentUser.uid) {
+                // YOU WON
+                icon.innerText = "🎉";
+                text.innerText = "Congratulations!";
+                text.style.color = "#16a34a"; // Green
+                detail.innerText = "You won this item for $" + data.current_bid.toLocaleString();
+            } else {
+                // SOMEONE ELSE WON
+                icon.innerText = "🏷️";
+                text.innerText = "Auction Ended";
+                text.style.color = "#1f2937"; // Dark Gray
+                detail.innerText = "Sold to " + (data.high_bidder_name || "Unknown") + " for $" + data.current_bid.toLocaleString();
+            }
+            modal.style.display = 'flex';
         }
 
         window.addToBid = function(amount) {
@@ -367,11 +405,7 @@
                     });
 
                     const historyRef = ref(db, auctionId + '/bid_history');
-                    push(historyRef, {
-                        name: currentUser.displayName,
-                        amount: newPrice,
-                        timestamp: Date.now()
-                    });
+                    push(historyRef, { name: currentUser.displayName, amount: newPrice, timestamp: Date.now() });
                     alert("You are now the highest bidder!");
                 } else {
                     let newPrice = myMaxBid + 1;
