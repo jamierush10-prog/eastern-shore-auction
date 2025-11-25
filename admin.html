@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard | Eastern Shore Auction House</title>
     <style>
-        :root { --primary-color: #2563eb; --header-bg: #111827; --text-color: #1f2937; --bg-color: #f3f4f6; }
+        :root { --primary-color: #2563eb; --header-bg: #111827; --text-color: #1f2937; --bg-color: #f3f4f6; --success-color: #10b981; --live-color: #dc2626; }
         body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg-color); color: var(--text-color); margin: 0; }
         
         /* HEADER */
@@ -22,8 +22,23 @@
         table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         th, td { padding: 15px; text-align: left; border-bottom: 1px solid #e5e7eb; }
         th { background: #f9fafb; font-weight: bold; color: #6b7280; font-size: 0.85rem; text-transform: uppercase; }
+        tr { transition: all 0.3s ease; }
         tr:hover { background: #f9fafb; }
         
+        /* --- LIVE ROW STYLING --- */
+        tr.live-active-row { background-color: #ecfdf5 !important; border-left: 5px solid var(--success-color); }
+        
+        .live-badge { 
+            display: inline-block; background: var(--live-color); color: white; 
+            padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; 
+            margin-right: 8px; vertical-align: middle; text-transform: uppercase;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
+
+        .live-bid-info { color: var(--success-color); font-weight: bold; font-size: 1rem; display: block; }
+        .live-bidder-name { font-size: 0.8rem; color: #6b7280; font-weight: normal; }
+
         /* FORMS */
         .form-card { background: white; padding: 30px; border-radius: 8px; max-width: 600px; margin: 0 auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         .form-group { margin-bottom: 15px; }
@@ -32,9 +47,9 @@
         
         /* ACTIONS */
         .btn { padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9rem; font-weight: bold; color: white; }
-        .btn-queue { background: #16a34a; } /* Green */
-        .btn-edit { background: #2563eb; } /* Blue */
-        .btn-delete { background: #dc2626; } /* Red */
+        .btn-queue { background: #16a34a; }
+        .btn-edit { background: #2563eb; }
+        .btn-delete { background: #dc2626; }
         .btn-save { background: #111827; width: 100%; padding: 12px; margin-top: 10px; }
 
         .status-pill { padding: 4px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; }
@@ -70,7 +85,7 @@
                         <th>Lot #</th>
                         <th>Item</th>
                         <th>Seller</th>
-                        <th>Start Price</th>
+                        <th>Status / Price</th>
                         <th>Times Run</th>
                         <th>Actions</th>
                     </tr>
@@ -85,42 +100,20 @@
             <h2 id="formTitle">Add New Lot</h2>
             <div class="form-card">
                 <form onsubmit="event.preventDefault(); saveItem();">
-                    <input type="hidden" id="editKey"> <div class="form-group">
-                        <label>Lot Number (Sort Order):</label>
-                        <input type="number" id="inpLot" required placeholder="e.g. 101">
-                    </div>
-                    <div class="form-group">
-                        <label>Title:</label>
-                        <input type="text" id="inpTitle" required placeholder="Item Name">
-                    </div>
-                    <div class="form-group">
-                        <label>Subtitle:</label>
-                        <input type="text" id="inpSub" placeholder="Condition / Category">
-                    </div>
-                    <div class="form-group">
-                        <label>Seller Email (Private):</label>
-                        <input type="email" id="inpSeller" placeholder="seller@email.com">
-                    </div>
-                    <div class="form-group">
-                        <label>Starting Price ($):</label>
-                        <input type="number" id="inpPrice" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Main Image URL:</label>
-                        <input type="text" id="inpImg" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Description:</label>
-                        <textarea id="inpDesc" rows="4"></textarea>
-                    </div>
-                    
+                    <input type="hidden" id="editKey">
+                    <div class="form-group"><label>Lot Number (Sort Order):</label><input type="number" id="inpLot" required placeholder="e.g. 101"></div>
+                    <div class="form-group"><label>Title:</label><input type="text" id="inpTitle" required placeholder="Item Name"></div>
+                    <div class="form-group"><label>Subtitle:</label><input type="text" id="inpSub" placeholder="Condition / Category"></div>
+                    <div class="form-group"><label>Seller Email:</label><input type="email" id="inpSeller" placeholder="seller@email.com"></div>
+                    <div class="form-group"><label>Starting Price ($):</label><input type="number" id="inpPrice" required></div>
+                    <div class="form-group"><label>Main Image URL:</label><input type="text" id="inpImg" required></div>
+                    <div class="form-group"><label>Description:</label><textarea id="inpDesc" rows="4"></textarea></div>
                     <h3>Extra Images (Optional)</h3>
                     <div class="form-group"><input type="text" id="inpThumb1" placeholder="URL 1"></div>
                     <div class="form-group"><input type="text" id="inpThumb2" placeholder="URL 2"></div>
                     <div class="form-group"><input type="text" id="inpThumb3" placeholder="URL 3"></div>
                     <div class="form-group"><input type="text" id="inpThumb4" placeholder="URL 4"></div>
-
-                    <button type="submit" class="btn btn-save">Save Item to Inventory</button>
+                    <button type="submit" class="btn btn-save">Save Item</button>
                 </form>
             </div>
         </div>
@@ -138,7 +131,8 @@
                     </tr>
                 </thead>
                 <tbody id="historyTableBody">
-                    </tbody>
+                    <tr><td colspan="5" style="text-align:center; color:#999;">Sales history logic to be connected.</td></tr>
+                </tbody>
             </table>
         </div>
 
@@ -149,7 +143,7 @@
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getDatabase, ref, onValue, set, push, remove, update, child, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // --- PASTE KEYS HERE ---
+        // --- PASTE YOUR KEYS HERE ---
         const firebaseConfig = {
   apiKey: "AIzaSyCt0i8a7ZVRlNmSts9yM4uGwV7ghPU59rk",
   authDomain: "eastern-shore-auction.firebaseapp.com",
@@ -164,18 +158,15 @@
         const auth = getAuth(app);
         const db = getDatabase(app);
 
-        // --- 1. AUTH CHECK (Security) ---
+        // 1. AUTH CHECK
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                // Check if Admin
                 get(child(ref(db), `admins/${user.uid}`)).then((snapshot) => {
                     if (!snapshot.exists() || snapshot.val() !== true) {
-                        alert("Access Denied.");
-                        window.location.href = "index.html";
+                        alert("Access Denied."); window.location.href = "index.html";
                     } else {
-                        // Load Data
                         loadInventory();
-                        loadHistory();
+                        monitorActiveAuction(); // START MONITORING LIVE AUCTION
                     }
                 });
             } else {
@@ -183,12 +174,9 @@
             }
         });
 
-        // --- 2. VIEW SWITCHER ---
         window.switchView = function(viewName) {
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
             document.getElementById(viewName + 'View').classList.add('active');
-            
-            // Reset form if switching to Add
             if(viewName === 'add') {
                 document.querySelector('form').reset();
                 document.getElementById('editKey').value = "";
@@ -196,7 +184,7 @@
             }
         }
 
-        // --- 3. INVENTORY LOGIC ---
+        // 2. INVENTORY LOGIC
         function loadInventory() {
             const invRef = ref(db, 'inventory');
             onValue(invRef, (snapshot) => {
@@ -204,19 +192,24 @@
                 tbody.innerHTML = "";
                 const data = snapshot.val();
 
-                if(!data) { tbody.innerHTML = "<tr><td colspan='6'>No items in inventory.</td></tr>"; return; }
+                if(!data) { tbody.innerHTML = "<tr><td colspan='6'>No items.</td></tr>"; return; }
 
-                // Convert to array and sort by Lot #
                 const items = Object.entries(data).map(([key, val]) => ({ ...val, key }));
                 items.sort((a, b) => a.lot - b.lot);
 
                 items.forEach(item => {
                     const tr = document.createElement('tr');
+                    tr.id = `row-${item.key}`; // GIVE ROW AN ID FOR LIVE UPDATE
+                    tr.dataset.defaultPrice = item.start_price; // Store default price for revert
+
                     tr.innerHTML = `
                         <td><strong>#${item.lot}</strong></td>
-                        <td><img src="${item.image_url}" class="img-preview">${item.title}</td>
+                        <td class="item-cell">
+                            <img src="${item.image_url}" class="img-preview">
+                            <span class="item-title">${item.title}</span>
+                        </td>
                         <td>${item.seller_email || "N/A"}</td>
-                        <td>$${item.start_price}</td>
+                        <td class="price-cell">$${item.start_price}</td>
                         <td><span class="status-pill ${item.times_run > 0 ? 'status-run' : 'status-new'}">${item.times_run || 0} Times</span></td>
                         <td>
                             <button class="btn btn-queue" onclick="queueItem('${item.key}')">📢 Queue</button>
@@ -229,6 +222,51 @@
             });
         }
 
+        // 3. MONITOR LIVE AUCTION (THE NEW PART)
+        function monitorActiveAuction() {
+            const activeRef = ref(db, 'active_auction');
+            
+            onValue(activeRef, (snapshot) => {
+                const liveData = snapshot.val();
+
+                // Clear previous live indicators
+                document.querySelectorAll('.live-active-row').forEach(row => {
+                    row.classList.remove('live-active-row');
+                    // Remove badge
+                    const titleCell = row.querySelector('.item-title');
+                    const badge = row.querySelector('.live-badge');
+                    if(badge) badge.remove();
+                    // Reset Price
+                    const priceCell = row.querySelector('.price-cell');
+                    priceCell.innerHTML = "$" + row.dataset.defaultPrice;
+                });
+
+                // If auction is active and matches an item in inventory
+                if (liveData && liveData.inventory_key) {
+                    const row = document.getElementById(`row-${liveData.inventory_key}`);
+                    if (row) {
+                        // 1. Highlight Row
+                        row.classList.add('live-active-row');
+
+                        // 2. Add Badge
+                        const titleCell = row.querySelector('.item-title');
+                        if (!row.querySelector('.live-badge')) {
+                            titleCell.insertAdjacentHTML('afterbegin', '<span class="live-badge">LIVE</span>');
+                        }
+
+                        // 3. Show Real-time Price & Bidder
+                        const priceCell = row.querySelector('.price-cell');
+                        const bidder = liveData.high_bidder_name ? liveData.high_bidder_name : "No Bids";
+                        priceCell.innerHTML = `
+                            <span class="live-bid-info">$${liveData.current_bid.toLocaleString()}</span>
+                            <span class="live-bidder-name">High Bidder: ${bidder}</span>
+                        `;
+                    }
+                }
+            });
+        }
+
+        // --- CRUD & QUEUE FUNCTIONS (Same as before) ---
         window.saveItem = function() {
             const key = document.getElementById('editKey').value;
             const data = {
@@ -239,7 +277,7 @@
                 start_price: parseInt(document.getElementById('inpPrice').value),
                 image_url: document.getElementById('inpImg').value,
                 description: document.getElementById('inpDesc').value,
-                times_run: 0, // Default
+                times_run: 0,
                 images: {
                     thumb1: document.getElementById('inpThumb1').value,
                     thumb2: document.getElementById('inpThumb2').value,
@@ -249,26 +287,19 @@
             };
 
             if(key) {
-                // Update Existing
-                // Keep the old 'times_run' count if editing
                 get(ref(db, `inventory/${key}/times_run`)).then((snap) => {
                     data.times_run = snap.val() || 0;
                     update(ref(db, `inventory/${key}`), data);
-                    alert("Item Updated");
-                    switchView('inventory');
+                    alert("Item Updated"); switchView('inventory');
                 });
             } else {
-                // Create New
                 push(ref(db, 'inventory'), data);
-                alert("Item Added to Inventory");
-                switchView('inventory');
+                alert("Item Added"); switchView('inventory');
             }
         }
 
         window.deleteItem = function(key) {
-            if(confirm("Delete this item permanently?")) {
-                remove(ref(db, `inventory/${key}`));
-            }
+            if(confirm("Delete item?")) remove(ref(db, `inventory/${key}`));
         }
 
         window.editItem = function(key) {
@@ -282,65 +313,33 @@
                 document.getElementById('inpPrice').value = data.start_price;
                 document.getElementById('inpImg').value = data.image_url;
                 document.getElementById('inpDesc').value = data.description;
-                
                 if(data.images) {
                     document.getElementById('inpThumb1').value = data.images.thumb1 || "";
                     document.getElementById('inpThumb2').value = data.images.thumb2 || "";
                     document.getElementById('inpThumb3').value = data.images.thumb3 || "";
                     document.getElementById('inpThumb4').value = data.images.thumb4 || "";
                 }
-
                 document.getElementById('formTitle').innerText = "Edit Item";
                 switchView('add');
             });
         }
 
-        // --- 4. QUEUE TO LIVE BLOCK ---
         window.queueItem = function(key) {
-            if(!confirm("Put this item on the LIVE Auction Block right now? (This ends any current auction)")) return;
-
+            if(!confirm("Put this item on the LIVE Auction Block?")) return;
             get(ref(db, `inventory/${key}`)).then((snapshot) => {
                 const item = snapshot.val();
-                
-                // 1. Prepare data for Active Auction
                 const auctionData = {
-                    title: item.title,
-                    subtitle: item.subtitle,
-                    description: item.description,
-                    current_bid: item.start_price,
-                    image_url: item.image_url,
-                    end_time: Date.now() + (6 * 60 * 1000), // 6 Minutes from now
+                    title: item.title, subtitle: item.subtitle, description: item.description,
+                    current_bid: item.start_price, image_url: item.image_url,
+                    end_time: Date.now() + (6 * 60 * 1000),
                     images: item.images,
-                    
-                    // Reset bidding data
-                    high_bidder_max: 0,
-                    high_bidder_name: "",
-                    high_bidder_uid: "",
-                    bid_history: null,
-                    
-                    // Link back to inventory for history tracking
-                    inventory_key: key,
-                    seller_email: item.seller_email
+                    high_bidder_max: 0, high_bidder_name: "", high_bidder_uid: "", bid_history: null,
+                    inventory_key: key, seller_email: item.seller_email
                 };
-
-                // 2. Push to Active Auction
                 set(ref(db, 'active_auction'), auctionData);
-
-                // 3. Increment "Times Run" in Inventory
-                update(ref(db, `inventory/${key}`), {
-                    times_run: (item.times_run || 0) + 1
-                });
-
-                alert("Item is LIVE on the auction block!");
+                update(ref(db, `inventory/${key}`), { times_run: (item.times_run || 0) + 1 });
+                alert("Item is LIVE!");
             });
-        }
-
-        // --- 5. SALES HISTORY ---
-        function loadHistory() {
-            // NOTE: In a real app, we would write a "winner" entry to a 'sales' node when auction ends.
-            // For now, this is a placeholder where you would list completed sales.
-            const tbody = document.getElementById('historyTableBody');
-            tbody.innerHTML = "<tr><td colspan='5' style='text-align:center; color:#999;'>History tracking requires backend trigger logic. Currently viewing live data only.</td></tr>";
         }
     </script>
 </body>
