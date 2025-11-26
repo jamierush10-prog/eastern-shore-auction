@@ -17,8 +17,15 @@
         .schedule-title { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; color: #6b7280; font-weight: bold; }
         .schedule-time { font-size: 1.8rem; font-weight: 800; margin: 10px 0; }
         
-        /* NEW ANNOUNCEMENT STYLE */
-        .announcement-text { font-size: 1rem; color: #dc2626; font-weight: bold; margin-bottom: 15px; }
+        /* ANNOUNCEMENT STYLE (UPDATED) */
+        .announcement-text { 
+            font-size: 1rem; 
+            color: #dc2626; 
+            margin-bottom: 15px; 
+            white-space: pre-wrap; /* Keeps line breaks */
+            line-height: 1.5;
+        }
+        .announcement-text strong { font-weight: 900; text-decoration: underline; }
 
         .enter-btn { cursor: pointer; display: inline-block; background-color: var(--primary-color); color: white; border: none; padding: 15px 40px; border-radius: 50px; font-weight: bold; font-size: 1.1rem; margin-top: 20px; transition: transform 0.2s, background 0.2s; box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3); }
         .enter-btn:hover { background-color: #1d4ed8; transform: translateY(-2px); }
@@ -143,7 +150,16 @@
         onValue(ref(db, 'settings'), (snapshot) => {
             const data = snapshot.val() || {};
             document.getElementById('scheduleDisplay').innerText = data.schedule || "Schedule TBA";
-            document.getElementById('announcementDisplay').innerText = data.announcement || "";
+            
+            // FORMAT ANNOUNCEMENT
+            let text = data.announcement || "";
+            if (text) {
+                // Basic sanitizer to prevent XSS
+                text = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                // Convert **bold** to <strong>bold</strong>
+                text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            }
+            document.getElementById('announcementDisplay').innerHTML = text;
         });
 
         // --- 2. LOAD FEATURED ITEMS ---
