@@ -64,6 +64,9 @@
         
         #userMaxBidDisplay { margin-top: 10px; font-size: 0.9rem; color: var(--primary-color); text-align: center; display: none; background: #dbeafe; padding: 8px; border-radius: 4px; }
         .user-badge { background: #e0f2fe; color: #0369a1; padding: 10px; border-radius: 6px; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border: 1px solid #bae6fd; }
+        
+        /* WINNING STATUS */
+        .winning-bid-status { background-color: #dcfce7 !important; color: #166534 !important; border-color: #86efac !important; }
 
         /* CHAT SECTION */
         .chat-section { margin-top: 30px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 15px; }
@@ -305,11 +308,16 @@
                 updateTimer(data.end_time);
                 renderBidHistory(data.bid_history);
 
+                // User Winning Status Logic
+                const userMaxDisplay = document.getElementById('userMaxBidDisplay');
                 if (currentUser && data.high_bidder_uid === currentUser.uid) {
-                    document.getElementById('userMaxBidDisplay').style.display = 'block';
-                    document.getElementById('userMaxVal').innerText = "$" + data.high_bidder_max.toLocaleString();
+                    userMaxDisplay.style.display = 'block';
+                    userMaxDisplay.classList.add('winning-bid-status');
+                    userMaxDisplay.innerHTML = `🎉 <strong>You are the highest bidder!</strong> <br>(Your max bid: $${data.high_bidder_max.toLocaleString()})`;
                 } else {
-                    document.getElementById('userMaxBidDisplay').style.display = 'none';
+                    userMaxDisplay.style.display = 'none';
+                    userMaxDisplay.classList.remove('winning-bid-status');
+                    userMaxDisplay.innerHTML = '';
                 }
 
             } else {
@@ -432,9 +440,16 @@
                 const currentLeaderUID = data.high_bidder_uid || "";
                 const currentPrice = data.current_bid;
 
+                // --- ANTI-SNIPING LOGIC (Extend time if < 30s) ---
+                const now = Date.now();
+                let newEndTime = data.end_time;
+                if ((data.end_time - now) < 30000) {
+                    newEndTime = now + 30000; // Reset timer to 30 seconds
+                }
+
                 if (currentUser.uid === currentLeaderUID) {
                     if (myMaxBid > currentLeaderMax) {
-                        update(dbRef, { high_bidder_max: myMaxBid });
+                        update(dbRef, { high_bidder_max: myMaxBid, end_time: newEndTime });
                         alert("Your max bid has been increased to $" + myMaxBid);
                     } else {
                         alert("You are already the highest bidder with a max of $" + currentLeaderMax);
@@ -445,14 +460,27 @@
                 if (myMaxBid > currentLeaderMax) {
                     let newPrice = (currentLeaderMax > 0) ? (currentLeaderMax + 1) : (currentPrice + 1);
                     if(newPrice < currentPrice + 1) newPrice = currentPrice + 1;
-                    update(dbRef, { current_bid: newPrice, high_bidder_max: myMaxBid, high_bidder_uid: currentUser.uid, high_bidder_name: currentUser.displayName });
+                    
+                    update(dbRef, { 
+                        current_bid: newPrice, 
+                        high_bidder_max: myMaxBid, 
+                        high_bidder_uid: currentUser.uid, 
+                        high_bidder_name: currentUser.displayName,
+                        end_time: newEndTime // EXTEND TIME
+                    });
+
                     const historyRef = ref(db, auctionId + '/bid_history');
                     push(historyRef, { name: currentUser.displayName, amount: newPrice, timestamp: Date.now() });
                     alert("You are now the highest bidder!");
                 } else {
                     let newPrice = myMaxBid + 1;
                     if (myMaxBid === currentLeaderMax) newPrice = myMaxBid;
-                    update(dbRef, { current_bid: newPrice });
+                    
+                    update(dbRef, { 
+                        current_bid: newPrice,
+                        end_time: newEndTime // EXTEND TIME
+                    });
+
                     const historyRef = ref(db, auctionId + '/bid_history');
                     push(historyRef, { name: currentUser.displayName, amount: myMaxBid, timestamp: Date.now() });
                     push(historyRef, { name: data.high_bidder_name, amount: newPrice, timestamp: Date.now() + 1 });
