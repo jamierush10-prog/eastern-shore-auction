@@ -240,8 +240,6 @@
         window.switchView = function(viewName) {
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
             document.getElementById(viewName + 'View').classList.add('active');
-            
-            // Form Reset Logic
             if(viewName === 'add') {
                 if(!document.getElementById('editKey').value) { resetForm(); }
             }
@@ -264,8 +262,16 @@
                 const items = Object.values(data).sort((a, b) => b.date - a.date);
                 items.forEach(item => {
                     const dateStr = new Date(item.date).toLocaleDateString();
+                    const lotNum = item.lot || "Old";
                     const tr = document.createElement('tr');
-                    tr.innerHTML = `<td><strong>#${item.lot || "?"}</strong></td><td>${item.item_title}</td><td style="color:#16a34a; font-weight:bold;">$${item.final_price}</td><td>${item.winner_name}<br><small>${item.winner_email}</small></td><td>${item.seller_name || "N/A"}</td><td>${dateStr}</td>`;
+                    tr.innerHTML = `
+                        <td><strong>#${lotNum}</strong></td>
+                        <td>${item.item_title}</td>
+                        <td style="color:#16a34a; font-weight:bold;">$${item.final_price}</td>
+                        <td class="contact-info"><span class="contact-label">Name:</span> ${item.winner_name}<br><span class="contact-label">Email:</span> ${item.winner_email}</td>
+                        <td class="contact-info">${item.seller_name || "N/A"}</td>
+                        <td>${dateStr}</td>
+                    `;
                     tbody.appendChild(tr);
                 });
             });
@@ -286,6 +292,7 @@
                     tr.id = `row-${item.key}`; 
                     tr.dataset.defaultPrice = item.start_price;
                     const isChecked = item.is_featured ? 'checked' : '';
+                    
                     let statusDisplay = "";
                     if(item.status_label && item.status_label.includes("SOLD")) { statusDisplay = `<span class="text-sold">${item.status_label}</span>`; } 
                     else if(item.status_label && item.status_label.includes("PASSED")) { statusDisplay = `<span class="text-passed">${item.status_label}</span>`; } 
@@ -329,7 +336,7 @@
         }
         window.approveUser = function(uid) { if(confirm("Approve this user?")) update(ref(db, `users/${uid}`), { is_approved: true }); }
 
-        // --- LIVE MONITOR ---
+        // --- MONITOR ---
         let activeAuctionData = null;
         function monitorActiveAuction() {
             const activeRef = ref(db, 'active_auction');
@@ -384,7 +391,7 @@
                 lot: parseInt(document.getElementById('inpLot').value),
                 title: document.getElementById('inpTitle').value,
                 subtitle: document.getElementById('inpSub').value,
-                seller_name: document.getElementById('inpSeller').value, // Name saved here
+                seller_name: document.getElementById('inpSeller').value,
                 start_price: parseInt(document.getElementById('inpPrice').value),
                 reserve_price: parseInt(document.getElementById('inpReserve').value) || 0,
                 image_url: document.getElementById('inpImg').value,
@@ -404,7 +411,7 @@
         window.deleteItem = function(key) { if(confirm("Delete item?")) remove(ref(db, `inventory/${key}`)); }
         
         window.editItem = function(key) {
-            resetForm(); // Clear first
+            resetForm(); 
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
             document.getElementById('addView').classList.add('active'); document.getElementById('formTitle').innerText = "Edit Item";
             get(ref(db, `inventory/${key}`)).then((snapshot) => {
@@ -413,7 +420,7 @@
                 document.getElementById('inpLot').value = data.lot;
                 document.getElementById('inpTitle').value = data.title;
                 document.getElementById('inpSub').value = data.subtitle;
-                document.getElementById('inpSeller').value = data.seller_name; // Load Name
+                document.getElementById('inpSeller').value = data.seller_name;
                 document.getElementById('inpPrice').value = data.start_price;
                 document.getElementById('inpReserve').value = data.reserve_price || "";
                 document.getElementById('inpImg').value = data.image_url;
@@ -434,9 +441,12 @@
                     const currentAuction = activeSnap.val();
                     const startNew = () => {
                         const auctionData = {
-                            lot: newItem.lot, title: newItem.title, subtitle: newItem.subtitle, description: newItem.description,
-                            current_bid: newItem.start_price, image_url: newItem.image_url, reserve_price: newItem.reserve_price || 0,
-                            end_time: Date.now() + (6 * 60 * 1000), images: newItem.images,
+                            lot: newItem.lot, 
+                            title: newItem.title, subtitle: newItem.subtitle, description: newItem.description,
+                            current_bid: newItem.start_price, image_url: newItem.image_url,
+                            reserve_price: newItem.reserve_price || 0,
+                            end_time: Date.now() + (6 * 60 * 1000),
+                            images: newItem.images,
                             high_bidder_max: 0, high_bidder_name: "", high_bidder_uid: "", bid_history: null,
                             inventory_key: newKey, seller_name: newItem.seller_name
                         };
@@ -458,21 +468,24 @@
                         if (isSold) {
                             get(ref(db, `users/${currentAuction.high_bidder_uid}`)).then((userSnap) => {
                                 const winnerEmail = userSnap.exists() ? userSnap.val().email : "Unknown";
-                                push(ref(db, 'sales_history'), {
-                                    lot: currentAuction.lot,
-                                    item_title: currentAuction.title,
-                                    final_price: finalBid,
-                                    winner_name: currentAuction.high_bidder_name,
-                                    winner_email: winnerEmail,
-                                    seller_name: currentAuction.seller_name, 
-                                    date: Date.now()
-                                });
-                                startNew();
-                            }).catch(() => { startNew(); });
+                                saveHistoryRecord(currentAuction, finalBid, winnerEmail, startNew);
+                            }).catch(() => { saveHistoryRecord(currentAuction, finalBid, "Error fetching email", startNew); });
                         } else { startNew(); }
                     } else { startNew(); }
                 });
             });
+        }
+
+        function saveHistoryRecord(auction, price, email, callback) {
+            push(ref(db, 'sales_history'), {
+                lot: auction.lot || "?",
+                item_title: auction.title,
+                final_price: price,
+                winner_name: auction.high_bidder_name || "Unknown",
+                winner_email: email,
+                seller_name: auction.seller_name || "N/A",
+                date: Date.now()
+            }).then(() => { callback(); });
         }
     </script>
 </body>
