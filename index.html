@@ -11,20 +11,20 @@
         
         .brand-font { font-family: "Georgia", serif; }
         
-        /* Hero Section Background */
+        /* Hero Section */
         .hero-bg {
             background-color: var(--header-bg);
             color: white;
-            padding: 60px 20px 100px; /* Added extra padding bottom for overlap */
+            padding: 60px 20px 100px;
             text-align: center;
             position: relative;
         }
 
-        /* The main white card overlapping the hero */
+        /* Main Card */
         .main-card {
             background: white;
             max-width: 800px;
-            margin: -80px auto 40px; /* Negative top margin creates overlap */
+            margin: -80px auto 40px;
             padding: 40px;
             border-radius: 12px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
@@ -42,12 +42,13 @@
             font-size: 1.2rem;
             transition: transform 0.2s, background-color 0.2s;
             display: inline-block;
-            text-decoration: none;
+            border: none;
+            cursor: pointer;
             margin-top: 20px;
         }
         .enter-btn:hover { transform: scale(1.05); background-color: #1d4ed8; }
 
-        /* Rules Button & Modal */
+        /* Rules Button */
         .info-btn {
             background-color: transparent;
             border: 2px solid #d1d5db;
@@ -60,12 +61,25 @@
         }
         .info-btn:hover { border-color: var(--primary-color); color: var(--primary-color); }
 
+        /* Modals */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 30px; border-radius: 12px; width: 90%; max-width: 600px; max-height: 80vh; overflow-y: auto; position: relative; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
         .close-modal-btn { position: absolute; top: 15px; right: 20px; font-size: 1.8rem; line-height: 1; cursor: pointer; color: #9ca3af; }
         .close-modal-btn:hover { color: #374151; }
+        
+        /* Auth Specific Styles */
+        .auth-content { max-width: 400px; }
+        .tabs { display: flex; margin-bottom: 20px; border-bottom: 2px solid #e5e7eb; }
+        .tab { flex: 1; padding: 10px; text-align: center; cursor: pointer; font-weight: bold; color: #6b7280; transition: color 0.2s; }
+        .tab.active { color: var(--primary-color); border-bottom: 2px solid var(--primary-color); }
+        .form-group { margin-bottom: 15px; text-align: left; }
+        .form-group input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+        .action-btn { width: 100%; padding: 12px; background: var(--header-bg); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1rem; }
+        .error-msg { color: #dc2626; font-size: 0.9rem; margin-bottom: 10px; display: none; text-align: center; background: #fee2e2; padding: 8px; border-radius: 4px; }
+
+        /* Rules Specific Styles */
         .rules-section { margin-bottom: 25px; text-align: left; }
-        .rules-section h3 { color: var(--primary-color); margin-bottom: 10px; font-size: 1.2rem; font-weight: bold; display: flex; align-items: center; gap: 8px;}
+        .rules-section h3 { color: var(--primary-color); margin-bottom: 10px; font-size: 1.2rem; font-weight: bold; }
         .rules-section ul { padding-left: 20px; line-height: 1.6; color: #4b5563; list-style-type: disc; }
         .rules-section li { margin-bottom: 8px; }
     </style>
@@ -87,7 +101,7 @@
             Log in or Create an Account to bid.
         </p>
 
-        <a href="auction.html" class="enter-btn">Enter Auction Room</a>
+        <button onclick="openAuthModal()" class="enter-btn">Enter Auction Room</button>
     </div>
 
     <div class="max-w-6xl mx-auto px-4 py-8">
@@ -105,40 +119,68 @@
         <div class="modal-content">
             <span class="close-modal-btn" onclick="closeRulesModal(event)">&times;</span>
             <h2 class="brand-font" style="text-align:center; margin-top:0; margin-bottom: 20px; font-size: 1.8rem; font-weight: bold;">How It Works & Rules</h2>
-
             <div class="rules-section">
                 <h3>⏰ The Live Auction Process</h3>
                 <ul>
-                    <li><strong>One Item at a Time:</strong> Unlike silent auctions, we sell one item live on the "block." You must be in the Live Auction Room to participate.</li>
-                    <li><strong>The Going, Going, Gone Timer:</strong> Every new bid resets the countdown timer (usually to 30 seconds). The item is not sold until the timer hits zero without any new bids.</li>
-                    <li><strong>Bidding:</strong> You can place quick incremental bids or set a <strong>Max Proxy Bid</strong>. The system will automatically bid for you in small increments up to your maximum amount to keep you in the lead.</li>
+                    <li><strong>One Item at a Time:</strong> We sell one item live on the "block."</li>
+                    <li><strong>The Timer:</strong> Every new bid resets the countdown. Item sells when timer hits zero.</li>
+                    <li><strong>Proxy Bidding:</strong> You can set a max bid, and the system will bid for you automatically.</li>
                 </ul>
             </div>
-
             <div class="rules-section">
-                <h3>📋 Participation Rules</h3>
+                <h3>📋 Rules</h3>
                 <ul>
-                    <li><strong>Registration:</strong> You must have a registered account to view the live auction and place bids.</li>
-                    <li><strong>Bids are Binding:</strong> Placing a bid is a binding contract to purchase the item if you win.</li>
-                    <li><strong>Payment & Pickup:</strong> Winning bidders are expected to arrange payment and local pickup promptly after the auction event concludes.</li>
-                </ul>
-            </div>
-
-            <div class="rules-section">
-                <h3>📦 Selling With Us</h3>
-                <ul>
-                    <li>Registered users can submit items for consideration via their "My Account" page.</li>
-                    <li>All submissions are reviewed by our staff. If approved, they will be scheduled for an upcoming live event.</li>
+                    <li><strong>Binding Bids:</strong> Placing a bid is a contract to buy.</li>
+                    <li><strong>Local Pickup:</strong> Winning bidders must arrange local pickup.</li>
                 </ul>
             </div>
         </div>
     </div>
 
+    <div id="authModal" class="modal-overlay">
+        <div class="modal-content auth-content">
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('login')">Log In</div>
+                <div class="tab" onclick="switchTab('register')">Sign Up</div>
+            </div>
+            <div id="errorMsg" class="error-msg"></div>
+            
+            <form id="loginForm" onsubmit="event.preventDefault(); handleLogin();">
+                <div class="form-group"><input type="email" id="loginEmail" placeholder="Email Address" required></div>
+                <div class="form-group"><input type="password" id="loginPass" placeholder="Password" required></div>
+                <button type="submit" class="action-btn">Log In</button>
+            </form>
+
+            <form id="registerForm" style="display:none;" onsubmit="event.preventDefault(); handleRegister();">
+                <div class="form-group"><input type="text" id="regName" placeholder="Create Username" required></div>
+                <div class="form-group"><input type="email" id="regEmail" placeholder="Email Address" required></div>
+                <div class="form-group"><input type="password" id="regPass" placeholder="Password (6+ chars)" required></div>
+                
+                <div class="form-group" style="background: #f9fafb; padding: 10px; border-radius: 6px;">
+                    <label style="display:block; font-weight:bold; font-size:0.9rem; margin-bottom:5px;">Are you local to Daphne/Fairhope?</label>
+                    <div style="display:flex; gap:15px;">
+                        <label><input type="radio" name="isLocal" value="yes" checked onchange="toggleLocalFields(true)"> Yes</label>
+                        <label><input type="radio" name="isLocal" value="no" onchange="toggleLocalFields(false)"> No</label>
+                    </div>
+                </div>
+
+                <div id="nonLocalWarning" style="display:none; font-size:0.85rem; color:#9a3412; background:#fff7ed; padding:10px; border-radius:6px; margin-bottom:10px;">
+                    <strong>Note:</strong> Non-local accounts require Admin approval before bidding.
+                    <input type="text" id="pickupPlan" placeholder="Can you pick up locally?" style="margin-top:5px;">
+                </div>
+
+                <button type="submit" class="action-btn">Create Account</button>
+            </form>
+            <div class="close-modal-btn" style="top: 10px; right: 15px;" onclick="document.getElementById('authModal').style.display='none'">&times;</div>
+        </div>
+    </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, onValue, query, orderByChild, limitToLast } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getDatabase, ref, onValue, query, orderByChild, limitToLast, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
+        // --- PASTE KEYS HERE ---
         const firebaseConfig = {
   apiKey: "AIzaSyCt0i8a7ZVRlNmSts9yM4uGwV7ghPU59rk",
   authDomain: "eastern-shore-auction.firebaseapp.com",
@@ -150,40 +192,28 @@
 };
 
         const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
         const db = getDatabase(app);
 
         // 1. Load Schedule
-        const scheduleRef = ref(db, 'auction_schedule');
-        onValue(scheduleRef, (snapshot) => {
+        onValue(ref(db, 'auction_schedule'), (snapshot) => {
             const data = snapshot.val();
             document.getElementById('scheduleDisplay').innerText = data || "Schedule TBA";
         });
 
         // 2. Load Featured Items
-        const inventoryRef = ref(db, 'inventory');
-        // Query for items where is_featured is true
-        const featuredQuery = query(inventoryRef, orderByChild('is_featured'), limitToLast(50));
-
+        const featuredQuery = query(ref(db, 'inventory'), orderByChild('is_featured'), limitToLast(50));
         onValue(featuredQuery, (snapshot) => {
             const grid = document.getElementById('featuredGrid');
             grid.innerHTML = "";
             const data = snapshot.val();
 
-            if (!data) {
-                grid.innerHTML = '<div class="col-span-3 text-center text-gray-500 py-10">No upcoming items scheduled yet.</div>';
-                return;
-            }
-
-            // Filter client-side because Firebase query can return nulls for false values if not careful
-            const featuredItems = Object.values(data).filter(item => item.is_featured === true && item.times_run === 0);
-
-            if (featuredItems.length === 0) {
-                grid.innerHTML = '<div class="col-span-3 text-center text-gray-500 py-10">No upcoming items scheduled yet. Check back soon!</div>';
-                return;
-            }
+            if (!data) { grid.innerHTML = '<div class="col-span-3 text-center text-gray-500 py-10">No upcoming items scheduled.</div>'; return; }
             
-            // Sort by Lot number
+            const featuredItems = Object.values(data).filter(item => item.is_featured === true && item.times_run === 0);
             featuredItems.sort((a, b) => a.lot - b.lot);
+
+            if (featuredItems.length === 0) { grid.innerHTML = '<div class="col-span-3 text-center text-gray-500 py-10">No upcoming items scheduled.</div>'; return; }
 
             featuredItems.forEach(item => {
                 const card = document.createElement('div');
@@ -191,9 +221,7 @@
                 card.innerHTML = `
                     <div class="h-48 bg-gray-200 relative">
                         <img src="${item.image_url}" alt="${item.title}" class="w-full h-full object-cover">
-                        <div class="absolute top-0 right-0 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-bl-lg uppercase tracking-wider">
-                            UPCOMING
-                        </div>
+                        <div class="absolute top-0 right-0 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-bl-lg uppercase tracking-wider">UPCOMING</div>
                     </div>
                     <div class="p-5">
                         <h3 class="font-bold text-xl mb-1 text-gray-800 truncate">${item.title}</h3>
@@ -205,18 +233,90 @@
             });
         });
 
-        // --- MODAL LOGIC ---
+        // --- AUTH LOGIC ---
+        window.openAuthModal = function() {
+            if(auth.currentUser) { window.location.href = "auction.html"; }
+            else { document.getElementById('authModal').style.display = 'flex'; }
+        }
+
+        window.toggleLocalFields = function(isLocal) {
+            const div = document.getElementById('nonLocalWarning');
+            const input = document.getElementById('pickupPlan');
+            if(isLocal) { div.style.display = 'none'; input.removeAttribute('required'); } 
+            else { div.style.display = 'block'; input.setAttribute('required', 'true'); }
+        }
+
+        window.switchTab = function(mode) {
+            document.getElementById('errorMsg').style.display = 'none';
+            if(mode === 'login') {
+                document.getElementById('loginForm').style.display = 'block';
+                document.getElementById('registerForm').style.display = 'none';
+                document.querySelectorAll('.tab')[0].classList.add('active');
+                document.querySelectorAll('.tab')[1].classList.remove('active');
+            } else {
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('registerForm').style.display = 'block';
+                document.querySelectorAll('.tab')[0].classList.remove('active');
+                document.querySelectorAll('.tab')[1].classList.add('active');
+            }
+        }
+
+        window.handleLogin = function() {
+            const email = document.getElementById('loginEmail').value;
+            const pass = document.getElementById('loginPass').value;
+            const btn = document.querySelector('#loginForm button');
+            btn.disabled = true; btn.innerText = "Verifying...";
+            signInWithEmailAndPassword(auth, email, pass)
+            .then(() => { window.location.href = "auction.html"; })
+            .catch((error) => { showError(error.message); btn.disabled = false; btn.innerText = "Log In"; });
+        }
+
+        window.handleRegister = function() {
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+            const pass = document.getElementById('regPass').value;
+            const isLocal = document.querySelector('input[name="isLocal"]:checked').value === "yes";
+            const pickupPlan = document.getElementById('pickupPlan').value;
+            const btn = document.querySelector('#registerForm button');
+
+            if(pass.length < 6) { showError("Password must be at least 6 characters"); return; }
+            btn.disabled = true; btn.innerText = "Creating Account...";
+
+            createUserWithEmailAndPassword(auth, email, pass)
+            .then((userCredential) => {
+                const user = userCredential.user;
+                updateProfile(user, { displayName: name })
+                .then(() => {
+                    set(ref(db, 'users/' + user.uid), {
+                        name: name,
+                        email: email,
+                        is_local: isLocal,
+                        pickup_plan: isLocal ? "Local" : pickupPlan,
+                        is_approved: isLocal ? true : false,
+                        joined_at: Date.now()
+                    }).then(() => { window.location.href = "auction.html"; });
+                });
+            })
+            .catch((error) => { showError(error.message); btn.disabled = false; btn.innerText = "Create Account"; });
+        }
+
+        function showError(msg) {
+            const errDiv = document.getElementById('errorMsg');
+            errDiv.style.display = 'block';
+            let cleanMsg = msg.replace("Firebase: ", "").replace("auth/", "").replace(/-/g, " ");
+            cleanMsg = cleanMsg.charAt(0).toUpperCase() + cleanMsg.slice(1);
+            errDiv.innerText = cleanMsg;
+        }
+
+        // --- MODAL UI LOGIC ---
         window.openRulesModal = function() {
             document.getElementById('rulesModal').style.display = 'flex';
-            // Prevent body scrolling when modal is open
             document.body.style.overflow = 'hidden';
         }
 
         window.closeRulesModal = function(event) {
-            // Close if clicking the 'X' or the background overlay
             if (!event || event.target === document.getElementById('rulesModal') || event.target.classList.contains('close-modal-btn')) {
                 document.getElementById('rulesModal').style.display = 'none';
-                // Re-enable body scrolling
                 document.body.style.overflow = 'auto';
             }
         }
