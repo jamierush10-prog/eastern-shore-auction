@@ -46,6 +46,7 @@
         .status-run { background: #f3f4f6; color: #374151; }
         .status-approved { background: #dcfce7; color: #166534; }
         .status-pending { background: #fee2e2; color: #991b1b; }
+        .status-banned { background: #fef2f2; color: #991b1b; text-decoration: line-through; }
 
         .text-sold { color: #b45309; font-weight: bold; }
         .text-passed { color: #6b7280; font-style: italic; }
@@ -74,6 +75,7 @@
         .btn-queue { background: #16a34a; }
         .btn-edit { background: #2563eb; }
         .btn-delete { background: #dc2626; }
+        .btn-ban { background: #991b1b; } /* Dark Red for Ban */
         .btn-save { background: #111827; width: 100%; padding: 12px; margin-top: 10px; }
         .btn-stop { background: #dc2626; padding: 10px 20px; }
         .btn-manual { background: #4b5563; margin-bottom: 15px; }
@@ -134,8 +136,7 @@
                     <tr>
                         <th>Name</th>
                         <th>Email</th>
-                        <th>Local?</th>
-                        <th>Pickup Plan</th>
+                        <th>Phone</th> <th>Local?</th>
                         <th>Status</th>
                         <th>Action</th>
                     </tr>
@@ -245,6 +246,7 @@
             }
         });
 
+        // --- SCHEDULE ---
         function loadSchedule() {
             get(ref(db, 'auction_schedule')).then((snapshot) => {
                 if(snapshot.exists()) document.getElementById('scheduleInput').value = snapshot.val();
@@ -255,6 +257,7 @@
             set(ref(db, 'auction_schedule'), newText).then(() => { alert("Schedule updated!"); });
         }
 
+        // --- NAVIGATION ---
         window.switchView = function(viewName) {
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
             document.getElementById(viewName + 'View').classList.add('active');
@@ -283,7 +286,7 @@
             });
         }
 
-        // --- SALES HISTORY (WITH LOOKUP) ---
+        // --- SALES HISTORY ---
         function loadHistory() {
             const refHist = ref(db, 'sales_history');
             const refUsers = ref(db, 'users');
@@ -306,7 +309,6 @@
                         const dateStr = new Date(item.date).toLocaleDateString();
                         const lotNum = item.lot || "Old";
 
-                        // Lookup Logic
                         const buyerProfile = allUsers.find(u => u.email && u.email.toLowerCase() === (item.winner_email || "").toLowerCase());
                         const buyerPhone = buyerProfile && buyerProfile.phone ? buyerProfile.phone : "No Phone Listed";
                         const buyerName = buyerProfile ? buyerProfile.name : item.winner_name;
@@ -338,6 +340,7 @@
             });
         }
 
+        // --- INVENTORY ---
         function loadInventory() {
             const invRef = ref(db, 'inventory');
             onValue(invRef, (snapshot) => {
@@ -378,6 +381,7 @@
 
         window.toggleFeatured = function(key, status) { update(ref(db, `inventory/${key}`), { is_featured: status }); }
 
+        // --- USER MANAGEMENT (UPDATED) ---
         function loadUsers() {
             const userRef = ref(db, 'users');
             onValue(userRef, (snapshot) => {
@@ -387,14 +391,48 @@
                 if(!data) { tbody.innerHTML = "<tr><td colspan='6'>No registered users.</td></tr>"; return; }
                 Object.entries(data).forEach(([key, user]) => {
                     const isApproved = user.is_approved === true;
+                    const phoneDisplay = user.phone ? user.phone : '<span style="color:#9ca3af">N/A</span>';
+                    const localDisplay = user.is_local ? 'Yes' : 'No';
+                    
+                    let statusPill = '';
+                    let actionBtn = '';
+
+                    if(isApproved) {
+                        statusPill = '<span class="status-pill status-approved">Active</span>';
+                        actionBtn = `<button class="btn btn-ban" onclick="banUser('${key}')">Ban</button>`;
+                    } else {
+                        // If false, it could be pending or banned. For now, assume pending approval or ban state
+                        statusPill = '<span class="status-pill status-pending">Pending/Banned</span>';
+                        actionBtn = `<button class="btn btn-queue" onclick="approveUser('${key}')">Approve</button>`;
+                    }
+
                     const tr = document.createElement('tr');
-                    tr.innerHTML = `<td><strong>${user.name}</strong></td><td>${user.email}</td><td>${user.is_local ? 'Yes' : 'No'}</td><td>${user.pickup_plan || "N/A"}</td><td><span class="status-pill ${isApproved ? 'status-approved' : 'status-pending'}">${isApproved ? 'Active' : 'Pending'}</span></td><td>${!isApproved ? `<button class="btn btn-queue" onclick="approveUser('${key}')">Approve</button>` : ''}</td>`;
+                    tr.innerHTML = `
+                        <td><strong>${user.name}</strong></td>
+                        <td>${user.email}</td>
+                        <td>${phoneDisplay}</td>
+                        <td>${localDisplay}</td>
+                        <td>${statusPill}</td>
+                        <td>${actionBtn}</td>
+                    `;
                     tbody.appendChild(tr);
                 });
             });
         }
-        window.approveUser = function(uid) { if(confirm("Approve this user?")) update(ref(db, `users/${uid}`), { is_approved: true }); }
 
+        window.approveUser = function(uid) {
+            if(confirm("Approve this user to bid?")) {
+                update(ref(db, `users/${uid}`), { is_approved: true });
+            }
+        }
+
+        window.banUser = function(uid) {
+            if(confirm("BAN this user? They will be unable to place bids.")) {
+                update(ref(db, `users/${uid}`), { is_approved: false });
+            }
+        }
+
+        // --- MONITOR ---
         let activeAuctionData = null;
         function monitorActiveAuction() {
             const activeRef = ref(db, 'active_auction');
@@ -442,6 +480,7 @@
             }
         }
 
+        // --- CRUD & QUEUE ---
         window.saveItem = function() {
             const key = document.getElementById('editKey').value;
             const data = {

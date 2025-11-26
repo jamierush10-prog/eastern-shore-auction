@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Account | Eastern Shore Auction House</title>
     <style>
-        :root { --primary-color: #2563eb; --header-bg: #111827; --text-color: #1f2937; --bg-color: #f3f4f6; }
+        :root { --primary-color: #2563eb; --header-bg: #111827; --text-color: #1f2937; --bg-color: #f3f4f6; --success-color: #16a34a; --danger-color: #dc2626; }
         body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg-color); color: var(--text-color); margin: 0; }
         
         /* HEADER */
@@ -17,30 +17,40 @@
         .container { max-width: 1000px; margin: 30px auto; padding: 20px; }
 
         /* PROFILE CARD */
-        .profile-card { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 30px; }
-        .section-title { border-bottom: 2px solid #e5e7eb; padding-bottom: 10px; margin-bottom: 20px; font-size: 1.5rem; font-weight: bold; }
+        .card { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 30px; }
+        .section-title { border-bottom: 2px solid #e5e7eb; padding-bottom: 10px; margin-bottom: 20px; font-size: 1.5rem; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
         
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-size: 0.9rem; font-weight: bold; margin-bottom: 5px; color: #4b5563; }
-        .form-group input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
         .form-group input:disabled { background: #f3f4f6; color: #6b7280; cursor: not-allowed; }
 
         .btn { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; color: white; }
         .btn-save { background: var(--primary-color); }
         .btn-reset { background: #4b5563; margin-left: 10px; }
+        .btn-list { background: var(--primary-color); font-size: 1rem; }
+        .btn-cancel { background: var(--danger-color); padding: 5px 10px; font-size: 0.8rem; }
 
-        /* LISTS SECTION */
-        .lists-container { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-        .list-box { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .list-header { font-size: 1.2rem; font-weight: bold; margin-bottom: 15px; color: var(--primary-color); }
+        /* TABLES */
+        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; margin-top: 10px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e5e7eb; }
+        th { color: #6b7280; font-size: 0.8rem; text-transform: uppercase; background: #f9fafb; }
         
-        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #e5e7eb; }
-        th { color: #6b7280; font-size: 0.8rem; text-transform: uppercase; }
+        /* STATUS BADGES */
+        .status-badge { padding: 4px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; }
+        .st-review { background: #fef3c7; color: #92400e; } /* Yellow */
+        .st-approved { background: #dbeafe; color: #1e40af; } /* Blue */
+        .st-scheduled { background: #d1fae5; color: #065f46; } /* Green */
+        .st-sold { background: #111827; color: #fff; } /* Black */
+        .st-inactive { background: #f3f4f6; color: #9ca3af; text-decoration: line-through; } /* Gray */
+
+        /* MODAL */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
 
         @media (max-width: 768px) {
-            .form-grid, .lists-container { grid-template-columns: 1fr; }
+            .form-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -56,8 +66,11 @@
 
     <div class="container">
         
-        <div class="profile-card">
-            <div class="section-title">Account Details</div>
+        <div class="card">
+            <div class="section-title">
+                Account Details
+                <button class="btn btn-list" onclick="openListingModal()">+ List an Item</button>
+            </div>
             <div class="form-grid">
                 <div class="form-group">
                     <label>Username (Cannot Change)</label>
@@ -82,35 +95,95 @@
             </div>
         </div>
 
-        <div class="lists-container">
-            
-            <div class="list-box">
-                <div class="list-header">📦 Items Purchased</div>
-                <table>
-                    <thead><tr><th>Date</th><th>Item</th><th>Price</th></tr></thead>
-                    <tbody id="purchaseList">
-                        <tr><td colspan="3">Loading...</td></tr>
-                    </tbody>
-                </table>
-            </div>
+        <div class="card">
+            <div class="section-title">My Listings</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Item</th>
+                        <th>Start Price</th>
+                        <th>Result</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="myListingsBody">
+                    <tr><td colspan="5">Loading listings...</td></tr>
+                </tbody>
+            </table>
+        </div>
 
-            <div class="list-box">
-                <div class="list-header">💰 Items Sold</div>
-                <table>
-                    <thead><tr><th>Date</th><th>Item</th><th>Sold For</th></tr></thead>
-                    <tbody id="salesList">
-                        <tr><td colspan="3">Loading...</td></tr>
-                    </tbody>
-                </table>
+        <div class="card">
+            <div class="section-title">Transaction History</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div>
+                    <h4 style="color: var(--primary-color);">📦 Items Purchased</h4>
+                    <table>
+                        <thead><tr><th>Date</th><th>Item</th><th>Price</th></tr></thead>
+                        <tbody id="purchaseList"><tr><td colspan="3">Loading...</td></tr></tbody>
+                    </table>
+                </div>
+                <div>
+                    <h4 style="color: var(--success-color);">💰 Items Sold</h4>
+                    <table>
+                        <thead><tr><th>Date</th><th>Item</th><th>Sold For</th></tr></thead>
+                        <tbody id="salesList"><tr><td colspan="3">Loading...</td></tr></tbody>
+                    </table>
+                </div>
             </div>
+        </div>
+    </div>
 
+    <div id="listingModal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 style="margin-top:0;">List Item for Auction</h2>
+            <form onsubmit="event.preventDefault(); submitListing();">
+                
+                <div class="form-group">
+                    <label>Seller Name (You):</label>
+                    <input type="text" id="listSeller" disabled>
+                </div>
+
+                <div class="form-group">
+                    <label>Item Title:</label>
+                    <input type="text" id="listTitle" required placeholder="e.g. Vintage Lamp">
+                </div>
+
+                <div class="form-group">
+                    <label>Subtitle:</label>
+                    <input type="text" id="listSub" placeholder="Condition / Category">
+                </div>
+
+                <div class="form-group">
+                    <label>Starting Price ($):</label>
+                    <input type="number" id="listPrice" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Main Image URL:</label>
+                    <input type="text" id="listImg" required placeholder="https://...">
+                </div>
+
+                <div class="form-group">
+                    <label>Description:</label>
+                    <textarea id="listDesc" rows="3" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Extra Image 1 (Optional):</label>
+                    <input type="text" id="listThumb1">
+                </div>
+
+                <button type="submit" class="btn btn-save" style="width:100%">Submit Item</button>
+                <button type="button" class="btn btn-reset" style="width:100%; margin:10px 0 0 0;" onclick="document.getElementById('listingModal').style.display='none'">Cancel</button>
+            </form>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getDatabase, ref, onValue, update, child, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, onValue, update, child, get, push } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
         // --- PASTE KEYS HERE ---
         const firebaseConfig = {
@@ -134,6 +207,7 @@
                 currentUser = user;
                 loadUserProfile(user.uid);
                 loadUserHistory(user.email);
+                loadUserListings(user.uid); // NEW
             } else {
                 window.location.href = "index.html";
             }
@@ -141,7 +215,7 @@
 
         window.logout = function() { signOut(auth).then(() => window.location.href = "index.html"); }
 
-        // --- 1. LOAD PROFILE ---
+        // --- 1. PROFILE ---
         function loadUserProfile(uid) {
             const userRef = ref(db, `users/${uid}`);
             get(userRef).then((snapshot) => {
@@ -157,7 +231,100 @@
             });
         }
 
-        // --- 2. LOAD HISTORY (BOUGHT & SOLD) ---
+        // --- 2. LISTINGS LOGIC (NEW) ---
+        window.openListingModal = function() {
+            document.getElementById('listSeller').value = document.getElementById('accName').value; // Pre-fill name
+            document.getElementById('listingModal').style.display = 'flex';
+        }
+
+        window.submitListing = function() {
+            const newItem = {
+                title: document.getElementById('listTitle').value,
+                subtitle: document.getElementById('listSub').value,
+                start_price: parseInt(document.getElementById('listPrice').value),
+                image_url: document.getElementById('listImg').value,
+                description: document.getElementById('listDesc').value,
+                
+                // System Fields
+                owner_uid: currentUser.uid,
+                seller_name: document.getElementById('listSeller').value,
+                seller_email: currentUser.email,
+                approval_status: "pending", // Default status
+                lot: 0, // Placeholder
+                times_run: 0,
+                is_featured: false,
+                
+                images: {
+                    thumb1: document.getElementById('listThumb1').value
+                }
+            };
+
+            push(ref(db, 'inventory'), newItem).then(() => {
+                alert("Thank you! Your item is under review. If approved, it will be scheduled for an upcoming auction.");
+                document.getElementById('listingModal').style.display = 'none';
+                document.querySelector('form').reset();
+            });
+        }
+
+        function loadUserListings(uid) {
+            const invRef = ref(db, 'inventory');
+            onValue(invRef, (snapshot) => {
+                const tbody = document.getElementById('myListingsBody');
+                tbody.innerHTML = "";
+                const data = snapshot.val();
+
+                if(!data) { tbody.innerHTML = "<tr><td colspan='5'>You haven't listed any items.</td></tr>"; return; }
+
+                // Convert to Array
+                const items = Object.entries(data).map(([key, val]) => ({ ...val, key }));
+                
+                // Filter for MY items
+                const myItems = items.filter(item => item.owner_uid === uid);
+
+                if(myItems.length === 0) { tbody.innerHTML = "<tr><td colspan='5'>You haven't listed any items.</td></tr>"; return; }
+
+                myItems.forEach(item => {
+                    let statusBadge = '<span class="status-badge st-review">Under Review</span>';
+                    let resultText = "-";
+                    
+                    // Status Logic
+                    if (item.approval_status === 'inactive') {
+                        statusBadge = '<span class="status-badge st-inactive">Inactive</span>';
+                    } else if (item.status_label && item.status_label.includes("SOLD")) {
+                        statusBadge = '<span class="status-badge st-sold">Sold</span>';
+                        resultText = item.status_label;
+                    } else if (item.is_featured) {
+                        statusBadge = '<span class="status-badge st-scheduled">Scheduled</span>';
+                    } else if (item.lot > 0) {
+                        statusBadge = '<span class="status-badge st-approved">Approved</span>';
+                    }
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${statusBadge}</td>
+                        <td>${item.title}</td>
+                        <td>$${item.start_price}</td>
+                        <td>${resultText}</td>
+                        <td>
+                            ${item.approval_status !== 'inactive' && !item.status_label?.includes("SOLD") 
+                                ? `<button class="btn btn-cancel" onclick="makeInactive('${item.key}')">Deactivate</button>` 
+                                : ''}
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            });
+        }
+
+        window.makeInactive = function(key) {
+            if(confirm("Are you sure you want to remove this item from the auction list?")) {
+                update(ref(db, `inventory/${key}`), {
+                    approval_status: 'inactive'
+                });
+            }
+        }
+
+        // --- 3. HISTORY LOGIC ---
         function loadUserHistory(userEmail) {
             const historyRef = ref(db, 'sales_history');
             onValue(historyRef, (snapshot) => {
@@ -168,60 +335,41 @@
                 salesTbody.innerHTML = "";
 
                 const data = snapshot.val();
-                if (!data) {
-                    purchasesTbody.innerHTML = "<tr><td colspan='3'>No records found.</td></tr>";
-                    salesTbody.innerHTML = "<tr><td colspan='3'>No records found.</td></tr>";
-                    return;
-                }
+                if (!data) return;
 
                 const items = Object.values(data).sort((a, b) => b.date - a.date);
-                let boughtCount = 0;
-                let soldCount = 0;
 
                 items.forEach(item => {
                     const dateStr = new Date(item.date).toLocaleDateString();
                     
-                    // Check if User BOUGHT this
+                    // Bought
                     if (item.winner_email && item.winner_email.toLowerCase() === userEmail.toLowerCase()) {
-                        boughtCount++;
                         const tr = document.createElement('tr');
                         tr.innerHTML = `<td>${dateStr}</td><td>${item.item_title}</td><td>$${item.final_price}</td>`;
                         purchasesTbody.appendChild(tr);
                     }
 
-                    // Check if User SOLD this
+                    // Sold
                     if (item.seller_email && item.seller_email.toLowerCase() === userEmail.toLowerCase()) {
-                        soldCount++;
                         const tr = document.createElement('tr');
                         tr.innerHTML = `<td>${dateStr}</td><td>${item.item_title}</td><td>$${item.final_price}</td>`;
                         salesTbody.appendChild(tr);
                     }
                 });
-
-                if(boughtCount === 0) purchasesTbody.innerHTML = "<tr><td colspan='3'>No purchases yet.</td></tr>";
-                if(soldCount === 0) salesTbody.innerHTML = "<tr><td colspan='3'>No sales yet.</td></tr>";
             });
         }
 
         // --- ACTIONS ---
         window.saveProfile = function() {
             const newPhone = document.getElementById('accPhone').value;
-            update(ref(db, `users/${currentUser.uid}`), {
-                phone: newPhone
-            }).then(() => {
-                alert("Profile Updated!");
-            });
+            update(ref(db, `users/${currentUser.uid}`), { phone: newPhone }).then(() => alert("Profile Updated!"));
         }
 
         window.resetPassword = function() {
             if(confirm(`Send a password reset email to ${currentUser.email}?`)) {
                 sendPasswordResetEmail(auth, currentUser.email)
-                .then(() => {
-                    alert("Email sent! Check your inbox.");
-                })
-                .catch((error) => {
-                    alert("Error: " + error.message);
-                });
+                .then(() => alert("Email sent! Check your inbox."))
+                .catch((error) => alert("Error: " + error.message));
             }
         }
     </script>
