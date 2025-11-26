@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Account | Eastern Shore Auction House</title>
     <style>
-        :root { --primary-color: #2563eb; --header-bg: #111827; --text-color: #1f2937; --bg-color: #f3f4f6; --success-color: #16a34a; --danger-color: #dc2626; }
+        :root { --primary-color: #2563eb; --header-bg: #111827; --text-color: #1f2937; --bg-color: #f3f4f6; --success-color: #16a34a; --danger-color: #dc2626; --gold-color: #f59e0b; }
         body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg-color); color: var(--text-color); margin: 0; }
         
         /* HEADER */
@@ -14,7 +14,7 @@
         .nav-link { color: #d1d5db; text-decoration: none; margin-left: 20px; cursor: pointer; }
         .nav-link:hover { color: white; text-decoration: underline; }
 
-        .container { max-width: 1000px; margin: 30px auto; padding: 20px; }
+        .container { max-width: 800px; margin: 30px auto; padding: 20px; }
 
         /* PROFILE CARD */
         .card { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 30px; }
@@ -26,28 +26,41 @@
         .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
         .form-group input:disabled { background: #f3f4f6; color: #6b7280; cursor: not-allowed; }
 
+        /* RATING STARS DISPLAY */
+        .profile-rating { margin-top: 5px; font-size: 1.2rem; color: var(--gold-color); }
+        .rating-text { font-size: 0.8rem; color: #6b7280; margin-left: 5px; vertical-align: middle; }
+
         .btn { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; color: white; }
         .btn-save { background: var(--primary-color); }
         .btn-reset { background: #4b5563; margin-left: 10px; }
         .btn-list { background: var(--primary-color); font-size: 1rem; }
         .btn-cancel { background: var(--danger-color); padding: 5px 10px; font-size: 0.8rem; }
+        .btn-rate { background: var(--gold-color); padding: 5px 10px; font-size: 0.8rem; color: #fff; text-shadow: 0 1px 1px rgba(0,0,0,0.2); }
 
-        /* TABLES */
+        /* TABLES - STACKED LAYOUT */
+        .lists-container { display: flex; flex-direction: column; gap: 30px; } /* Stacked Vertically */
+        
         table { width: 100%; border-collapse: collapse; font-size: 0.9rem; margin-top: 10px; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e5e7eb; }
         th { color: #6b7280; font-size: 0.8rem; text-transform: uppercase; background: #f9fafb; }
         
         /* STATUS BADGES */
         .status-badge { padding: 4px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; }
-        .st-review { background: #fef3c7; color: #92400e; } /* Yellow */
-        .st-approved { background: #dbeafe; color: #1e40af; } /* Blue */
-        .st-scheduled { background: #d1fae5; color: #065f46; } /* Green */
-        .st-sold { background: #111827; color: #fff; } /* Black */
-        .st-inactive { background: #f3f4f6; color: #9ca3af; text-decoration: line-through; } /* Gray */
+        .st-review { background: #fef3c7; color: #92400e; }
+        .st-approved { background: #dbeafe; color: #1e40af; }
+        .st-scheduled { background: #d1fae5; color: #065f46; }
+        .st-sold { background: #111827; color: #fff; }
+        .st-inactive { background: #f3f4f6; color: #9ca3af; text-decoration: line-through; }
 
         /* MODAL */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
+
+        /* STAR RATING INPUT */
+        .star-input { display: flex; flex-direction: row-reverse; justify-content: center; gap: 5px; font-size: 2rem; }
+        .star-input input { display: none; }
+        .star-input label { color: #ddd; cursor: pointer; transition: color 0.2s; }
+        .star-input input:checked ~ label, .star-input label:hover, .star-input label:hover ~ label { color: var(--gold-color); }
 
         @media (max-width: 768px) {
             .form-grid { grid-template-columns: 1fr; }
@@ -75,7 +88,7 @@
                 <div class="form-group">
                     <label>Username (Cannot Change)</label>
                     <input type="text" id="accName" disabled>
-                </div>
+                    <div id="userRatingDisplay" class="profile-rating"></div> </div>
                 <div class="form-group">
                     <label>Member Since</label>
                     <input type="text" id="accDate" disabled>
@@ -96,41 +109,51 @@
         </div>
 
         <div class="card">
-            <div class="section-title">My Listings</div>
+            <div class="section-title">My Listings (Items you are selling)</div>
             <table>
-                <thead>
-                    <tr>
-                        <th>Status</th>
-                        <th>Item</th>
-                        <th>Start Price</th>
-                        <th>Result</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="myListingsBody">
-                    <tr><td colspan="5">Loading listings...</td></tr>
-                </tbody>
+                <thead><tr><th>Status</th><th>Item</th><th>Start Price</th><th>Result</th><th>Action</th></tr></thead>
+                <tbody id="myListingsBody"><tr><td colspan="5">Loading listings...</td></tr></tbody>
             </table>
         </div>
 
-        <div class="card">
-            <div class="section-title">Transaction History</div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                <div>
-                    <h4 style="color: var(--primary-color);">📦 Items Purchased</h4>
-                    <table>
-                        <thead><tr><th>Date</th><th>Item</th><th>Price</th></tr></thead>
-                        <tbody id="purchaseList"><tr><td colspan="3">Loading...</td></tr></tbody>
-                    </table>
-                </div>
-                <div>
-                    <h4 style="color: var(--success-color);">💰 Items Sold</h4>
-                    <table>
-                        <thead><tr><th>Date</th><th>Item</th><th>Sold For</th></tr></thead>
-                        <tbody id="salesList"><tr><td colspan="3">Loading...</td></tr></tbody>
-                    </table>
-                </div>
+        <div class="lists-container">
+            
+            <div class="card">
+                <div class="section-title" style="color: var(--primary-color);">📦 Items Purchased</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Item</th>
+                            <th>Seller</th>
+                            <th>Price</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="purchaseList">
+                        <tr><td colspan="5">Loading...</td></tr>
+                    </tbody>
+                </table>
             </div>
+
+            <div class="card">
+                <div class="section-title" style="color: var(--success-color);">💰 Items Sold</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Item</th>
+                            <th>Buyer</th>
+                            <th>Sold For</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="salesList">
+                        <tr><td colspan="5">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
         </div>
     </div>
 
@@ -138,52 +161,42 @@
         <div class="modal-content">
             <h2 style="margin-top:0;">List Item for Auction</h2>
             <form onsubmit="event.preventDefault(); submitListing();">
-                
-                <div class="form-group">
-                    <label>Seller Name (You):</label>
-                    <input type="text" id="listSeller" disabled>
-                </div>
-
-                <div class="form-group">
-                    <label>Item Title:</label>
-                    <input type="text" id="listTitle" required placeholder="e.g. Vintage Lamp">
-                </div>
-
-                <div class="form-group">
-                    <label>Subtitle:</label>
-                    <input type="text" id="listSub" placeholder="Condition / Category">
-                </div>
-
-                <div class="form-group">
-                    <label>Starting Price ($):</label>
-                    <input type="number" id="listPrice" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Main Image URL:</label>
-                    <input type="text" id="listImg" required placeholder="https://...">
-                </div>
-
-                <div class="form-group">
-                    <label>Description:</label>
-                    <textarea id="listDesc" rows="3" required></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label>Extra Image 1 (Optional):</label>
-                    <input type="text" id="listThumb1">
-                </div>
-
+                <div class="form-group"><label>Seller Name (You):</label><input type="text" id="listSeller" disabled></div>
+                <div class="form-group"><label>Item Title:</label><input type="text" id="listTitle" required placeholder="e.g. Vintage Lamp"></div>
+                <div class="form-group"><label>Subtitle:</label><input type="text" id="listSub" placeholder="Condition / Category"></div>
+                <div class="form-group"><label>Starting Price ($):</label><input type="number" id="listPrice" required></div>
+                <div class="form-group"><label>Main Image URL:</label><input type="text" id="listImg" required placeholder="https://..."></div>
+                <div class="form-group"><label>Description:</label><textarea id="listDesc" rows="3" required></textarea></div>
+                <div class="form-group"><label>Extra Image 1 (Optional):</label><input type="text" id="listThumb1"></div>
                 <button type="submit" class="btn btn-save" style="width:100%">Submit Item</button>
                 <button type="button" class="btn btn-reset" style="width:100%; margin:10px 0 0 0;" onclick="document.getElementById('listingModal').style.display='none'">Cancel</button>
             </form>
         </div>
     </div>
 
+    <div id="ratingModal" class="modal-overlay">
+        <div class="modal-content" style="text-align: center;">
+            <h2>Rate User</h2>
+            <p>How was your experience with <strong id="rateTargetName">User</strong>?</p>
+            <input type="hidden" id="rateTargetEmail">
+            
+            <div class="star-input">
+                <input type="radio" id="star5" name="rating" value="5"><label for="star5" title="5 stars">★</label>
+                <input type="radio" id="star4" name="rating" value="4"><label for="star4" title="4 stars">★</label>
+                <input type="radio" id="star3" name="rating" value="3"><label for="star3" title="3 stars">★</label>
+                <input type="radio" id="star2" name="rating" value="2"><label for="star2" title="2 stars">★</label>
+                <input type="radio" id="star1" name="rating" value="1"><label for="star1" title="1 star">★</label>
+            </div>
+
+            <button class="btn btn-save" style="margin-top:20px; width:100%" onclick="submitRating()">Submit Rating</button>
+            <button class="btn btn-reset" style="margin-top:10px; width:100%" onclick="document.getElementById('ratingModal').style.display='none'">Cancel</button>
+        </div>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getDatabase, ref, onValue, update, child, get, push } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, onValue, update, child, get, push, runTransaction } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
         // --- PASTE KEYS HERE ---
         const firebaseConfig = {
@@ -200,14 +213,15 @@
         const auth = getAuth(app);
         const db = getDatabase(app);
         let currentUser = null;
+        let allUsersCache = []; // Store users to find UIDs by email
 
         // --- AUTH & LOAD ---
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 currentUser = user;
+                preloadUsers(); // Load user DB for lookups
                 loadUserProfile(user.uid);
-                loadUserHistory(user.email);
-                loadUserListings(user.uid); // NEW
+                loadUserListings(user.uid);
             } else {
                 window.location.href = "index.html";
             }
@@ -215,10 +229,20 @@
 
         window.logout = function() { signOut(auth).then(() => window.location.href = "index.html"); }
 
+        // Fetch all users once to help with lookups (Email -> Name/UID)
+        function preloadUsers() {
+            get(ref(db, 'users')).then((snapshot) => {
+                if (snapshot.exists()) {
+                    allUsersCache = Object.entries(snapshot.val()).map(([uid, data]) => ({ uid, ...data }));
+                    loadUserHistory(currentUser.email); // Load history after we have user data
+                }
+            });
+        }
+
         // --- 1. PROFILE ---
         function loadUserProfile(uid) {
             const userRef = ref(db, `users/${uid}`);
-            get(userRef).then((snapshot) => {
+            onValue(userRef, (snapshot) => {
                 if (snapshot.exists()) {
                     const data = snapshot.val();
                     document.getElementById('accName').value = data.name || currentUser.displayName;
@@ -227,13 +251,135 @@
                     
                     const joinDate = data.joined_at ? new Date(data.joined_at).toLocaleDateString() : "N/A";
                     document.getElementById('accDate').value = joinDate;
+
+                    // RATING DISPLAY
+                    const totalStars = data.rating_total || 0;
+                    const countReviews = data.rating_count || 0;
+                    const average = countReviews > 0 ? (totalStars / countReviews).toFixed(1) : "New";
+                    
+                    let starStr = "☆☆☆☆☆";
+                    if(countReviews > 0) {
+                        const roundScore = Math.round(totalStars / countReviews);
+                        starStr = "★".repeat(roundScore) + "☆".repeat(5 - roundScore);
+                    }
+
+                    document.getElementById('userRatingDisplay').innerHTML = `
+                        ${starStr} <span class="rating-text">(${average} / 5 from ${countReviews} reviews)</span>
+                    `;
                 }
             });
         }
 
-        // --- 2. LISTINGS LOGIC (NEW) ---
+        // --- 2. HISTORY LOGIC ---
+        function loadUserHistory(userEmail) {
+            const historyRef = ref(db, 'sales_history');
+            onValue(historyRef, (snapshot) => {
+                const purchasesTbody = document.getElementById('purchaseList');
+                const salesTbody = document.getElementById('salesList');
+                
+                purchasesTbody.innerHTML = "";
+                salesTbody.innerHTML = "";
+
+                const data = snapshot.val();
+                if (!data) {
+                    purchasesTbody.innerHTML = "<tr><td colspan='5'>No records.</td></tr>";
+                    salesTbody.innerHTML = "<tr><td colspan='5'>No records.</td></tr>";
+                    return;
+                }
+
+                const items = Object.values(data).sort((a, b) => b.date - a.date);
+                let boughtCount = 0;
+                let soldCount = 0;
+
+                items.forEach(item => {
+                    const dateStr = new Date(item.date).toLocaleDateString();
+                    
+                    // BOUGHT (Show Seller)
+                    if (item.winner_email && item.winner_email.toLowerCase() === userEmail.toLowerCase()) {
+                        boughtCount++;
+                        // Find Seller Name
+                        const seller = allUsersCache.find(u => u.email && u.email.toLowerCase() === (item.seller_email || "").toLowerCase());
+                        const sellerName = seller ? seller.name : (item.seller_name || "Unknown");
+                        const sellerEmail = item.seller_email || "";
+
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${dateStr}</td>
+                            <td>${item.item_title}</td>
+                            <td>${sellerName}</td>
+                            <td>$${item.final_price}</td>
+                            <td><button class="btn btn-rate" onclick="openRateModal('${sellerEmail}', '${sellerName}')">Rate Seller</button></td>
+                        `;
+                        purchasesTbody.appendChild(tr);
+                    }
+
+                    // SOLD (Show Buyer)
+                    if (item.seller_email && item.seller_email.toLowerCase() === userEmail.toLowerCase()) {
+                        soldCount++;
+                        // Find Buyer Name
+                        const buyer = allUsersCache.find(u => u.email && u.email.toLowerCase() === (item.winner_email || "").toLowerCase());
+                        const buyerName = buyer ? buyer.name : (item.winner_name || "Unknown");
+                        const buyerEmail = item.winner_email || "";
+
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${dateStr}</td>
+                            <td>${item.item_title}</td>
+                            <td>${buyerName}</td>
+                            <td>$${item.final_price}</td>
+                            <td><button class="btn btn-rate" onclick="openRateModal('${buyerEmail}', '${buyerName}')">Rate Buyer</button></td>
+                        `;
+                        salesTbody.appendChild(tr);
+                    }
+                });
+
+                if(boughtCount === 0) purchasesTbody.innerHTML = "<tr><td colspan='5'>No purchases yet.</td></tr>";
+                if(soldCount === 0) salesTbody.innerHTML = "<tr><td colspan='5'>No sales yet.</td></tr>";
+            });
+        }
+
+        // --- 3. RATING LOGIC ---
+        window.openRateModal = function(email, name) {
+            if(!email) { alert("Cannot rate this user (No email found)."); return; }
+            if(email.toLowerCase() === currentUser.email.toLowerCase()) { alert("You cannot rate yourself."); return; }
+            
+            document.getElementById('rateTargetName').innerText = name;
+            document.getElementById('rateTargetEmail').value = email;
+            document.getElementById('ratingModal').style.display = 'flex';
+        }
+
+        window.submitRating = function() {
+            const email = document.getElementById('rateTargetEmail').value;
+            const starsRadio = document.querySelector('input[name="rating"]:checked');
+            
+            if(!starsRadio) { alert("Please select a star rating."); return; }
+            const stars = parseInt(starsRadio.value);
+
+            // Find UID from email
+            const targetUser = allUsersCache.find(u => u.email && u.email.toLowerCase() === email.toLowerCase());
+            
+            if(targetUser) {
+                const userRef = ref(db, `users/${targetUser.uid}`);
+                
+                // Transactional Update to ensure math is correct
+                runTransaction(userRef, (userData) => {
+                    if (userData) {
+                        userData.rating_total = (userData.rating_total || 0) + stars;
+                        userData.rating_count = (userData.rating_count || 0) + 1;
+                    }
+                    return userData;
+                }).then(() => {
+                    alert("Rating submitted!");
+                    document.getElementById('ratingModal').style.display = 'none';
+                });
+            } else {
+                alert("Error finding user profile.");
+            }
+        }
+
+        // --- 4. LISTINGS LOGIC ---
         window.openListingModal = function() {
-            document.getElementById('listSeller').value = document.getElementById('accName').value; // Pre-fill name
+            document.getElementById('listSeller').value = document.getElementById('accName').value;
             document.getElementById('listingModal').style.display = 'flex';
         }
 
@@ -244,23 +390,15 @@
                 start_price: parseInt(document.getElementById('listPrice').value),
                 image_url: document.getElementById('listImg').value,
                 description: document.getElementById('listDesc').value,
-                
-                // System Fields
                 owner_uid: currentUser.uid,
                 seller_name: document.getElementById('listSeller').value,
                 seller_email: currentUser.email,
-                approval_status: "pending", // Default status
-                lot: 0, // Placeholder
-                times_run: 0,
-                is_featured: false,
-                
-                images: {
-                    thumb1: document.getElementById('listThumb1').value
-                }
+                approval_status: "pending",
+                lot: 0, times_run: 0, is_featured: false,
+                images: { thumb1: document.getElementById('listThumb1').value }
             };
-
             push(ref(db, 'inventory'), newItem).then(() => {
-                alert("Thank you! Your item is under review. If approved, it will be scheduled for an upcoming auction.");
+                alert("Item submitted for review!");
                 document.getElementById('listingModal').style.display = 'none';
                 document.querySelector('form').reset();
             });
@@ -272,91 +410,28 @@
                 const tbody = document.getElementById('myListingsBody');
                 tbody.innerHTML = "";
                 const data = snapshot.val();
-
-                if(!data) { tbody.innerHTML = "<tr><td colspan='5'>You haven't listed any items.</td></tr>"; return; }
-
-                // Convert to Array
-                const items = Object.entries(data).map(([key, val]) => ({ ...val, key }));
+                if(!data) { tbody.innerHTML = "<tr><td colspan='5'>No items listed.</td></tr>"; return; }
                 
-                // Filter for MY items
-                const myItems = items.filter(item => item.owner_uid === uid);
+                const items = Object.entries(data).map(([key, val]) => ({ ...val, key })).filter(item => item.owner_uid === uid);
+                if(items.length === 0) { tbody.innerHTML = "<tr><td colspan='5'>No items listed.</td></tr>"; return; }
 
-                if(myItems.length === 0) { tbody.innerHTML = "<tr><td colspan='5'>You haven't listed any items.</td></tr>"; return; }
-
-                myItems.forEach(item => {
+                items.forEach(item => {
                     let statusBadge = '<span class="status-badge st-review">Under Review</span>';
                     let resultText = "-";
-                    
-                    // Status Logic
-                    if (item.approval_status === 'inactive') {
-                        statusBadge = '<span class="status-badge st-inactive">Inactive</span>';
-                    } else if (item.status_label && item.status_label.includes("SOLD")) {
-                        statusBadge = '<span class="status-badge st-sold">Sold</span>';
-                        resultText = item.status_label;
-                    } else if (item.is_featured) {
-                        statusBadge = '<span class="status-badge st-scheduled">Scheduled</span>';
-                    } else if (item.lot > 0) {
-                        statusBadge = '<span class="status-badge st-approved">Approved</span>';
-                    }
+                    if (item.approval_status === 'inactive') { statusBadge = '<span class="status-badge st-inactive">Inactive</span>'; } 
+                    else if (item.status_label && item.status_label.includes("SOLD")) { statusBadge = '<span class="status-badge st-sold">Sold</span>'; resultText = item.status_label; } 
+                    else if (item.is_featured) { statusBadge = '<span class="status-badge st-scheduled">Scheduled</span>'; } 
+                    else if (item.lot > 0) { statusBadge = '<span class="status-badge st-approved">Approved</span>'; }
 
                     const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${statusBadge}</td>
-                        <td>${item.title}</td>
-                        <td>$${item.start_price}</td>
-                        <td>${resultText}</td>
-                        <td>
-                            ${item.approval_status !== 'inactive' && !item.status_label?.includes("SOLD") 
-                                ? `<button class="btn btn-cancel" onclick="makeInactive('${item.key}')">Deactivate</button>` 
-                                : ''}
-                        </td>
-                    `;
+                    tr.innerHTML = `<td>${statusBadge}</td><td>${item.title}</td><td>$${item.start_price}</td><td>${resultText}</td><td>${item.approval_status !== 'inactive' && !item.status_label?.includes("SOLD") ? `<button class="btn btn-cancel" onclick="makeInactive('${item.key}')">Deactivate</button>` : ''}</td>`;
                     tbody.appendChild(tr);
                 });
             });
         }
 
         window.makeInactive = function(key) {
-            if(confirm("Are you sure you want to remove this item from the auction list?")) {
-                update(ref(db, `inventory/${key}`), {
-                    approval_status: 'inactive'
-                });
-            }
-        }
-
-        // --- 3. HISTORY LOGIC ---
-        function loadUserHistory(userEmail) {
-            const historyRef = ref(db, 'sales_history');
-            onValue(historyRef, (snapshot) => {
-                const purchasesTbody = document.getElementById('purchaseList');
-                const salesTbody = document.getElementById('salesList');
-                
-                purchasesTbody.innerHTML = "";
-                salesTbody.innerHTML = "";
-
-                const data = snapshot.val();
-                if (!data) return;
-
-                const items = Object.values(data).sort((a, b) => b.date - a.date);
-
-                items.forEach(item => {
-                    const dateStr = new Date(item.date).toLocaleDateString();
-                    
-                    // Bought
-                    if (item.winner_email && item.winner_email.toLowerCase() === userEmail.toLowerCase()) {
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `<td>${dateStr}</td><td>${item.item_title}</td><td>$${item.final_price}</td>`;
-                        purchasesTbody.appendChild(tr);
-                    }
-
-                    // Sold
-                    if (item.seller_email && item.seller_email.toLowerCase() === userEmail.toLowerCase()) {
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `<td>${dateStr}</td><td>${item.item_title}</td><td>$${item.final_price}</td>`;
-                        salesTbody.appendChild(tr);
-                    }
-                });
-            });
+            if(confirm("Remove this item?")) update(ref(db, `inventory/${key}`), { approval_status: 'inactive' });
         }
 
         // --- ACTIONS ---
@@ -366,9 +441,9 @@
         }
 
         window.resetPassword = function() {
-            if(confirm(`Send a password reset email to ${currentUser.email}?`)) {
+            if(confirm(`Send a password reset email?`)) {
                 sendPasswordResetEmail(auth, currentUser.email)
-                .then(() => alert("Email sent! Check your inbox."))
+                .then(() => alert("Email sent!"))
                 .catch((error) => alert("Error: " + error.message));
             }
         }
