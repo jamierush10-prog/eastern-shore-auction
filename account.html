@@ -37,8 +37,8 @@
         .btn-cancel { background: var(--danger-color); padding: 5px 10px; font-size: 0.8rem; }
         .btn-rate { background: var(--gold-color); padding: 5px 10px; font-size: 0.8rem; color: #fff; text-shadow: 0 1px 1px rgba(0,0,0,0.2); }
 
-        /* TABLES - STACKED LAYOUT */
-        .lists-container { display: flex; flex-direction: column; gap: 30px; } /* Stacked Vertically */
+        /* TABLES */
+        .lists-container { display: flex; flex-direction: column; gap: 30px; } 
         
         table { width: 100%; border-collapse: collapse; font-size: 0.9rem; margin-top: 10px; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e5e7eb; }
@@ -62,9 +62,7 @@
         .star-input label { color: #ddd; cursor: pointer; transition: color 0.2s; }
         .star-input input:checked ~ label, .star-input label:hover, .star-input label:hover ~ label { color: var(--gold-color); }
 
-        @media (max-width: 768px) {
-            .form-grid { grid-template-columns: 1fr; }
-        }
+        @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -88,7 +86,8 @@
                 <div class="form-group">
                     <label>Username (Cannot Change)</label>
                     <input type="text" id="accName" disabled>
-                    <div id="userRatingDisplay" class="profile-rating"></div> </div>
+                    <div id="userRatingDisplay" class="profile-rating"></div> 
+                </div>
                 <div class="form-group">
                     <label>Member Since</label>
                     <input type="text" id="accDate" disabled>
@@ -117,43 +116,20 @@
         </div>
 
         <div class="lists-container">
-            
             <div class="card">
                 <div class="section-title" style="color: var(--primary-color);">📦 Items Purchased</div>
                 <table>
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Item</th>
-                            <th>Seller</th>
-                            <th>Price</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="purchaseList">
-                        <tr><td colspan="5">Loading...</td></tr>
-                    </tbody>
+                    <thead><tr><th>Date</th><th>Item</th><th>Seller</th><th>Price</th><th>Action</th></tr></thead>
+                    <tbody id="purchaseList"><tr><td colspan="5">Loading...</td></tr></tbody>
                 </table>
             </div>
-
             <div class="card">
                 <div class="section-title" style="color: var(--success-color);">💰 Items Sold</div>
                 <table>
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Item</th>
-                            <th>Buyer</th>
-                            <th>Sold For</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="salesList">
-                        <tr><td colspan="5">Loading...</td></tr>
-                    </tbody>
+                    <thead><tr><th>Date</th><th>Item</th><th>Buyer</th><th>Sold For</th><th>Action</th></tr></thead>
+                    <tbody id="salesList"><tr><td colspan="5">Loading...</td></tr></tbody>
                 </table>
             </div>
-
         </div>
     </div>
 
@@ -179,15 +155,13 @@
             <h2>Rate User</h2>
             <p>How was your experience with <strong id="rateTargetName">User</strong>?</p>
             <input type="hidden" id="rateTargetEmail">
-            
             <div class="star-input">
-                <input type="radio" id="star5" name="rating" value="5"><label for="star5" title="5 stars">★</label>
-                <input type="radio" id="star4" name="rating" value="4"><label for="star4" title="4 stars">★</label>
-                <input type="radio" id="star3" name="rating" value="3"><label for="star3" title="3 stars">★</label>
-                <input type="radio" id="star2" name="rating" value="2"><label for="star2" title="2 stars">★</label>
-                <input type="radio" id="star1" name="rating" value="1"><label for="star1" title="1 star">★</label>
+                <input type="radio" id="star5" name="rating" value="5"><label for="star5">★</label>
+                <input type="radio" id="star4" name="rating" value="4"><label for="star4">★</label>
+                <input type="radio" id="star3" name="rating" value="3"><label for="star3">★</label>
+                <input type="radio" id="star2" name="rating" value="2"><label for="star2">★</label>
+                <input type="radio" id="star1" name="rating" value="1"><label for="star1">★</label>
             </div>
-
             <button class="btn btn-save" style="margin-top:20px; width:100%" onclick="submitRating()">Submit Rating</button>
             <button class="btn btn-reset" style="margin-top:10px; width:100%" onclick="document.getElementById('ratingModal').style.display='none'">Cancel</button>
         </div>
@@ -196,7 +170,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getDatabase, ref, onValue, update, child, get, push, runTransaction } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, onValue, update, child, get, push, runTransaction, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
         // --- PASTE KEYS HERE ---
         const firebaseConfig = {
@@ -213,13 +187,12 @@
         const auth = getAuth(app);
         const db = getDatabase(app);
         let currentUser = null;
-        let allUsersCache = []; // Store users to find UIDs by email
+        let allUsersCache = []; 
 
-        // --- AUTH & LOAD ---
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 currentUser = user;
-                preloadUsers(); // Load user DB for lookups
+                preloadUsers();
                 loadUserProfile(user.uid);
                 loadUserListings(user.uid);
             } else {
@@ -229,12 +202,11 @@
 
         window.logout = function() { signOut(auth).then(() => window.location.href = "index.html"); }
 
-        // Fetch all users once to help with lookups (Email -> Name/UID)
         function preloadUsers() {
             get(ref(db, 'users')).then((snapshot) => {
                 if (snapshot.exists()) {
                     allUsersCache = Object.entries(snapshot.val()).map(([uid, data]) => ({ uid, ...data }));
-                    loadUserHistory(currentUser.email); // Load history after we have user data
+                    loadUserHistory(currentUser.email);
                 }
             });
         }
@@ -249,10 +221,9 @@
                     document.getElementById('accEmail').value = data.email || currentUser.email;
                     document.getElementById('accPhone').value = data.phone || "";
                     
-                    const joinDate = data.joined_at ? new Date(data.joined_at).toLocaleDateString() : "N/A";
+                    const joinDate = data.joined_at ? new Date(data.joined_at).toLocaleDateString() : new Date().toLocaleDateString();
                     document.getElementById('accDate').value = joinDate;
 
-                    // RATING DISPLAY
                     const totalStars = data.rating_total || 0;
                     const countReviews = data.rating_count || 0;
                     const average = countReviews > 0 ? (totalStars / countReviews).toFixed(1) : "New";
@@ -262,10 +233,12 @@
                         const roundScore = Math.round(totalStars / countReviews);
                         starStr = "★".repeat(roundScore) + "☆".repeat(5 - roundScore);
                     }
-
-                    document.getElementById('userRatingDisplay').innerHTML = `
-                        ${starStr} <span class="rating-text">(${average} / 5 from ${countReviews} reviews)</span>
-                    `;
+                    document.getElementById('userRatingDisplay').innerHTML = `${starStr} <span class="rating-text">(${average} / 5 from ${countReviews} reviews)</span>`;
+                } else {
+                    // Fallback if user isn't in DB yet (Fill with Auth Data)
+                    document.getElementById('accName').value = currentUser.displayName;
+                    document.getElementById('accEmail').value = currentUser.email;
+                    document.getElementById('accDate').value = "Not registered in DB";
                 }
             });
         }
@@ -276,63 +249,34 @@
             onValue(historyRef, (snapshot) => {
                 const purchasesTbody = document.getElementById('purchaseList');
                 const salesTbody = document.getElementById('salesList');
-                
-                purchasesTbody.innerHTML = "";
-                salesTbody.innerHTML = "";
-
+                purchasesTbody.innerHTML = ""; salesTbody.innerHTML = "";
                 const data = snapshot.val();
-                if (!data) {
-                    purchasesTbody.innerHTML = "<tr><td colspan='5'>No records.</td></tr>";
-                    salesTbody.innerHTML = "<tr><td colspan='5'>No records.</td></tr>";
-                    return;
-                }
+                if (!data) { purchasesTbody.innerHTML = "<tr><td colspan='5'>No records.</td></tr>"; salesTbody.innerHTML = "<tr><td colspan='5'>No records.</td></tr>"; return; }
 
                 const items = Object.values(data).sort((a, b) => b.date - a.date);
-                let boughtCount = 0;
-                let soldCount = 0;
+                let boughtCount = 0; let soldCount = 0;
 
                 items.forEach(item => {
                     const dateStr = new Date(item.date).toLocaleDateString();
-                    
-                    // BOUGHT (Show Seller)
                     if (item.winner_email && item.winner_email.toLowerCase() === userEmail.toLowerCase()) {
                         boughtCount++;
-                        // Find Seller Name
                         const seller = allUsersCache.find(u => u.email && u.email.toLowerCase() === (item.seller_email || "").toLowerCase());
                         const sellerName = seller ? seller.name : (item.seller_name || "Unknown");
                         const sellerEmail = item.seller_email || "";
-
                         const tr = document.createElement('tr');
-                        tr.innerHTML = `
-                            <td>${dateStr}</td>
-                            <td>${item.item_title}</td>
-                            <td>${sellerName}</td>
-                            <td>$${item.final_price}</td>
-                            <td><button class="btn btn-rate" onclick="openRateModal('${sellerEmail}', '${sellerName}')">Rate Seller</button></td>
-                        `;
+                        tr.innerHTML = `<td>${dateStr}</td><td>${item.item_title}</td><td>${sellerName}</td><td>$${item.final_price}</td><td><button class="btn btn-rate" onclick="openRateModal('${sellerEmail}', '${sellerName}')">Rate Seller</button></td>`;
                         purchasesTbody.appendChild(tr);
                     }
-
-                    // SOLD (Show Buyer)
                     if (item.seller_email && item.seller_email.toLowerCase() === userEmail.toLowerCase()) {
                         soldCount++;
-                        // Find Buyer Name
                         const buyer = allUsersCache.find(u => u.email && u.email.toLowerCase() === (item.winner_email || "").toLowerCase());
                         const buyerName = buyer ? buyer.name : (item.winner_name || "Unknown");
                         const buyerEmail = item.winner_email || "";
-
                         const tr = document.createElement('tr');
-                        tr.innerHTML = `
-                            <td>${dateStr}</td>
-                            <td>${item.item_title}</td>
-                            <td>${buyerName}</td>
-                            <td>$${item.final_price}</td>
-                            <td><button class="btn btn-rate" onclick="openRateModal('${buyerEmail}', '${buyerName}')">Rate Buyer</button></td>
-                        `;
+                        tr.innerHTML = `<td>${dateStr}</td><td>${item.item_title}</td><td>${buyerName}</td><td>$${item.final_price}</td><td><button class="btn btn-rate" onclick="openRateModal('${buyerEmail}', '${buyerName}')">Rate Buyer</button></td>`;
                         salesTbody.appendChild(tr);
                     }
                 });
-
                 if(boughtCount === 0) purchasesTbody.innerHTML = "<tr><td colspan='5'>No purchases yet.</td></tr>";
                 if(soldCount === 0) salesTbody.innerHTML = "<tr><td colspan='5'>No sales yet.</td></tr>";
             });
@@ -342,7 +286,6 @@
         window.openRateModal = function(email, name) {
             if(!email) { alert("Cannot rate this user (No email found)."); return; }
             if(email.toLowerCase() === currentUser.email.toLowerCase()) { alert("You cannot rate yourself."); return; }
-            
             document.getElementById('rateTargetName').innerText = name;
             document.getElementById('rateTargetEmail').value = email;
             document.getElementById('ratingModal').style.display = 'flex';
@@ -351,30 +294,19 @@
         window.submitRating = function() {
             const email = document.getElementById('rateTargetEmail').value;
             const starsRadio = document.querySelector('input[name="rating"]:checked');
-            
             if(!starsRadio) { alert("Please select a star rating."); return; }
             const stars = parseInt(starsRadio.value);
-
-            // Find UID from email
             const targetUser = allUsersCache.find(u => u.email && u.email.toLowerCase() === email.toLowerCase());
-            
             if(targetUser) {
                 const userRef = ref(db, `users/${targetUser.uid}`);
-                
-                // Transactional Update to ensure math is correct
                 runTransaction(userRef, (userData) => {
                     if (userData) {
                         userData.rating_total = (userData.rating_total || 0) + stars;
                         userData.rating_count = (userData.rating_count || 0) + 1;
                     }
                     return userData;
-                }).then(() => {
-                    alert("Rating submitted!");
-                    document.getElementById('ratingModal').style.display = 'none';
-                });
-            } else {
-                alert("Error finding user profile.");
-            }
+                }).then(() => { alert("Rating submitted!"); document.getElementById('ratingModal').style.display = 'none'; });
+            } else { alert("Error finding user profile."); }
         }
 
         // --- 4. LISTINGS LOGIC ---
@@ -393,8 +325,7 @@
                 owner_uid: currentUser.uid,
                 seller_name: document.getElementById('listSeller').value,
                 seller_email: currentUser.email,
-                approval_status: "pending",
-                lot: 0, times_run: 0, is_featured: false,
+                approval_status: "pending", lot: 0, times_run: 0, is_featured: false,
                 images: { thumb1: document.getElementById('listThumb1').value }
             };
             push(ref(db, 'inventory'), newItem).then(() => {
@@ -411,10 +342,8 @@
                 tbody.innerHTML = "";
                 const data = snapshot.val();
                 if(!data) { tbody.innerHTML = "<tr><td colspan='5'>No items listed.</td></tr>"; return; }
-                
                 const items = Object.entries(data).map(([key, val]) => ({ ...val, key })).filter(item => item.owner_uid === uid);
                 if(items.length === 0) { tbody.innerHTML = "<tr><td colspan='5'>No items listed.</td></tr>"; return; }
-
                 items.forEach(item => {
                     let statusBadge = '<span class="status-badge st-review">Under Review</span>';
                     let resultText = "-";
@@ -422,7 +351,6 @@
                     else if (item.status_label && item.status_label.includes("SOLD")) { statusBadge = '<span class="status-badge st-sold">Sold</span>'; resultText = item.status_label; } 
                     else if (item.is_featured) { statusBadge = '<span class="status-badge st-scheduled">Scheduled</span>'; } 
                     else if (item.lot > 0) { statusBadge = '<span class="status-badge st-approved">Approved</span>'; }
-
                     const tr = document.createElement('tr');
                     tr.innerHTML = `<td>${statusBadge}</td><td>${item.title}</td><td>$${item.start_price}</td><td>${resultText}</td><td>${item.approval_status !== 'inactive' && !item.status_label?.includes("SOLD") ? `<button class="btn btn-cancel" onclick="makeInactive('${item.key}')">Deactivate</button>` : ''}</td>`;
                     tbody.appendChild(tr);
@@ -434,10 +362,30 @@
             if(confirm("Remove this item?")) update(ref(db, `inventory/${key}`), { approval_status: 'inactive' });
         }
 
-        // --- ACTIONS ---
+        // --- ACTIONS (UPDATED TO CREATE PROFILE IF MISSING) ---
         window.saveProfile = function() {
             const newPhone = document.getElementById('accPhone').value;
-            update(ref(db, `users/${currentUser.uid}`), { phone: newPhone }).then(() => alert("Profile Updated!"));
+            const userRef = ref(db, `users/${currentUser.uid}`);
+            
+            get(userRef).then((snapshot) => {
+                if(snapshot.exists()) {
+                    // Profile exists, just update phone
+                    update(userRef, { phone: newPhone }).then(() => alert("Profile Updated!"));
+                } else {
+                    // Profile missing (Admin/Old user), create it now
+                    set(userRef, {
+                        name: currentUser.displayName,
+                        email: currentUser.email,
+                        phone: newPhone,
+                        is_local: true, // Default for manual creation
+                        is_approved: true, // Auto-approve manually saved profiles (likely Admin)
+                        joined_at: Date.now()
+                    }).then(() => {
+                        alert("Profile Created & Saved!");
+                        location.reload(); // Refresh to show new data
+                    });
+                }
+            });
         }
 
         window.resetPassword = function() {
