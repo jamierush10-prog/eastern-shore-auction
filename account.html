@@ -8,7 +8,6 @@
         :root { --primary-color: #2563eb; --header-bg: #111827; --text-color: #1f2937; --bg-color: #f3f4f6; --success-color: #16a34a; --danger-color: #dc2626; --gold-color: #f59e0b; --info-color: #0891b2; }
         body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg-color); color: var(--text-color); margin: 0; }
         
-        /* HEADER */
         header { background: var(--header-bg); color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
         .brand { font-family: "Georgia", serif; font-size: 1.5rem; font-weight: bold; }
         .nav-link { color: #d1d5db; text-decoration: none; margin-left: 20px; cursor: pointer; }
@@ -16,7 +15,6 @@
 
         .container { max-width: 1000px; margin: 30px auto; padding: 20px; }
 
-        /* PROFILE CARD */
         .card { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 30px; }
         .section-title { border-bottom: 2px solid #e5e7eb; padding-bottom: 10px; margin-bottom: 20px; font-size: 1.5rem; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
         
@@ -26,29 +24,23 @@
         .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
         .form-group input:disabled { background: #f3f4f6; color: #6b7280; cursor: not-allowed; }
 
-        /* RATING STARS DISPLAY */
         .profile-rating { margin-top: 5px; font-size: 1.2rem; color: var(--gold-color); }
         .rating-text { font-size: 0.8rem; color: #6b7280; margin-left: 5px; vertical-align: middle; }
 
-        /* BUTTONS */
         .btn { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; color: white; }
         .btn-save { background: var(--primary-color); }
         .btn-reset { background: #4b5563; margin-left: 10px; }
         .btn-list { background: var(--primary-color); font-size: 1rem; }
         .btn-cancel { background: var(--danger-color); padding: 5px 10px; font-size: 0.8rem; }
-        
-        /* Action Buttons in Table */
         .btn-rate { background: var(--gold-color); padding: 6px 12px; font-size: 0.8rem; color: #fff; text-shadow: 0 1px 1px rgba(0,0,0,0.2); margin-left: 5px; }
         .btn-contact { background: var(--info-color); padding: 6px 12px; font-size: 0.8rem; color: #fff; }
 
-        /* TABLES - STACKED LAYOUT */
         .lists-container { display: flex; flex-direction: column; gap: 30px; } 
         
         table { width: 100%; border-collapse: collapse; font-size: 0.9rem; margin-top: 10px; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e5e7eb; }
         th { color: #6b7280; font-size: 0.8rem; text-transform: uppercase; background: #f9fafb; }
         
-        /* STATUS BADGES */
         .status-badge { padding: 4px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; }
         .st-review { background: #fef3c7; color: #92400e; }
         .st-approved { background: #dbeafe; color: #1e40af; }
@@ -56,11 +48,9 @@
         .st-sold { background: #111827; color: #fff; }
         .st-inactive { background: #f3f4f6; color: #9ca3af; text-decoration: line-through; }
 
-        /* MODAL */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
 
-        /* STAR RATING INPUT */
         .star-input { display: flex; flex-direction: row-reverse; justify-content: center; gap: 5px; font-size: 2rem; }
         .star-input input { display: none; }
         .star-input label { color: #ddd; cursor: pointer; transition: color 0.2s; }
@@ -120,7 +110,6 @@
         </div>
 
         <div class="lists-container">
-            
             <div class="card">
                 <div class="section-title" style="color: var(--primary-color);">📦 Items Purchased</div>
                 <table>
@@ -128,7 +117,6 @@
                     <tbody id="purchaseList"><tr><td colspan="5">Loading...</td></tr></tbody>
                 </table>
             </div>
-
             <div class="card">
                 <div class="section-title" style="color: var(--success-color);">💰 Items Sold</div>
                 <table>
@@ -136,7 +124,6 @@
                     <tbody id="salesList"><tr><td colspan="5">Loading...</td></tr></tbody>
                 </table>
             </div>
-
         </div>
     </div>
 
@@ -147,6 +134,20 @@
                 <div class="form-group"><label>Seller Name (You):</label><input type="text" id="listSeller" disabled></div>
                 <div class="form-group"><label>Item Title:</label><input type="text" id="listTitle" required placeholder="e.g. Vintage Lamp"></div>
                 <div class="form-group"><label>Subtitle:</label><input type="text" id="listSub" placeholder="Condition / Category"></div>
+                
+                <div class="form-group" style="background:#f0f9ff; padding:10px; border-radius:6px; border:1px solid #bae6fd;">
+                    <label>📍 Where is the item located?</label>
+                    <input type="text" id="listLoc" required placeholder="e.g. Lake Forrest - Daphne">
+                </div>
+                <div class="form-group" style="background:#f0f9ff; padding:10px; border-radius:6px; border:1px solid #bae6fd;">
+                    <label>💵 How do you want to be paid?</label>
+                    <input type="text" id="listPay" required placeholder="e.g. Venmo, Cash, CashApp">
+                </div>
+                <div class="form-group" style="background:#f0f9ff; padding:10px; border-radius:6px; border:1px solid #bae6fd;">
+                    <label>🚚 Delivery Preference:</label>
+                    <input type="text" id="listDel" required placeholder="e.g. Porch Pickup, Meet at Public Place">
+                </div>
+
                 <div class="form-group"><label>Starting Price ($):</label><input type="number" id="listPrice" required></div>
                 <div class="form-group"><label>Main Image URL:</label><input type="text" id="listImg" required placeholder="https://..."></div>
                 <div class="form-group"><label>Description:</label><textarea id="listDesc" rows="3" required></textarea></div>
@@ -230,7 +231,6 @@
             });
         }
 
-        // --- 1. PROFILE ---
         function loadUserProfile(uid) {
             const userRef = ref(db, `users/${uid}`);
             onValue(userRef, (snapshot) => {
@@ -239,14 +239,11 @@
                     document.getElementById('accName').value = data.name || currentUser.displayName;
                     document.getElementById('accEmail').value = data.email || currentUser.email;
                     document.getElementById('accPhone').value = data.phone || "";
-                    
                     const joinDate = data.joined_at ? new Date(data.joined_at).toLocaleDateString() : new Date().toLocaleDateString();
                     document.getElementById('accDate').value = joinDate;
-
                     const totalStars = data.rating_total || 0;
                     const countReviews = data.rating_count || 0;
                     const average = countReviews > 0 ? (totalStars / countReviews).toFixed(1) : "New";
-                    
                     let starStr = "☆☆☆☆☆";
                     if(countReviews > 0) {
                         const roundScore = Math.round(totalStars / countReviews);
@@ -254,7 +251,6 @@
                     }
                     document.getElementById('userRatingDisplay').innerHTML = `${starStr} <span class="rating-text">(${average} / 5 from ${countReviews} reviews)</span>`;
                 } else {
-                    // Fallback logic
                     document.getElementById('accName').value = currentUser.displayName;
                     document.getElementById('accEmail').value = currentUser.email;
                     document.getElementById('accDate').value = "Not registered in DB";
@@ -262,7 +258,6 @@
             });
         }
 
-        // --- 2. HISTORY LOGIC (WITH CONTACT BUTTON) ---
         function loadUserHistory(userEmail) {
             const historyRef = ref(db, 'sales_history');
             onValue(historyRef, (snapshot) => {
@@ -277,46 +272,24 @@
 
                 items.forEach(item => {
                     const dateStr = new Date(item.date).toLocaleDateString();
-                    
-                    // BOUGHT (Show Seller)
                     if (item.winner_email && item.winner_email.toLowerCase() === userEmail.toLowerCase()) {
                         boughtCount++;
                         const seller = allUsersCache.find(u => u.email && u.email.toLowerCase() === (item.seller_email || "").toLowerCase());
                         const sellerName = seller ? seller.name : (item.seller_name || "Unknown");
                         const sellerEmail = item.seller_email || "";
-                        const sellerPhone = seller ? seller.phone : "N/A"; // Get Phone
-                        
+                        const sellerPhone = seller ? seller.phone : "N/A";
                         const tr = document.createElement('tr');
-                        tr.innerHTML = `
-                            <td>${dateStr}</td>
-                            <td>${item.item_title}</td>
-                            <td>${sellerName}</td>
-                            <td>$${item.final_price}</td>
-                            <td>
-                                <button class="btn btn-contact" onclick="viewContact('${sellerName}', '${sellerEmail}', '${sellerPhone}')">Contact</button>
-                                <button class="btn btn-rate" onclick="openRateModal('${sellerEmail}', '${sellerName}')">Rate</button>
-                            </td>`;
+                        tr.innerHTML = `<td>${dateStr}</td><td>${item.item_title}</td><td>${sellerName}</td><td>$${item.final_price}</td><td><button class="btn btn-contact" onclick="viewContact('${sellerName}', '${sellerEmail}', '${sellerPhone}')">Contact</button><button class="btn btn-rate" onclick="openRateModal('${sellerEmail}', '${sellerName}')">Rate</button></td>`;
                         purchasesTbody.appendChild(tr);
                     }
-
-                    // SOLD (Show Buyer)
                     if (item.seller_email && item.seller_email.toLowerCase() === userEmail.toLowerCase()) {
                         soldCount++;
                         const buyer = allUsersCache.find(u => u.email && u.email.toLowerCase() === (item.winner_email || "").toLowerCase());
                         const buyerName = buyer ? buyer.name : (item.winner_name || "Unknown");
                         const buyerEmail = item.winner_email || "";
-                        const buyerPhone = buyer ? buyer.phone : "N/A"; // Get Phone
-
+                        const buyerPhone = buyer ? buyer.phone : "N/A";
                         const tr = document.createElement('tr');
-                        tr.innerHTML = `
-                            <td>${dateStr}</td>
-                            <td>${item.item_title}</td>
-                            <td>${buyerName}</td>
-                            <td>$${item.final_price}</td>
-                            <td>
-                                <button class="btn btn-contact" onclick="viewContact('${buyerName}', '${buyerEmail}', '${buyerPhone}')">Contact</button>
-                                <button class="btn btn-rate" onclick="openRateModal('${buyerEmail}', '${buyerName}')">Rate</button>
-                            </td>`;
+                        tr.innerHTML = `<td>${dateStr}</td><td>${item.item_title}</td><td>${buyerName}</td><td>$${item.final_price}</td><td><button class="btn btn-contact" onclick="viewContact('${buyerName}', '${buyerEmail}', '${buyerPhone}')">Contact</button><button class="btn btn-rate" onclick="openRateModal('${buyerEmail}', '${buyerName}')">Rate</button></td>`;
                         salesTbody.appendChild(tr);
                     }
                 });
@@ -325,22 +298,15 @@
             });
         }
 
-        // --- CONTACT MODAL LOGIC ---
         window.viewContact = function(name, email, phone) {
             document.getElementById('contactName').innerText = name;
             const elEmail = document.getElementById('contactEmail');
             const elPhone = document.getElementById('contactPhone');
-            
-            elEmail.innerText = email;
-            elEmail.href = "mailto:" + email;
-            
-            elPhone.innerText = phone;
-            elPhone.href = "tel:" + phone;
-
+            elEmail.innerText = email; elEmail.href = "mailto:" + email;
+            elPhone.innerText = phone; elPhone.href = "tel:" + phone;
             document.getElementById('contactModal').style.display = 'flex';
         }
 
-        // --- 3. RATING LOGIC ---
         window.openRateModal = function(email, name) {
             if(!email) { alert("Cannot rate this user (No email found)."); return; }
             if(email.toLowerCase() === currentUser.email.toLowerCase()) { alert("You cannot rate yourself."); return; }
@@ -367,7 +333,6 @@
             } else { alert("Error finding user profile."); }
         }
 
-        // --- 4. LISTINGS LOGIC ---
         window.openListingModal = function() {
             document.getElementById('listSeller').value = document.getElementById('accName').value;
             document.getElementById('listingModal').style.display = 'flex';
@@ -380,6 +345,12 @@
                 start_price: parseInt(document.getElementById('listPrice').value),
                 image_url: document.getElementById('listImg').value,
                 description: document.getElementById('listDesc').value,
+                
+                // NEW LOGISTICS FIELDS
+                location: document.getElementById('listLoc').value,
+                payment_methods: document.getElementById('listPay').value,
+                delivery_method: document.getElementById('listDel').value,
+
                 owner_uid: currentUser.uid,
                 seller_name: document.getElementById('listSeller').value,
                 seller_email: currentUser.email,
@@ -420,14 +391,12 @@
             if(confirm("Remove this item?")) update(ref(db, `inventory/${key}`), { approval_status: 'inactive' });
         }
 
-        // --- ACTIONS ---
         window.saveProfile = function() {
             const newPhone = document.getElementById('accPhone').value;
             const userRef = ref(db, `users/${currentUser.uid}`);
             get(userRef).then((snapshot) => {
-                if(snapshot.exists()) {
-                    update(userRef, { phone: newPhone }).then(() => alert("Profile Updated!"));
-                } else {
+                if(snapshot.exists()) { update(userRef, { phone: newPhone }).then(() => alert("Profile Updated!")); } 
+                else {
                     set(userRef, {
                         name: currentUser.displayName, email: currentUser.email, phone: newPhone,
                         is_local: true, is_approved: true, joined_at: Date.now()

@@ -55,14 +55,11 @@
         .form-group label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9rem; }
         .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
         
-        /* CONTROL CARD UPDATED */
-        .control-card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 30px; display: flex; flex-direction: column; gap: 20px; border-left: 5px solid var(--primary-color); }
-        
-        .control-row { display: flex; gap: 20px; align-items: flex-start; }
+        .control-card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 30px; display: flex; flex-direction: column; gap: 15px; border-left: 5px solid var(--primary-color); }
+        .control-row { display: flex; gap: 15px; align-items: flex-end; }
         .control-input-group { flex: 1; }
         .control-input-group label { display: block; font-size: 0.85rem; font-weight: bold; color: #4b5563; margin-bottom: 5px; }
-        .control-input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-family: inherit; }
-        /* Textarea specific style */
+        .control-input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
         textarea.control-input { resize: vertical; min-height: 80px; }
 
         .btn { padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9rem; font-weight: bold; color: white; }
@@ -97,59 +94,34 @@
         <div id="inventoryView" class="view-section active">
             <div class="control-card">
                 <div class="control-row">
-                    <div class="control-input-group" style="flex: 1;">
+                    <div class="control-input-group">
                         <label>📅 Next Auction Date:</label>
                         <input type="text" id="scheduleInput" class="control-input" placeholder="e.g. Thursday at 7:30 PM">
                     </div>
                 </div>
-                
                 <div class="control-row">
-                    <div class="control-input-group" style="flex: 1;">
-                        <label>📢 Announcement (Use **text** for bold):</label>
-                        <textarea id="announcementInput" class="control-input" rows="4" placeholder="Enter announcements here...&#10;e.g. Pickup is Friday 9-5&#10;**Special Event** tonight!"></textarea>
+                    <div class="control-input-group">
+                        <label>📢 Announcement:</label>
+                        <textarea id="announcementInput" class="control-input" rows="4" placeholder="Use **bold** for emphasis"></textarea>
                     </div>
                     <button class="btn btn-edit" style="height: fit-content; align-self: flex-end;" onclick="updateSettings()">Update All</button>
                 </div>
-
                 <hr style="border:0; border-top:1px solid #e5e7eb; margin:0;">
                 <button class="btn btn-stop" onclick="finalizeAuction()">⛔ End Current Auction</button>
             </div>
 
             <h2>Item Inventory</h2>
             <table>
-                <thead>
-                    <tr>
-                        <th style="text-align:center;">Feat</th>
-                        <th>Lot #</th>
-                        <th>Item</th>
-                        <th>Seller</th>
-                        <th>Status / Price</th>
-                        <th>Run</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="inventoryTableBody">
-                    <tr><td colspan="7" style="text-align:center;">Loading inventory...</td></tr>
-                </tbody>
+                <thead><tr><th style="text-align:center;">Feat</th><th>Lot #</th><th>Item</th><th>Seller</th><th>Status / Price</th><th>Run</th><th>Actions</th></tr></thead>
+                <tbody id="inventoryTableBody"><tr><td colspan="7" style="text-align:center;">Loading inventory...</td></tr></tbody>
             </table>
         </div>
 
         <div id="usersView" class="view-section">
             <h2>User Management</h2>
             <table>
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Phone</th>
-                        <th>Local?</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="usersTableBody">
-                    <tr><td colspan="6" style="text-align:center;">Loading users...</td></tr>
-                </tbody>
+                <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Local?</th><th>Status</th><th>Action</th></tr></thead>
+                <tbody id="usersTableBody"><tr><td colspan="6" style="text-align:center;">Loading users...</td></tr></tbody>
             </table>
         </div>
 
@@ -159,19 +131,8 @@
                 <button class="btn btn-manual" onclick="openManualLogModal()">+ Manually Record Sale</button>
             </div>
             <table>
-                <thead>
-                    <tr>
-                        <th>Lot #</th>
-                        <th>Item</th>
-                        <th>Sold Price</th>
-                        <th>Buyer Contact</th>
-                        <th>Seller Contact</th>
-                        <th>Date</th>
-                    </tr>
-                </thead>
-                <tbody id="salesTableBody">
-                    <tr><td colspan="6" style="text-align:center;">Loading history...</td></tr>
-                </tbody>
+                <thead><tr><th>Lot #</th><th>Item</th><th>Sold Price</th><th>Buyer Contact</th><th>Seller Contact</th><th>Date</th></tr></thead>
+                <tbody id="salesTableBody"><tr><td colspan="6" style="text-align:center;">Loading history...</td></tr></tbody>
             </table>
         </div>
 
@@ -184,6 +145,20 @@
                     <div class="form-group"><label>Title:</label><input type="text" id="inpTitle" required></div>
                     <div class="form-group"><label>Subtitle:</label><input type="text" id="inpSub" placeholder="Condition / Category"></div>
                     <div class="form-group"><label>Seller Name:</label><input type="text" id="inpSeller" placeholder="e.g. Jamie R."></div>
+                    
+                    <div class="form-group" style="background:#f0f9ff; padding:10px; border-radius:6px; border:1px solid #bae6fd;">
+                        <label>📍 Item Location:</label>
+                        <input type="text" id="inpLoc" placeholder="e.g. Lake Forrest - Daphne">
+                    </div>
+                    <div class="form-group" style="background:#f0f9ff; padding:10px; border-radius:6px; border:1px solid #bae6fd;">
+                        <label>💵 Payment Accepted:</label>
+                        <input type="text" id="inpPay" placeholder="e.g. Venmo, Cash, CashApp">
+                    </div>
+                    <div class="form-group" style="background:#f0f9ff; padding:10px; border-radius:6px; border:1px solid #bae6fd;">
+                        <label>🚚 Delivery Method:</label>
+                        <input type="text" id="inpDel" placeholder="e.g. Porch Pickup, Meet at Public Place">
+                    </div>
+
                     <div class="form-group"><label>Start Bid ($):</label><input type="number" id="inpPrice" required></div>
                     <div class="form-group"><label>Reserve Price ($):</label><input type="number" id="inpReserve" placeholder="Hidden Minimum"></div>
                     <div class="form-group"><label>Main Image URL:</label><input type="text" id="inpImg" required></div>
@@ -197,7 +172,6 @@
                 </form>
             </div>
         </div>
-
     </div>
 
     <div id="manualLogModal" class="modal-overlay">
@@ -220,7 +194,7 @@
         import { getDatabase, ref, onValue, set, push, remove, update, child, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
         // --- PASTE KEYS HERE ---
-        const firebaseConfig = {
+       const firebaseConfig = {
   apiKey: "AIzaSyCt0i8a7ZVRlNmSts9yM4uGwV7ghPU59rk",
   authDomain: "eastern-shore-auction.firebaseapp.com",
   databaseURL: "https://eastern-shore-auction-default-rtdb.firebaseio.com",
@@ -252,28 +226,21 @@
             }
         });
 
-        // --- SETTINGS (SCHEDULE & ANNOUNCEMENT) ---
         function loadSettings() {
             get(ref(db, 'settings')).then((snapshot) => {
                 if(snapshot.exists()) {
                     const data = snapshot.val();
                     document.getElementById('scheduleInput').value = data.schedule || "";
-                    // Load announcement
                     document.getElementById('announcementInput').value = data.announcement || "";
                 }
             });
         }
-
         window.updateSettings = function() {
             const schedule = document.getElementById('scheduleInput').value;
             const announcement = document.getElementById('announcementInput').value;
-            update(ref(db, 'settings'), {
-                schedule: schedule,
-                announcement: announcement
-            }).then(() => { alert("Settings updated!"); });
+            update(ref(db, 'settings'), { schedule: schedule, announcement: announcement }).then(() => { alert("Settings updated!"); });
         }
 
-        // --- NAVIGATION ---
         window.switchView = function(viewName) {
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
             document.getElementById(viewName + 'View').classList.add('active');
@@ -302,11 +269,9 @@
             });
         }
 
-        // --- SALES HISTORY ---
         function loadHistory() {
             const refHist = ref(db, 'sales_history');
             const refUsers = ref(db, 'users');
-
             onValue(refHist, (histSnap) => {
                 const historyData = histSnap.val();
                 get(refUsers).then((userSnap) => {
@@ -314,49 +279,29 @@
                     const allUsers = Object.values(usersData);
                     const tbody = document.getElementById('salesTableBody');
                     tbody.innerHTML = "";
-
                     if(!historyData) { tbody.innerHTML = "<tr><td colspan='6'>No sales yet.</td></tr>"; return; }
-                    
                     const items = Object.values(historyData).sort((a, b) => b.date - a.date);
-                    
                     items.forEach(item => {
                         const dateStr = new Date(item.date).toLocaleDateString();
                         let lotDisplay = item.lot;
-                        if (!lotDisplay || lotDisplay === 0 || lotDisplay === "0") {
-                            lotDisplay = `<span style="color:#9ca3af; font-style:italic;">#Old</span>`;
-                        } else {
-                            lotDisplay = `<strong>#${lotDisplay}</strong>`;
-                        }
-
+                        if (!lotDisplay || lotDisplay === 0 || lotDisplay === "0") { lotDisplay = `<span style="color:#9ca3af; font-style:italic;">#Old</span>`; } 
+                        else { lotDisplay = `<strong>#${lotDisplay}</strong>`; }
                         const buyerProfile = allUsers.find(u => u.email && u.email.toLowerCase() === (item.winner_email || "").toLowerCase());
                         const buyerPhone = buyerProfile && buyerProfile.phone ? buyerProfile.phone : "N/A";
                         const buyerName = buyerProfile ? buyerProfile.name : item.winner_name;
                         const buyerEmail = item.winner_email || "N/A";
-
                         const sellerProfile = allUsers.find(u => u.name && u.name.toLowerCase() === (item.seller_name || "").toLowerCase());
                         const sellerPhone = sellerProfile && sellerProfile.phone ? sellerProfile.phone : "N/A";
                         const sellerEmail = sellerProfile ? sellerProfile.email : "N/A";
                         const sellerName = item.seller_name || "House Item";
-                        
                         const tr = document.createElement('tr');
-                        tr.innerHTML = `
-                            <td>${lotDisplay}</td>
-                            <td>
-                                <img src="https://img.icons8.com/color/48/sold.png" class="status-icon" alt="Sold" style="width:20px; vertical-align:middle; margin-right:5px;">
-                                ${item.item_title}
-                            </td>
-                            <td style="color:#16a34a; font-weight:bold;">$${item.final_price}</td>
-                            <td class="contact-info"><div style="font-weight:bold;">${buyerName}</div><div>${buyerEmail}</div><div style="color:#2563eb;">📞 ${buyerPhone}</div></td>
-                            <td class="contact-info"><div style="font-weight:bold;">${sellerName}</div><div>${sellerEmail}</div><div style="color:#2563eb;">📞 ${sellerPhone}</div></td>
-                            <td>${dateStr}</td>
-                        `;
+                        tr.innerHTML = `<td>${lotDisplay}</td><td><img src="https://img.icons8.com/color/48/sold.png" class="status-icon" alt="Sold" style="width:20px; vertical-align:middle; margin-right:5px;"> ${item.item_title}</td><td style="color:#16a34a; font-weight:bold;">$${item.final_price}</td><td class="contact-info"><div style="font-weight:bold;">${buyerName}</div><div>${buyerEmail}</div><div style="color:#2563eb;">📞 ${buyerPhone}</div></td><td class="contact-info"><div style="font-weight:bold;">${sellerName}</div><div>${sellerEmail}</div><div style="color:#2563eb;">📞 ${sellerPhone}</div></td><td>${dateStr}</td>`;
                         tbody.appendChild(tr);
                     });
                 });
             });
         }
 
-        // --- INVENTORY ---
         function loadInventory() {
             const invRef = ref(db, 'inventory');
             onValue(invRef, (snapshot) => {
@@ -371,25 +316,11 @@
                     tr.id = `row-${item.key}`; 
                     tr.dataset.defaultPrice = item.start_price;
                     const isChecked = item.is_featured ? 'checked' : '';
-                    
                     let statusDisplay = "";
                     if(item.status_label && item.status_label.includes("SOLD")) { statusDisplay = `<span class="text-sold">${item.status_label}</span>`; } 
                     else if(item.status_label && item.status_label.includes("PASSED")) { statusDisplay = `<span class="text-passed">${item.status_label}</span>`; } 
                     else { statusDisplay = `Start: $${item.start_price}<br><small style="color:#999">Reserve: $${item.reserve_price || 0}</small>`; }
-
-                    tr.innerHTML = `
-                        <td style="text-align:center;"><input type="checkbox" ${isChecked} onchange="toggleFeatured('${item.key}', this.checked)"></td>
-                        <td><strong>#${item.lot}</strong></td>
-                        <td class="item-cell"><img src="${item.image_url}" class="img-preview"><span class="item-title">${item.title}</span></td>
-                        <td>${item.seller_name || "N/A"}</td>
-                        <td class="price-cell">${statusDisplay}</td>
-                        <td><span class="status-pill ${item.times_run > 0 ? 'status-run' : 'status-new'}">${item.times_run || 0} Times</span></td>
-                        <td>
-                            <button class="btn btn-queue" onclick="queueItem('${item.key}')">📢 Queue</button>
-                            <button class="btn btn-edit" onclick="editItem('${item.key}')">✏️ Edit</button>
-                            <button class="btn btn-delete" onclick="deleteItem('${item.key}')">🗑️</button>
-                        </td>
-                    `;
+                    tr.innerHTML = `<td style="text-align:center;"><input type="checkbox" ${isChecked} onchange="toggleFeatured('${item.key}', this.checked)"></td><td><strong>#${item.lot}</strong></td><td class="item-cell"><img src="${item.image_url}" class="img-preview"><span class="item-title">${item.title}</span></td><td>${item.seller_name || "N/A"}</td><td class="price-cell">${statusDisplay}</td><td><span class="status-pill ${item.times_run > 0 ? 'status-run' : 'status-new'}">${item.times_run || 0} Times</span></td><td><button class="btn btn-queue" onclick="queueItem('${item.key}')">📢 Queue</button> <button class="btn btn-edit" onclick="editItem('${item.key}')">✏️ Edit</button> <button class="btn btn-delete" onclick="deleteItem('${item.key}')">🗑️</button></td>`;
                     tbody.appendChild(tr);
                 });
             });
@@ -397,7 +328,6 @@
 
         window.toggleFeatured = function(key, status) { update(ref(db, `inventory/${key}`), { is_featured: status }); }
 
-        // --- USERS ---
         function loadUsers() {
             const userRef = ref(db, 'users');
             onValue(userRef, (snapshot) => {
@@ -409,18 +339,9 @@
                     const isApproved = user.is_approved === true;
                     const phoneDisplay = user.phone ? user.phone : '<span style="color:#9ca3af">N/A</span>';
                     const localDisplay = user.is_local ? 'Yes' : 'No';
-                    
-                    let statusPill = '';
-                    let actionBtn = '';
-
-                    if(isApproved) {
-                        statusPill = '<span class="status-pill status-approved">Active</span>';
-                        actionBtn = `<button class="btn btn-ban" onclick="banUser('${key}')">Ban</button>`;
-                    } else {
-                        statusPill = '<span class="status-pill status-pending">Pending/Banned</span>';
-                        actionBtn = `<button class="btn btn-queue" onclick="approveUser('${key}')">Approve</button>`;
-                    }
-
+                    let statusPill = ''; let actionBtn = '';
+                    if(isApproved) { statusPill = '<span class="status-pill status-approved">Active</span>'; actionBtn = `<button class="btn btn-ban" onclick="banUser('${key}')">Ban</button>`; } 
+                    else { statusPill = '<span class="status-pill status-pending">Pending/Banned</span>'; actionBtn = `<button class="btn btn-queue" onclick="approveUser('${key}')">Approve</button>`; }
                     const tr = document.createElement('tr');
                     tr.innerHTML = `<td><strong>${user.name}</strong></td><td>${user.email}</td><td>${phoneDisplay}</td><td>${localDisplay}</td><td>${statusPill}</td><td>${actionBtn}</td>`;
                     tbody.appendChild(tr);
@@ -430,7 +351,6 @@
         window.approveUser = function(uid) { if(confirm("Approve this user?")) update(ref(db, `users/${uid}`), { is_approved: true }); }
         window.banUser = function(uid) { if(confirm("BAN this user?")) update(ref(db, `users/${uid}`), { is_approved: false }); }
 
-        // --- MONITOR ---
         let activeAuctionData = null;
         function monitorActiveAuction() {
             const activeRef = ref(db, 'active_auction');
@@ -478,7 +398,7 @@
             }
         }
 
-        // --- CRUD & QUEUE ---
+        // --- CRUD & QUEUE (UPDATED WITH LOGISTICS) ---
         window.saveItem = function() {
             const key = document.getElementById('editKey').value;
             const data = {
@@ -490,6 +410,12 @@
                 reserve_price: parseInt(document.getElementById('inpReserve').value) || 0,
                 image_url: document.getElementById('inpImg').value,
                 description: document.getElementById('inpDesc').value,
+                
+                // NEW LOGISTICS FIELDS
+                location: document.getElementById('inpLoc').value,
+                payment_methods: document.getElementById('inpPay').value,
+                delivery_method: document.getElementById('inpDel').value,
+                
                 times_run: 0, is_featured: false,
                 images: { thumb1: document.getElementById('inpThumb1').value, thumb2: document.getElementById('inpThumb2').value, thumb3: document.getElementById('inpThumb3').value, thumb4: document.getElementById('inpThumb4').value }
             };
@@ -503,6 +429,7 @@
         }
 
         window.deleteItem = function(key) { if(confirm("Delete item?")) remove(ref(db, `inventory/${key}`)); }
+        
         window.editItem = function(key) {
             resetForm(); document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
             document.getElementById('addView').classList.add('active'); document.getElementById('formTitle').innerText = "Edit Item";
@@ -517,6 +444,12 @@
                 document.getElementById('inpReserve').value = data.reserve_price || "";
                 document.getElementById('inpImg').value = data.image_url;
                 document.getElementById('inpDesc').value = data.description;
+                
+                // NEW LOGISTICS POPULATE
+                document.getElementById('inpLoc').value = data.location || "";
+                document.getElementById('inpPay').value = data.payment_methods || "";
+                document.getElementById('inpDel').value = data.delivery_method || "";
+
                 if(data.images) {
                     document.getElementById('inpThumb1').value = data.images.thumb1 || "";
                     document.getElementById('inpThumb2').value = data.images.thumb2 || "";
@@ -537,10 +470,8 @@
                 const hasBidder = !!currentAuction.high_bidder_uid;
                 let statusLabel = "PASSED";
                 let isSold = false;
-
                 if (hasBidder && finalBid >= reserve) { statusLabel = `SOLD: $${finalBid}`; isSold = true; } 
                 else { statusLabel = hasBidder ? "PASSED (Reserve)" : "PASSED (No Bids)"; }
-
                 update(ref(db, `inventory/${currentAuction.inventory_key}`), { status_label: statusLabel });
 
                 const closeAuction = () => {
@@ -568,7 +499,12 @@
                             current_bid: newItem.start_price, image_url: newItem.image_url, reserve_price: newItem.reserve_price || 0,
                             end_time: Date.now() + (6 * 60 * 1000), images: newItem.images,
                             high_bidder_max: 0, high_bidder_name: "", high_bidder_uid: "", bid_history: null,
-                            inventory_key: newKey, seller_name: newItem.seller_name
+                            inventory_key: newKey, seller_name: newItem.seller_name,
+                            
+                            // PASS LOGISTICS TO ACTIVE
+                            location: newItem.location,
+                            payment_methods: newItem.payment_methods,
+                            delivery_method: newItem.delivery_method
                         };
                         set(ref(db, 'active_auction'), auctionData);
                         update(ref(db, `inventory/${newKey}`), { times_run: (newItem.times_run || 0) + 1, status_label: "LIVE" });

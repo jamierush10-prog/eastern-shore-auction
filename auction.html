@@ -5,6 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Eastern Shore Auction House</title>
     <style>
+        /* ... KEEP YOUR EXISTING CSS ... */
+        /* ADD THIS NEW STYLE FOR LOGISTICS BOX */
+        .logistics-box {
+            background-color: #f9fafb;
+            border: 1px solid #e5e7eb;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            color: #4b5563;
+        }
+        .logistics-item { margin-bottom: 8px; display: flex; align-items: flex-start; gap: 10px; }
+        .logistics-item:last-child { margin-bottom: 0; }
+        .log-icon { font-size: 1.1rem; min-width: 25px; }
+        .log-text strong { color: #1f2937; display: block; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* --- COPY ALL OTHER CSS FROM PREVIOUS VERSION --- */
         /* --- CSS STYLES --- */
         :root { --primary-color: #2563eb; --urgent-color: #dc2626; --bg-color: #f3f4f6; --text-color: #1f2937; --border-color: #e5e7eb; --header-bg: #111827; --header-text: #f9fafb; --success-color: #16a34a; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
@@ -42,7 +59,7 @@
         .details-section { display: flex; flex-direction: column; }
         h1 { margin: 0 0 10px 0; font-size: 2rem; line-height: 1.1; }
         .subtitle { color: #6b7280; font-size: 0.9rem; margin-bottom: 10px; }
-        .seller-info { margin-bottom: 20px; font-size: 0.95rem; color: #4b5563; display: none; }
+        .seller-info { margin-bottom: 15px; font-size: 0.95rem; color: #4b5563; display: none; }
         .seller-info strong { color: #1f2937; }
 
         .timer-block { background-color: #fee2e2; color: var(--urgent-color); padding: 15px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px; font-weight: bold; border: 1px solid #fca5a5; }
@@ -62,9 +79,7 @@
         button.bid-btn { background-color: var(--primary-color); color: white; border: none; padding: 12px 24px; border-radius: 6px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s; width: 100%; }
         button.bid-btn:hover { background-color: #1d4ed8; }
         
-        /* USER MAX BID DISPLAY */
         #userMaxBidDisplay { margin-top: 10px; font-size: 0.9rem; color: var(--primary-color); text-align: center; display: none; background: #dbeafe; padding: 8px; border-radius: 4px; }
-        /* Winning Green Status */
         .winning-bid-status { background-color: #dcfce7 !important; color: #166534 !important; border-color: #86efac !important; }
         
         .user-badge { background: #e0f2fe; color: #0369a1; padding: 10px; border-radius: 6px; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border: 1px solid #bae6fd; }
@@ -97,11 +112,8 @@
         #winnerText { font-size: 1.8rem; font-weight: bold; margin: 10px 0; color: var(--text-color); }
         #winnerDetail { font-size: 1.1rem; color: #6b7280; margin-bottom: 20px; }
         .winner-card { border-top: 5px solid var(--success-color); }
-        
-        /* GIF IMAGE STYLE */
         #winnerGif { width: 100%; max-width: 300px; height: auto; margin: 0 auto 15px auto; display: block; border-radius: 8px; }
 
-        /* --- MOBILE OPTIMIZATIONS --- */
         @media (max-width: 768px) {
             .site-header { flex-direction: column; gap: 10px; height: auto; padding: 15px 0; }
             .header-left, .header-right { position: static; width: 100%; justify-content: center; margin-bottom: 5px; }
@@ -150,6 +162,21 @@
             <div class="subtitle" id="itemSubtitle">...</div>
             
             <div id="sellerInfo" class="seller-info">Seller: <strong id="sellerName">...</strong></div>
+
+            <div id="logisticsBox" class="logistics-box">
+                <div class="logistics-item">
+                    <div class="log-icon">📍</div>
+                    <div class="log-text"><strong>Location:</strong> <span id="dispLoc">...</span></div>
+                </div>
+                <div class="logistics-item">
+                    <div class="log-icon">💵</div>
+                    <div class="log-text"><strong>Payment:</strong> <span id="dispPay">...</span></div>
+                </div>
+                <div class="logistics-item">
+                    <div class="log-icon">🚚</div>
+                    <div class="log-text"><strong>Delivery:</strong> <span id="dispDel">...</span></div>
+                </div>
+            </div>
 
             <div class="timer-block"><span>TIME REMAINING</span><span class="countdown" id="countdown">--:--</span></div>
 
@@ -260,7 +287,6 @@
         window.logout = function() { signOut(auth).then(() => { window.location.href = "index.html"; }); }
         window.openAdminPanel = function() { window.location.href = 'admin.html'; }
 
-        // --- CHAT LOGIC ---
         const chatRef = query(ref(db, 'auction_chat'), limitToLast(50));
         window.sendChat = function() {
             const input = document.getElementById('chatInput');
@@ -284,7 +310,6 @@
             }
         });
 
-        // --- AUCTION DATA ---
         onValue(dbRef, (snapshot) => {
             const data = snapshot.val();
             if (data) {
@@ -301,6 +326,11 @@
                     document.getElementById('sellerName').innerText = data.seller_name;
                     document.getElementById('sellerInfo').style.display = 'block';
                 } else { document.getElementById('sellerInfo').style.display = 'none'; }
+
+                // --- NEW LOGISTICS DISPLAY ---
+                document.getElementById('dispLoc').innerText = data.location || "Not Specified";
+                document.getElementById('dispPay').innerText = data.payment_methods || "Cash";
+                document.getElementById('dispDel').innerText = data.delivery_method || "Local Pickup";
 
                 const input = document.getElementById('bidInput');
                 if(document.activeElement !== input) input.value = globalCurrentBid + 1;
@@ -441,11 +471,11 @@
                 const currentLeaderUID = data.high_bidder_uid || "";
                 const currentPrice = data.current_bid;
 
-                // --- ANTI-SNIPING LOGIC (Extend time if < 30s) ---
+                // --- ANTI-SNIPING LOGIC ---
                 const now = Date.now();
                 let newEndTime = data.end_time;
                 if ((data.end_time - now) < 30000) {
-                    newEndTime = now + 30000; // Reset timer to 30 seconds
+                    newEndTime = now + 30000; 
                 }
 
                 if (currentUser.uid === currentLeaderUID) {
