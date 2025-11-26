@@ -65,7 +65,6 @@
         #userMaxBidDisplay { margin-top: 10px; font-size: 0.9rem; color: var(--primary-color); text-align: center; display: none; background: #dbeafe; padding: 8px; border-radius: 4px; }
         .user-badge { background: #e0f2fe; color: #0369a1; padding: 10px; border-radius: 6px; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border: 1px solid #bae6fd; }
         
-        /* WINNING STATUS */
         .winning-bid-status { background-color: #dcfce7 !important; color: #166534 !important; border-color: #86efac !important; }
 
         /* CHAT SECTION */
@@ -92,10 +91,10 @@
         .btn-yes { background: var(--primary-color); color: white; }
         .btn-no { background: #e5e7eb; color: #374151; }
 
-        #winnerIcon { font-size: 4rem; margin-bottom: 10px; }
         #winnerText { font-size: 1.8rem; font-weight: bold; margin: 10px 0; color: var(--text-color); }
         #winnerDetail { font-size: 1.1rem; color: #6b7280; margin-bottom: 20px; }
         .winner-card { border-top: 5px solid var(--success-color); }
+        #winnerGif { width: 150px; height: auto; margin: 0 auto 15px auto; display: block; border-radius: 8px; }
 
         /* --- MOBILE OPTIMIZATIONS --- */
         @media (max-width: 768px) {
@@ -183,7 +182,7 @@
 
     <div id="winnerModal" class="modal-overlay">
         <div class="modal-content winner-card">
-            <div id="winnerIcon">🏆</div>
+            <img id="winnerGif" src="https://media.giphy.com/media/3o7TKUM3IgJBX2as9O/giphy.gif" alt="Gavel">
             <h2 id="winnerText">Auction Ended</h2>
             <p id="winnerDetail">The item was sold.</p>
             <button class="btn-yes confirm-btn" onclick="document.getElementById('winnerModal').style.display='none'">Close</button>
@@ -308,16 +307,14 @@
                 updateTimer(data.end_time);
                 renderBidHistory(data.bid_history);
 
-                // User Winning Status Logic
-                const userMaxDisplay = document.getElementById('userMaxBidDisplay');
                 if (currentUser && data.high_bidder_uid === currentUser.uid) {
-                    userMaxDisplay.style.display = 'block';
-                    userMaxDisplay.classList.add('winning-bid-status');
-                    userMaxDisplay.innerHTML = `🎉 <strong>You are the highest bidder!</strong> <br>(Your max bid: $${data.high_bidder_max.toLocaleString()})`;
+                    document.getElementById('userMaxBidDisplay').style.display = 'block';
+                    document.getElementById('userMaxBidDisplay').classList.add('winning-bid-status');
+                    document.getElementById('userMaxBidDisplay').innerHTML = `🎉 <strong>You are the highest bidder!</strong> <br>(Your max bid: $${data.high_bidder_max.toLocaleString()})`;
                 } else {
-                    userMaxDisplay.style.display = 'none';
-                    userMaxDisplay.classList.remove('winning-bid-status');
-                    userMaxDisplay.innerHTML = '';
+                    document.getElementById('userMaxBidDisplay').style.display = 'none';
+                    document.getElementById('userMaxBidDisplay').classList.remove('winning-bid-status');
+                    document.getElementById('userMaxBidDisplay').innerHTML = '';
                 }
 
             } else {
@@ -393,14 +390,14 @@
 
         function showWinnerModal(data) {
             const modal = document.getElementById('winnerModal');
-            const icon = document.getElementById('winnerIcon');
             const text = document.getElementById('winnerText');
             const detail = document.getElementById('winnerDetail');
+
             if (currentUser && data.high_bidder_uid === currentUser.uid) {
-                icon.innerText = "🎉"; text.innerText = "Congratulations!"; text.style.color = "#16a34a"; 
+                text.innerText = "Congratulations!"; text.style.color = "#16a34a"; 
                 detail.innerText = "You won this item for $" + data.current_bid.toLocaleString();
             } else {
-                icon.innerText = "🏷️"; text.innerText = "Auction Ended"; text.style.color = "#1f2937";
+                text.innerText = "SOLD!"; text.style.color = "#1f2937";
                 detail.innerText = "Sold to " + (data.high_bidder_name || "Unknown") + " for $" + data.current_bid.toLocaleString();
             }
             modal.style.display = 'flex';
@@ -466,7 +463,7 @@
                         high_bidder_max: myMaxBid, 
                         high_bidder_uid: currentUser.uid, 
                         high_bidder_name: currentUser.displayName,
-                        end_time: newEndTime // EXTEND TIME
+                        end_time: newEndTime 
                     });
 
                     const historyRef = ref(db, auctionId + '/bid_history');
@@ -478,7 +475,7 @@
                     
                     update(dbRef, { 
                         current_bid: newPrice,
-                        end_time: newEndTime // EXTEND TIME
+                        end_time: newEndTime 
                     });
 
                     const historyRef = ref(db, auctionId + '/bid_history');
