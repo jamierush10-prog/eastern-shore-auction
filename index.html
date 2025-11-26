@@ -35,54 +35,23 @@
         .card-lot { font-size: 0.9rem; color: #6b7280; margin-top: auto; }
         .card-lot strong { color: #374151; }
 
-        /* --- STAMPS / WATERMARKS --- */
-        .stamp {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            padding: 5px 12px;
-            font-weight: 900;
-            text-transform: uppercase;
-            border-radius: 4px;
-            z-index: 10;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-
-        .stamp-live {
-            background-color: var(--live-color);
-            color: white;
-            animation: pulse 1.5s infinite;
-            border: 2px solid white;
-        }
-
-        .stamp-sold {
-            background-color: rgba(255, 255, 255, 0.9);
-            color: var(--sold-color);
-            border: 3px solid var(--sold-color);
-            transform: rotate(-15deg);
-            top: 40px;
-            right: 20px;
-            font-size: 1.2rem;
-            padding: 5px 20px;
-            border-radius: 8px;
-            letter-spacing: 2px;
-        }
-
+        /* WATERMARKS */
+        .stamp { position: absolute; top: 10px; right: 10px; padding: 5px 12px; font-weight: 900; text-transform: uppercase; border-radius: 4px; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .stamp-live { background-color: var(--live-color); color: white; animation: pulse 1.5s infinite; border: 2px solid white; }
+        .stamp-sold { background-color: rgba(255, 255, 255, 0.9); color: var(--sold-color); border: 3px solid var(--sold-color); transform: rotate(-15deg); top: 40px; right: 20px; font-size: 1.2rem; padding: 5px 20px; border-radius: 8px; letter-spacing: 2px; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
-        /* AUTH MODAL STYLES */
+        /* AUTH MODAL */
         #authModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-content { background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 400px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px rgba(0,0,0,0.2); }
+        .modal-content { background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 380px; box-shadow: 0 20px 25px rgba(0,0,0,0.2); }
         .tabs { display: flex; margin-bottom: 20px; border-bottom: 2px solid #e5e7eb; }
         .tab { flex: 1; padding: 10px; text-align: center; cursor: pointer; font-weight: bold; color: #6b7280; transition: color 0.2s; }
         .tab.active { color: var(--primary-color); border-bottom: 2px solid var(--primary-color); }
         .form-group { margin-bottom: 15px; }
-        .form-group label { font-size: 0.9rem; font-weight: bold; display: block; margin-bottom: 5px; }
-        .form-group input[type="text"], .form-group input[type="email"], .form-group input[type="password"] { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+        .form-group input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
         .action-btn { width: 100%; padding: 12px; background: var(--header-bg); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1rem; }
         .error-msg { color: #dc2626; font-size: 0.9rem; margin-bottom: 10px; display: none; text-align: center; background: #fee2e2; padding: 8px; border-radius: 4px; }
         .close-reg { text-align: center; margin-top: 15px; cursor: pointer; color: #6b7280; font-size: 0.9rem; text-decoration: underline; }
-        
         .radio-group { display: flex; gap: 15px; margin-bottom: 15px; }
         .radio-label { font-weight: normal; cursor: pointer; display: flex; align-items: center; gap: 5px; }
         #nonLocalWarning { display: none; background: #fff7ed; border: 1px solid #fed7aa; padding: 10px; border-radius: 6px; margin-bottom: 15px; font-size: 0.85rem; color: #9a3412; }
@@ -99,7 +68,7 @@
 
     <div class="info-card">
         <div class="schedule-title">Next Live Auction Begins</div>
-        <div class="schedule-time">Tonight at 7:00 PM CST</div>
+        <div class="schedule-time" id="scheduleDisplay">Loading schedule...</div>
         <p>Log in or Create an Account to bid.</p>
         <button onclick="openAuthModal()" class="enter-btn">Enter Auction Room</button>
     </div>
@@ -109,7 +78,6 @@
             <h2 class="section-title">Upcoming Lots</h2>
             <a href="sell.html" class="sell-btn">Have an item to sell?</a>
         </div>
-        
         <div class="grid" id="upcomingGrid">
             <div style="grid-column: 1/-1; text-align:center; color:#999; padding:40px;">Loading upcoming lots...</div>
         </div>
@@ -125,9 +93,9 @@
                 <button type="submit" class="action-btn">Log In</button>
             </form>
             <form id="registerForm" style="display:none;" onsubmit="event.preventDefault(); handleRegister();">
-                <div class="form-group"><input type="text" id="regName" placeholder="Username" required></div>
+                <div class="form-group"><input type="text" id="regName" placeholder="Create Username (Visible to others)" required></div>
                 <div class="form-group"><input type="email" id="regEmail" placeholder="Email Address" required></div>
-                <div class="form-group"><input type="password" id="regPass" placeholder="Password (6+ chars)" required></div>
+                <div class="form-group"><input type="password" id="regPass" placeholder="Create Password (6+ chars)" required></div>
                 <div class="form-group">
                     <label>Are you local to Daphne/Fairhope/Spanish Fort?</label>
                     <div class="radio-group">
@@ -168,34 +136,41 @@
         const auth = getAuth(app);
         const db = getDatabase(app);
 
-        // --- LOAD DATA WITH WATERMARKS ---
+        // --- 1. LOAD SCHEDULE ---
+        onValue(ref(db, 'auction_schedule'), (snapshot) => {
+            const text = snapshot.val();
+            if(text) {
+                document.getElementById('scheduleDisplay').innerText = text;
+            } else {
+                document.getElementById('scheduleDisplay').innerText = "Schedule coming soon...";
+            }
+        });
+
+        // --- 2. LOAD FEATURED ITEMS ---
         let activeAuctionKey = null;
         let inventoryData = null;
 
-        // 1. Listen to Active Auction
         onValue(ref(db, 'active_auction'), (snapshot) => {
             const data = snapshot.val();
             activeAuctionKey = data ? data.inventory_key : null;
-            renderGrid(); // Re-render when live item changes
+            renderGrid(); 
         });
 
-        // 2. Listen to Inventory
         onValue(ref(db, 'inventory'), (snapshot) => {
             inventoryData = snapshot.val();
-            renderGrid(); // Re-render when inventory changes
+            renderGrid();
         });
 
         function renderGrid() {
             const grid = document.getElementById('upcomingGrid');
             
             if (!inventoryData) {
-                grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; color:#999;">Loading...</div>';
+                grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; color:#999;">No upcoming lots listed yet.</div>';
                 return;
             }
 
             const items = Object.entries(inventoryData).map(([key, val]) => ({ ...val, key }));
             const featuredItems = items.filter(item => item.is_featured === true);
-            
             featuredItems.sort((a, b) => a.lot - b.lot);
 
             if (featuredItems.length === 0) {
@@ -203,18 +178,15 @@
                 return;
             }
 
-            grid.innerHTML = ""; // Clear current
+            grid.innerHTML = ""; 
 
             featuredItems.forEach(item => {
                 const subtitleText = item.subtitle ? item.subtitle : "No details";
                 let stampHTML = "";
 
-                // WATERMARK LOGIC
                 if (item.key === activeAuctionKey) {
-                    // Currently Live
                     stampHTML = '<div class="stamp stamp-live">LIVE NOW</div>';
-                } else if (item.times_run > 0) {
-                    // Sold (and not currently active)
+                } else if (item.status_label && item.status_label.includes("SOLD")) {
                     stampHTML = '<div class="stamp stamp-sold">SOLD</div>';
                 }
 
@@ -235,7 +207,7 @@
             });
         }
 
-        // --- UI & AUTH LOGIC ---
+        // --- AUTH & UI LOGIC ---
         window.toggleLocalFields = function(isLocal) {
             const div = document.getElementById('nonLocalWarning');
             const input = document.getElementById('pickupPlan');
