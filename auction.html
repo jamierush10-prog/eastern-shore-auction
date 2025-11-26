@@ -450,18 +450,50 @@
             }, 1000);
         }
 
+        // --- UPDATED WINNER MODAL LOGIC ---
         function showWinnerModal(data) {
             const modal = document.getElementById('winnerModal');
+            const icon = document.getElementById('winnerIcon');
+            const img = document.getElementById('winnerGif');
             const text = document.getElementById('winnerText');
             const detail = document.getElementById('winnerDetail');
-            if (currentUser && data.high_bidder_uid === currentUser.uid) {
-                text.innerText = "Congratulations!"; text.style.color = "#16a34a"; 
-                detail.innerText = "You won this item for $" + data.current_bid.toLocaleString();
+
+            const reserve = data.reserve_price || 0;
+            const currentBid = data.current_bid || 0;
+            const hasBidder = !!data.high_bidder_uid;
+
+            // CHECK IF SOLD (Met Reserve + Had Bidder)
+            const isSold = hasBidder && (currentBid >= reserve);
+
+            if (isSold) {
+                // SHOW SOLD GIF/TEXT
+                img.style.display = 'block';
+                if (currentUser && data.high_bidder_uid === currentUser.uid) {
+                    // I WON
+                    img.src = "https://media.giphy.com/media/26u4cqiYI30juCOGY/giphy.gif"; // Confetti
+                    text.innerText = "Congratulations!";
+                    text.style.color = "#16a34a";
+                    detail.innerText = "You won this item for $" + currentBid.toLocaleString();
+                } else {
+                    // SOMEONE ELSE WON
+                    img.src = "https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExcGJrenUwMW84Mmpia3dpazF1b3JmZTdyNWI2d3Izd2tudGVlbzRuYyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l41YAbDsTJXKANjmE/giphy.gif"; // Gavel
+                    text.innerText = "SOLD!";
+                    text.style.color = "#1f2937";
+                    detail.innerText = "Sold to " + (data.high_bidder_name || "Unknown") + " for $" + currentBid.toLocaleString();
+                }
+                modal.style.display = 'flex';
             } else {
-                text.innerText = "SOLD!"; text.style.color = "#1f2937";
-                detail.innerText = "Sold to " + (data.high_bidder_name || "Unknown") + " for $" + data.current_bid.toLocaleString();
+                // PASSED - OPTIONAL: Show "Passed" message or do nothing.
+                // Current logic: Do nothing (don't show popup) if it didn't sell.
+                // If you WANT a "Passed" popup, uncomment below:
+                /*
+                img.style.display = 'none';
+                text.innerText = "Item Passed";
+                text.style.color = "#6b7280";
+                detail.innerText = hasBidder ? "Reserve price not met." : "No bids received.";
+                modal.style.display = 'flex';
+                */
             }
-            modal.style.display = 'flex';
         }
 
         window.addToBid = function(amount) {
