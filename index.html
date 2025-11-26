@@ -17,12 +17,12 @@
         .schedule-title { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; color: #6b7280; font-weight: bold; }
         .schedule-time { font-size: 1.8rem; font-weight: 800; margin: 10px 0; }
         
-        /* ANNOUNCEMENT STYLE (UPDATED) */
+        /* ANNOUNCEMENT STYLE */
         .announcement-text { 
             font-size: 1rem; 
             color: #dc2626; 
             margin-bottom: 15px; 
-            white-space: pre-wrap; /* Keeps line breaks */
+            white-space: pre-wrap;
             line-height: 1.5;
         }
         .announcement-text strong { font-weight: 900; text-decoration: underline; }
@@ -31,9 +31,10 @@
         .enter-btn:hover { background-color: #1d4ed8; transform: translateY(-2px); }
 
         .catalog-section { max-width: 1000px; width: 90%; margin: 50px 0; }
-        .section-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px; margin-bottom: 30px; }
+        /* Updated section-header to justify center since btn is gone */
+        .section-header { display: flex; justify-content: center; align-items: center; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px; margin-bottom: 30px; }
         .section-title { font-family: "Georgia", serif; font-size: 1.8rem; margin: 0; }
-        .sell-btn { font-size: 0.9rem; color: var(--text-color); text-decoration: none; border: 1px solid #d1d5db; padding: 8px 16px; border-radius: 4px; background: white; transition: background 0.2s; }
+        
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
         
         .card { background: white; border-radius: 8px; overflow: hidden; border: 1px solid #e5e7eb; transition: transform 0.2s; display: flex; flex-direction: column; position: relative; }
@@ -86,8 +87,7 @@
     <div class="catalog-section">
         <div class="section-header">
             <h2 class="section-title">Upcoming Lots</h2>
-            <a href="sell.html" class="sell-btn">Have an item to sell?</a>
-        </div>
+            </div>
         <div class="grid" id="upcomingGrid">
             <div style="grid-column: 1/-1; text-align:center; color:#999; padding:40px;">Loading upcoming lots...</div>
         </div>
@@ -151,12 +151,9 @@
             const data = snapshot.val() || {};
             document.getElementById('scheduleDisplay').innerText = data.schedule || "Schedule TBA";
             
-            // FORMAT ANNOUNCEMENT
             let text = data.announcement || "";
             if (text) {
-                // Basic sanitizer to prevent XSS
                 text = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-                // Convert **bold** to <strong>bold</strong>
                 text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
             }
             document.getElementById('announcementDisplay').innerHTML = text;
