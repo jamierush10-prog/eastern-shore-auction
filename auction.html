@@ -94,7 +94,17 @@
         #winnerDetail { font-size: 1.1rem; color: #6b7280; margin-bottom: 20px; }
         .winner-card { border-top: 5px solid var(--success-color); }
 
-        @media (max-width: 768px) { .auction-container { grid-template-columns: 1fr; padding: 20px; } .main-image-wrapper { height: 300px; } }
+        /* --- MOBILE OPTIMIZATIONS --- */
+        @media (max-width: 768px) {
+            .site-header { flex-direction: column; gap: 10px; height: auto; padding: 15px 0; }
+            .header-left, .header-right { position: static; width: 100%; justify-content: center; margin-bottom: 5px; }
+            .brand-name { font-size: 1.4rem; margin: 5px 0; text-align: center; }
+            .auction-container { grid-template-columns: 1fr; width: 95%; padding: 15px; gap: 20px; }
+            .main-image-wrapper { height: 250px; }
+            .inc-btn, .bid-btn, .chat-btn { padding: 15px; }
+            .bid-input-row input { font-size: 1.4rem; }
+            .chat-window { height: 150px; }
+        }
     </style>
 </head>
 <body>
