@@ -26,7 +26,6 @@
         .sell-btn { font-size: 0.9rem; color: var(--text-color); text-decoration: none; border: 1px solid #d1d5db; padding: 8px 16px; border-radius: 4px; background: white; transition: background 0.2s; }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
         
-        /* CARD STYLES */
         .card { background: white; border-radius: 8px; overflow: hidden; border: 1px solid #e5e7eb; transition: transform 0.2s; display: flex; flex-direction: column; position: relative; }
         .card:hover { transform: translateY(-3px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         .card img { width: 100%; height: 200px; object-fit: cover; }
@@ -41,7 +40,7 @@
         .stamp-sold { background-color: rgba(255, 255, 255, 0.9); color: var(--sold-color); border: 3px solid var(--sold-color); transform: rotate(-15deg); top: 40px; right: 20px; font-size: 1.2rem; padding: 5px 20px; border-radius: 8px; letter-spacing: 2px; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
-        /* AUTH MODAL STYLES */
+        /* AUTH MODAL */
         #authModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 380px; box-shadow: 0 20px 25px rgba(0,0,0,0.2); }
         .tabs { display: flex; margin-bottom: 20px; border-bottom: 2px solid #e5e7eb; }
@@ -151,7 +150,7 @@
         let activeAuctionData = null;
         let inventoryData = null;
 
-        // Listen to Active Auction (Store full data object now)
+        // Listen to Active Auction
         onValue(ref(db, 'active_auction'), (snapshot) => {
             activeAuctionData = snapshot.val();
             renderGrid(); 
@@ -163,7 +162,7 @@
             renderGrid();
         });
 
-        // REFRESH GRID EVERY SECOND TO CHECK FOR TIME EXPIRATION
+        // Refresh check every second
         setInterval(renderGrid, 1000);
 
         function renderGrid() {
@@ -189,15 +188,13 @@
                 const subtitleText = item.subtitle ? item.subtitle : "No details";
                 let stampHTML = "";
 
-                // --- NEW WATERMARK LOGIC ---
-                // 1. Is it the Active Item AND Is the clock still running?
+                // TIME SENSITIVE BADGE LOGIC
                 if (activeAuctionData && item.key === activeAuctionData.inventory_key) {
+                    // Only show LIVE if time remains
                     if (Date.now() < activeAuctionData.end_time) {
                         stampHTML = '<div class="stamp stamp-live">LIVE NOW</div>';
                     }
-                    // If time is up, stamp remains empty (removing the LIVE badge)
                 } 
-                // 2. If not live, check if Sold in history
                 else if (item.status_label && item.status_label.includes("SOLD")) {
                     stampHTML = '<div class="stamp stamp-sold">SOLD</div>';
                 }
