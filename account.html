@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Account | Eastern Shore Auction House</title>
     <style>
-        :root { --primary-color: #2563eb; --header-bg: #111827; --text-color: #1f2937; --bg-color: #f3f4f6; --success-color: #16a34a; --danger-color: #dc2626; --gold-color: #f59e0b; }
+        :root { --primary-color: #2563eb; --header-bg: #111827; --text-color: #1f2937; --bg-color: #f3f4f6; --success-color: #16a34a; --danger-color: #dc2626; --gold-color: #f59e0b; --info-color: #0891b2; }
         body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg-color); color: var(--text-color); margin: 0; }
         
         /* HEADER */
@@ -14,7 +14,7 @@
         .nav-link { color: #d1d5db; text-decoration: none; margin-left: 20px; cursor: pointer; }
         .nav-link:hover { color: white; text-decoration: underline; }
 
-        .container { max-width: 800px; margin: 30px auto; padding: 20px; }
+        .container { max-width: 1000px; margin: 30px auto; padding: 20px; }
 
         /* PROFILE CARD */
         .card { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 30px; }
@@ -30,14 +30,18 @@
         .profile-rating { margin-top: 5px; font-size: 1.2rem; color: var(--gold-color); }
         .rating-text { font-size: 0.8rem; color: #6b7280; margin-left: 5px; vertical-align: middle; }
 
+        /* BUTTONS */
         .btn { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; color: white; }
         .btn-save { background: var(--primary-color); }
         .btn-reset { background: #4b5563; margin-left: 10px; }
         .btn-list { background: var(--primary-color); font-size: 1rem; }
         .btn-cancel { background: var(--danger-color); padding: 5px 10px; font-size: 0.8rem; }
-        .btn-rate { background: var(--gold-color); padding: 5px 10px; font-size: 0.8rem; color: #fff; text-shadow: 0 1px 1px rgba(0,0,0,0.2); }
+        
+        /* Action Buttons in Table */
+        .btn-rate { background: var(--gold-color); padding: 6px 12px; font-size: 0.8rem; color: #fff; text-shadow: 0 1px 1px rgba(0,0,0,0.2); margin-left: 5px; }
+        .btn-contact { background: var(--info-color); padding: 6px 12px; font-size: 0.8rem; color: #fff; }
 
-        /* TABLES */
+        /* TABLES - STACKED LAYOUT */
         .lists-container { display: flex; flex-direction: column; gap: 30px; } 
         
         table { width: 100%; border-collapse: collapse; font-size: 0.9rem; margin-top: 10px; }
@@ -116,6 +120,7 @@
         </div>
 
         <div class="lists-container">
+            
             <div class="card">
                 <div class="section-title" style="color: var(--primary-color);">📦 Items Purchased</div>
                 <table>
@@ -123,6 +128,7 @@
                     <tbody id="purchaseList"><tr><td colspan="5">Loading...</td></tr></tbody>
                 </table>
             </div>
+
             <div class="card">
                 <div class="section-title" style="color: var(--success-color);">💰 Items Sold</div>
                 <table>
@@ -130,6 +136,7 @@
                     <tbody id="salesList"><tr><td colspan="5">Loading...</td></tr></tbody>
                 </table>
             </div>
+
         </div>
     </div>
 
@@ -147,6 +154,18 @@
                 <button type="submit" class="btn btn-save" style="width:100%">Submit Item</button>
                 <button type="button" class="btn btn-reset" style="width:100%; margin:10px 0 0 0;" onclick="document.getElementById('listingModal').style.display='none'">Cancel</button>
             </form>
+        </div>
+    </div>
+
+    <div id="contactModal" class="modal-overlay">
+        <div class="modal-content" style="text-align: center;">
+            <h2>Contact Info</h2>
+            <div style="margin: 20px 0; text-align: left; background: #f9fafb; padding: 15px; border-radius: 6px; border: 1px solid #e5e7eb;">
+                <p style="margin-bottom:10px;"><strong>Name:</strong> <span id="contactName">...</span></p>
+                <p style="margin-bottom:10px;"><strong>Email:</strong> <a id="contactEmail" href="#" style="color:var(--primary-color);">...</a></p>
+                <p><strong>Phone:</strong> <a id="contactPhone" href="#" style="color:var(--primary-color);">...</a></p>
+            </div>
+            <button class="btn btn-reset" style="width:100%; margin:0;" onclick="document.getElementById('contactModal').style.display='none'">Close</button>
         </div>
     </div>
 
@@ -235,7 +254,7 @@
                     }
                     document.getElementById('userRatingDisplay').innerHTML = `${starStr} <span class="rating-text">(${average} / 5 from ${countReviews} reviews)</span>`;
                 } else {
-                    // Fallback if user isn't in DB yet (Fill with Auth Data)
+                    // Fallback logic
                     document.getElementById('accName').value = currentUser.displayName;
                     document.getElementById('accEmail').value = currentUser.email;
                     document.getElementById('accDate').value = "Not registered in DB";
@@ -243,7 +262,7 @@
             });
         }
 
-        // --- 2. HISTORY LOGIC ---
+        // --- 2. HISTORY LOGIC (WITH CONTACT BUTTON) ---
         function loadUserHistory(userEmail) {
             const historyRef = ref(db, 'sales_history');
             onValue(historyRef, (snapshot) => {
@@ -258,28 +277,67 @@
 
                 items.forEach(item => {
                     const dateStr = new Date(item.date).toLocaleDateString();
+                    
+                    // BOUGHT (Show Seller)
                     if (item.winner_email && item.winner_email.toLowerCase() === userEmail.toLowerCase()) {
                         boughtCount++;
                         const seller = allUsersCache.find(u => u.email && u.email.toLowerCase() === (item.seller_email || "").toLowerCase());
                         const sellerName = seller ? seller.name : (item.seller_name || "Unknown");
                         const sellerEmail = item.seller_email || "";
+                        const sellerPhone = seller ? seller.phone : "N/A"; // Get Phone
+                        
                         const tr = document.createElement('tr');
-                        tr.innerHTML = `<td>${dateStr}</td><td>${item.item_title}</td><td>${sellerName}</td><td>$${item.final_price}</td><td><button class="btn btn-rate" onclick="openRateModal('${sellerEmail}', '${sellerName}')">Rate Seller</button></td>`;
+                        tr.innerHTML = `
+                            <td>${dateStr}</td>
+                            <td>${item.item_title}</td>
+                            <td>${sellerName}</td>
+                            <td>$${item.final_price}</td>
+                            <td>
+                                <button class="btn btn-contact" onclick="viewContact('${sellerName}', '${sellerEmail}', '${sellerPhone}')">Contact</button>
+                                <button class="btn btn-rate" onclick="openRateModal('${sellerEmail}', '${sellerName}')">Rate</button>
+                            </td>`;
                         purchasesTbody.appendChild(tr);
                     }
+
+                    // SOLD (Show Buyer)
                     if (item.seller_email && item.seller_email.toLowerCase() === userEmail.toLowerCase()) {
                         soldCount++;
                         const buyer = allUsersCache.find(u => u.email && u.email.toLowerCase() === (item.winner_email || "").toLowerCase());
                         const buyerName = buyer ? buyer.name : (item.winner_name || "Unknown");
                         const buyerEmail = item.winner_email || "";
+                        const buyerPhone = buyer ? buyer.phone : "N/A"; // Get Phone
+
                         const tr = document.createElement('tr');
-                        tr.innerHTML = `<td>${dateStr}</td><td>${item.item_title}</td><td>${buyerName}</td><td>$${item.final_price}</td><td><button class="btn btn-rate" onclick="openRateModal('${buyerEmail}', '${buyerName}')">Rate Buyer</button></td>`;
+                        tr.innerHTML = `
+                            <td>${dateStr}</td>
+                            <td>${item.item_title}</td>
+                            <td>${buyerName}</td>
+                            <td>$${item.final_price}</td>
+                            <td>
+                                <button class="btn btn-contact" onclick="viewContact('${buyerName}', '${buyerEmail}', '${buyerPhone}')">Contact</button>
+                                <button class="btn btn-rate" onclick="openRateModal('${buyerEmail}', '${buyerName}')">Rate</button>
+                            </td>`;
                         salesTbody.appendChild(tr);
                     }
                 });
                 if(boughtCount === 0) purchasesTbody.innerHTML = "<tr><td colspan='5'>No purchases yet.</td></tr>";
                 if(soldCount === 0) salesTbody.innerHTML = "<tr><td colspan='5'>No sales yet.</td></tr>";
             });
+        }
+
+        // --- CONTACT MODAL LOGIC ---
+        window.viewContact = function(name, email, phone) {
+            document.getElementById('contactName').innerText = name;
+            const elEmail = document.getElementById('contactEmail');
+            const elPhone = document.getElementById('contactPhone');
+            
+            elEmail.innerText = email;
+            elEmail.href = "mailto:" + email;
+            
+            elPhone.innerText = phone;
+            elPhone.href = "tel:" + phone;
+
+            document.getElementById('contactModal').style.display = 'flex';
         }
 
         // --- 3. RATING LOGIC ---
@@ -362,37 +420,25 @@
             if(confirm("Remove this item?")) update(ref(db, `inventory/${key}`), { approval_status: 'inactive' });
         }
 
-        // --- ACTIONS (UPDATED TO CREATE PROFILE IF MISSING) ---
+        // --- ACTIONS ---
         window.saveProfile = function() {
             const newPhone = document.getElementById('accPhone').value;
             const userRef = ref(db, `users/${currentUser.uid}`);
-            
             get(userRef).then((snapshot) => {
                 if(snapshot.exists()) {
-                    // Profile exists, just update phone
                     update(userRef, { phone: newPhone }).then(() => alert("Profile Updated!"));
                 } else {
-                    // Profile missing (Admin/Old user), create it now
                     set(userRef, {
-                        name: currentUser.displayName,
-                        email: currentUser.email,
-                        phone: newPhone,
-                        is_local: true, // Default for manual creation
-                        is_approved: true, // Auto-approve manually saved profiles (likely Admin)
-                        joined_at: Date.now()
-                    }).then(() => {
-                        alert("Profile Created & Saved!");
-                        location.reload(); // Refresh to show new data
-                    });
+                        name: currentUser.displayName, email: currentUser.email, phone: newPhone,
+                        is_local: true, is_approved: true, joined_at: Date.now()
+                    }).then(() => { alert("Profile Created & Saved!"); location.reload(); });
                 }
             });
         }
 
         window.resetPassword = function() {
             if(confirm(`Send a password reset email?`)) {
-                sendPasswordResetEmail(auth, currentUser.email)
-                .then(() => alert("Email sent!"))
-                .catch((error) => alert("Error: " + error.message));
+                sendPasswordResetEmail(auth, currentUser.email).then(() => alert("Email sent!")).catch((error) => alert("Error: " + error.message));
             }
         }
     </script>
