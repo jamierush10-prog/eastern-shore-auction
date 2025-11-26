@@ -9,6 +9,7 @@
         :root { --primary-color: #2563eb; --header-bg: #111827; --text-color: #1f2937; --bg-color: #f3f4f6; --success-color: #10b981; --live-color: #dc2626; --ended-color: #f59e0b; --fail-color: #6b7280; }
         body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg-color); color: var(--text-color); margin: 0; }
         
+        /* HEADER */
         header { background: var(--header-bg); color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
         .brand { font-family: "Georgia", serif; font-size: 1.5rem; font-weight: bold; }
         .nav-links button { background: transparent; border: 1px solid #4b5563; color: white; padding: 8px 15px; cursor: pointer; border-radius: 4px; margin-left: 10px; }
@@ -17,16 +18,19 @@
 
         .container { max-width: 1200px; margin: 30px auto; padding: 20px; }
         
+        /* TABLES */
         table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         th, td { padding: 15px; text-align: left; border-bottom: 1px solid #e5e7eb; }
         th { background: #f9fafb; font-weight: bold; color: #6b7280; font-size: 0.85rem; text-transform: uppercase; }
         tr { transition: all 0.3s ease; }
         tr:hover { background: #f9fafb; }
         
+        /* LIVE ROW STYLES */
         tr.live-active-row { background-color: #ecfdf5 !important; border-left: 5px solid var(--success-color); }
         tr.live-ended-sold { background-color: #fffbeb !important; border-left: 5px solid var(--ended-color); }
         tr.live-ended-unsold { background-color: #f3f4f6 !important; border-left: 5px solid var(--fail-color); opacity: 0.8; }
 
+        /* BADGES */
         .badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; margin-right: 8px; vertical-align: middle; text-transform: uppercase; }
         .badge-live { background: var(--live-color); color: white; animation: pulse 1.5s infinite; }
         .badge-sold { background: var(--ended-color); color: white; }
@@ -35,34 +39,44 @@
 
         .live-bid-info { font-weight: bold; font-size: 1rem; display: block; }
         .live-bidder-name { font-size: 0.8rem; color: #6b7280; font-weight: normal; }
+
+        /* STATUS PILLS */
         .status-pill { padding: 4px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; }
         .status-new { background: #dbeafe; color: #1e40af; }
         .status-run { background: #f3f4f6; color: #374151; }
         .status-approved { background: #dcfce7; color: #166534; }
         .status-pending { background: #fee2e2; color: #991b1b; }
+
         .text-sold { color: #b45309; font-weight: bold; }
         .text-passed { color: #6b7280; font-style: italic; }
 
         input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; accent-color: var(--primary-color); }
+
+        /* CONTACT INFO IN TABLE */
         .contact-info { font-size: 0.9rem; }
         .contact-label { font-size: 0.75rem; color: #9ca3af; text-transform: uppercase; font-weight: bold; }
 
+        /* FORMS & MODALS */
         .form-card { background: white; padding: 30px; border-radius: 8px; max-width: 600px; margin: 0 auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
+        
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9rem; }
         .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
         
-        /* CONTROL CARD UPDATED */
         .control-card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 30px; display: flex; align-items: center; justify-content: space-between; border-left: 5px solid var(--primary-color); }
         .control-group { display: flex; align-items: center; gap: 10px; flex: 1; }
         .control-input { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 4px; max-width: 300px; }
 
+        /* ACTIONS */
         .btn { padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9rem; font-weight: bold; color: white; }
         .btn-queue { background: #16a34a; }
         .btn-edit { background: #2563eb; }
         .btn-delete { background: #dc2626; }
         .btn-save { background: #111827; width: 100%; padding: 12px; margin-top: 10px; }
-        .btn-stop { background: #dc2626; padding: 10px 20px; } /* RED STOP BUTTON */
+        .btn-stop { background: #dc2626; padding: 10px 20px; }
+        .btn-manual { background: #4b5563; margin-bottom: 15px; }
 
         .view-section { display: none; }
         .view-section.active { display: block; }
@@ -133,7 +147,10 @@
         </div>
 
         <div id="historyView" class="view-section">
-            <h2>Sales History (Sold Lots)</h2>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h2>Sales History (Sold Lots)</h2>
+                <button class="btn btn-manual" onclick="openManualLogModal()">+ Manually Record Sale</button>
+            </div>
             <table>
                 <thead>
                     <tr>
@@ -174,6 +191,20 @@
             </div>
         </div>
 
+    </div>
+
+    <div id="manualLogModal" class="modal-overlay">
+        <div class="modal-content">
+            <h2>Manually Record Sale</h2>
+            <div class="form-group"><label>Lot Number:</label><input type="number" id="manLot"></div>
+            <div class="form-group"><label>Item Title:</label><input type="text" id="manTitle"></div>
+            <div class="form-group"><label>Sold Price ($):</label><input type="number" id="manPrice"></div>
+            <div class="form-group"><label>Winner Name:</label><input type="text" id="manWinName"></div>
+            <div class="form-group"><label>Winner Email:</label><input type="text" id="manWinEmail"></div>
+            <div class="form-group"><label>Seller Name:</label><input type="text" id="manSeller"></div>
+            <button class="btn btn-save" onclick="saveManualLog()">Save to History</button>
+            <button class="btn btn-edit" style="background:#6b7280; margin-top:10px; width:100%" onclick="document.getElementById('manualLogModal').style.display='none'">Cancel</button>
+        </div>
     </div>
 
     <script type="module">
@@ -236,20 +267,73 @@
             document.getElementById('formTitle').innerText = "Add New Lot";
         }
 
+        window.openManualLogModal = function() { document.getElementById('manualLogModal').style.display = 'flex'; }
+        window.saveManualLog = function() {
+            const data = {
+                lot: parseInt(document.getElementById('manLot').value),
+                item_title: document.getElementById('manTitle').value,
+                final_price: parseInt(document.getElementById('manPrice').value),
+                winner_name: document.getElementById('manWinName').value,
+                winner_email: document.getElementById('manWinEmail').value,
+                seller_name: document.getElementById('manSeller').value,
+                date: Date.now()
+            };
+            push(ref(db, 'sales_history'), data).then(() => {
+                alert("Sale Recorded!"); document.getElementById('manualLogModal').style.display = 'none';
+            });
+        }
+
+        // --- SALES HISTORY (WITH LOOKUP) ---
         function loadHistory() {
             const refHist = ref(db, 'sales_history');
-            onValue(refHist, (snapshot) => {
-                const tbody = document.getElementById('salesTableBody');
-                tbody.innerHTML = "";
-                const data = snapshot.val();
-                if(!data) { tbody.innerHTML = "<tr><td colspan='6'>No sales yet.</td></tr>"; return; }
-                const items = Object.values(data).sort((a, b) => b.date - a.date);
-                items.forEach(item => {
-                    const dateStr = new Date(item.date).toLocaleDateString();
-                    const lotNum = item.lot || "Old";
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `<td><strong>#${lotNum}</strong></td><td>${item.item_title}</td><td style="color:#16a34a; font-weight:bold;">$${item.final_price}</td><td class="contact-info"><span class="contact-label">Name:</span> ${item.winner_name}<br><span class="contact-label">Email:</span> ${item.winner_email}</td><td class="contact-info">${item.seller_name || "N/A"}</td><td>${dateStr}</td>`;
-                    tbody.appendChild(tr);
+            const refUsers = ref(db, 'users');
+
+            onValue(refHist, (histSnap) => {
+                const historyData = histSnap.val();
+                
+                get(refUsers).then((userSnap) => {
+                    const usersData = userSnap.val() || {};
+                    const allUsers = Object.values(usersData);
+
+                    const tbody = document.getElementById('salesTableBody');
+                    tbody.innerHTML = "";
+
+                    if(!historyData) { tbody.innerHTML = "<tr><td colspan='6'>No sales yet.</td></tr>"; return; }
+                    
+                    const items = Object.values(historyData).sort((a, b) => b.date - a.date);
+                    
+                    items.forEach(item => {
+                        const dateStr = new Date(item.date).toLocaleDateString();
+                        const lotNum = item.lot || "Old";
+
+                        // Lookup Logic
+                        const buyerProfile = allUsers.find(u => u.email && u.email.toLowerCase() === (item.winner_email || "").toLowerCase());
+                        const buyerPhone = buyerProfile && buyerProfile.phone ? buyerProfile.phone : "No Phone Listed";
+                        const buyerName = buyerProfile ? buyerProfile.name : item.winner_name;
+
+                        const sellerProfile = allUsers.find(u => u.name && u.name.toLowerCase() === (item.seller_name || "").toLowerCase());
+                        const sellerPhone = sellerProfile && sellerProfile.phone ? sellerProfile.phone : "";
+                        const sellerEmail = sellerProfile ? sellerProfile.email : "";
+                        
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td><strong>#${lotNum}</strong></td>
+                            <td>${item.item_title}</td>
+                            <td style="color:#16a34a; font-weight:bold;">$${item.final_price}</td>
+                            <td class="contact-info">
+                                <div style="font-weight:bold;">${buyerName}</div>
+                                <div>${item.winner_email}</div>
+                                <div style="color: #2563eb;">📞 ${buyerPhone}</div>
+                            </td>
+                            <td class="contact-info">
+                                <div style="font-weight:bold;">${item.seller_name || "House Item"}</div>
+                                ${sellerEmail ? `<div>${sellerEmail}</div>` : ''}
+                                ${sellerPhone ? `<div style="color: #2563eb;">📞 ${sellerPhone}</div>` : ''}
+                            </td>
+                            <td>${dateStr}</td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
                 });
             });
         }
@@ -268,6 +352,7 @@
                     tr.id = `row-${item.key}`; 
                     tr.dataset.defaultPrice = item.start_price;
                     const isChecked = item.is_featured ? 'checked' : '';
+                    
                     let statusDisplay = "";
                     if(item.status_label && item.status_label.includes("SOLD")) { statusDisplay = `<span class="text-sold">${item.status_label}</span>`; } 
                     else if(item.status_label && item.status_label.includes("PASSED")) { statusDisplay = `<span class="text-passed">${item.status_label}</span>`; } 
@@ -404,18 +489,12 @@
             });
         }
 
-        // --- NEW: FINALIZE AUCTION (CLOSE THE NIGHT) ---
         window.finalizeAuction = function() {
             if(!confirm("End the current auction and save results?")) return;
-
             get(ref(db, 'active_auction')).then((snapshot) => {
                 const currentAuction = snapshot.val();
-                if (!currentAuction || !currentAuction.inventory_key) {
-                    alert("No active auction to finalize.");
-                    return;
-                }
+                if (!currentAuction || !currentAuction.inventory_key) { alert("No active auction to finalize."); return; }
 
-                // Perform Archive Logic
                 const reserve = currentAuction.reserve_price || 0;
                 const finalBid = currentAuction.current_bid || 0;
                 const hasBidder = !!currentAuction.high_bidder_uid;
@@ -428,14 +507,7 @@
                 update(ref(db, `inventory/${currentAuction.inventory_key}`), { status_label: statusLabel });
 
                 const closeAuction = () => {
-                    // Set active auction to "Closed" state
-                    set(ref(db, 'active_auction'), {
-                        title: "Auction Closed",
-                        subtitle: "Check back later",
-                        current_bid: 0,
-                        image_url: "https://placehold.co/600x400?text=Auction+Closed",
-                        end_time: 0 // Shows as ended immediately
-                    });
+                    set(ref(db, 'active_auction'), { title: "Auction Closed", subtitle: "Check back later", current_bid: 0, image_url: "https://placehold.co/600x400?text=Auction+Closed", end_time: 0 });
                     alert("Auction finalized and saved!");
                 };
 
@@ -443,12 +515,8 @@
                     get(ref(db, `users/${currentAuction.high_bidder_uid}`)).then((userSnap) => {
                         const winnerEmail = userSnap.exists() ? userSnap.val().email : "Unknown";
                         saveHistoryRecord(currentAuction, finalBid, winnerEmail, closeAuction);
-                    }).catch(() => {
-                        saveHistoryRecord(currentAuction, finalBid, "Error fetching email", closeAuction);
-                    });
-                } else {
-                    closeAuction();
-                }
+                    }).catch(() => { saveHistoryRecord(currentAuction, finalBid, "Error fetching email", closeAuction); });
+                } else { closeAuction(); }
             });
         }
 
