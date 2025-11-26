@@ -45,8 +45,16 @@
         .seller-info { margin-bottom: 20px; font-size: 0.95rem; color: #4b5563; display: none; }
         .seller-info strong { color: #1f2937; }
 
-        /* LOGISTICS BOX */
-        .logistics-box { background-color: #f9fafb; border: 1px solid #e5e7eb; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 0.9rem; color: #4b5563; }
+        /* LOGISTICS BOX STYLE */
+        .logistics-box {
+            background-color: #f9fafb;
+            border: 1px solid #e5e7eb;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            color: #4b5563;
+        }
         .logistics-item { margin-bottom: 8px; display: flex; align-items: flex-start; gap: 10px; }
         .logistics-item:last-child { margin-bottom: 0; }
         .log-icon { font-size: 1.1rem; min-width: 25px; }
@@ -281,7 +289,6 @@
         window.logout = function() { signOut(auth).then(() => { window.location.href = "index.html"; }); }
         window.openAdminPanel = function() { window.location.href = 'admin.html'; }
 
-        // --- CHAT LOGIC ---
         const chatRef = query(ref(db, 'auction_chat'), limitToLast(50));
         window.sendChat = function() {
             const input = document.getElementById('chatInput');
@@ -305,14 +312,13 @@
             }
         });
 
-        // --- AUCTION DATA ---
         onValue(dbRef, (snapshot) => {
             const data = snapshot.val();
             if (data) {
                 globalAuctionData = data;
                 if (data.end_time > Date.now()) { auctionEndedProcessed = false; }
 
-                // --- SMART TOGGLE LOGIC FOR CLOSED AUCTIONS ---
+                // --- SMART TOGGLE LOGIC ---
                 const isClosed = (data.title === "Auction Closed");
                 const displayStyle = isClosed ? 'none' : 'block';
                 const gridStyle = isClosed ? 'none' : 'grid';
@@ -326,19 +332,16 @@
                 document.querySelector('.description-block').style.display = displayStyle;
                 document.getElementById('sellerInfo').style.display = isClosed ? 'none' : (data.seller_name ? 'block' : 'none');
 
-                // Populate Data
                 document.getElementById('itemTitle').innerText = data.title;
                 document.getElementById('itemSubtitle').innerText = data.subtitle;
                 document.getElementById('itemDescription').innerText = data.description;
                 document.getElementById('priceDisplay').innerText = "$" + data.current_bid.toLocaleString();
                 globalCurrentBid = data.current_bid;
                 
-                // Update Seller info only if auction is active
                 if (!isClosed && data.seller_name) {
                     document.getElementById('sellerName').innerText = data.seller_name;
                 }
 
-                // LOGISTICS
                 document.getElementById('dispLoc').innerText = data.location || "Not Specified";
                 document.getElementById('dispPay').innerText = data.payment_methods || "Cash";
                 document.getElementById('dispDel').innerText = data.delivery_method || "Local Pickup";
@@ -348,8 +351,6 @@
 
                 const mainImg = document.getElementById('mainImage');
                 if(!mainImg.getAttribute('data-locked')) mainImg.src = data.image_url;
-                
-                // Thumbs update only if not closed (optimization)
                 if (!isClosed) updateThumbs(data.images);
                 
                 updateTimer(data.end_time);
@@ -422,10 +423,15 @@
                     timerElement.textContent = "ENDED";
                     bidBtn.disabled = true; bidBtn.textContent = "Auction Closed"; bidBtn.style.backgroundColor = "#9ca3af";
                     incBtns.forEach(b => b.disabled = true);
+                    
                     if (!auctionEndedProcessed && globalAuctionData) {
-                        showWinnerModal(globalAuctionData);
+                        // CHECK IF "AUCTION CLOSED" STATE
+                        if (globalAuctionData.title !== "Auction Closed") {
+                            showWinnerModal(globalAuctionData);
+                        }
                         auctionEndedProcessed = true;
                     }
+
                 } else {
                     bidBtn.disabled = false; bidBtn.textContent = "Place Max Bid"; bidBtn.style.backgroundColor = ""; 
                     incBtns.forEach(b => b.disabled = false);
