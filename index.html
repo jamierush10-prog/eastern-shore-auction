@@ -3,125 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome | Eastern Shore Auction House</title>
+    <title>Eastern Shore Auction House</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* --- LOBBY STYLES --- */
-        :root { --primary-color: #2563eb; --header-bg: #111827; --header-text: #f9fafb; --bg-color: #f3f4f6; --text-color: #1f2937; --live-color: #dc2626; --sold-color: #b91c1c; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        :root { --primary-color: #2563eb; --header-bg: #111827; }
+        body { font-family: -apple-system, system-ui, sans-serif; background-color: #f3f4f6; }
         
-        header { width: 100%; background-color: var(--header-bg); color: var(--header-text); padding: 40px 20px; text-align: center; }
-        .brand-name { font-family: "Georgia", "Times New Roman", serif; font-size: 2.5rem; letter-spacing: 2px; font-weight: bold; text-transform: uppercase; margin-bottom: 10px; }
-        .tagline { font-size: 1.1rem; color: #9ca3af; font-style: italic; }
-
-        .info-card { background: white; padding: 30px; margin-top: -30px; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; max-width: 600px; width: 90%; border-bottom: 4px solid var(--primary-color); }
-        .schedule-title { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; color: #6b7280; font-weight: bold; }
-        .schedule-time { font-size: 1.8rem; font-weight: 800; margin: 10px 0; }
-
-        .enter-btn { cursor: pointer; display: inline-block; background-color: var(--primary-color); color: white; border: none; padding: 15px 40px; border-radius: 50px; font-weight: bold; font-size: 1.1rem; margin-top: 20px; transition: transform 0.2s, background 0.2s; box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3); }
-        .enter-btn:hover { background-color: #1d4ed8; transform: translateY(-2px); }
-
-        .catalog-section { max-width: 1000px; width: 90%; margin: 50px 0; }
-        .section-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px; margin-bottom: 30px; }
-        .section-title { font-family: "Georgia", serif; font-size: 1.8rem; margin: 0; }
-        .sell-btn { font-size: 0.9rem; color: var(--text-color); text-decoration: none; border: 1px solid #d1d5db; padding: 8px 16px; border-radius: 4px; background: white; transition: background 0.2s; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
+        .brand-font { font-family: "Georgia", serif; }
         
-        .card { background: white; border-radius: 8px; overflow: hidden; border: 1px solid #e5e7eb; transition: transform 0.2s; display: flex; flex-direction: column; position: relative; }
-        .card:hover { transform: translateY(-3px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        .card img { width: 100%; height: 200px; object-fit: cover; }
-        .card-body { padding: 15px; flex: 1; display: flex; flex-direction: column; }
-        .card-title { font-weight: bold; margin-bottom: 5px; font-size: 1.1rem; }
-        .card-lot { font-size: 0.9rem; color: #6b7280; margin-top: auto; }
-        .card-lot strong { color: #374151; }
+        /* Hero Section Background */
+        .hero-bg {
+            background-color: var(--header-bg);
+            color: white;
+            padding: 60px 20px 100px; /* Added extra padding bottom for overlap */
+            text-align: center;
+            position: relative;
+        }
 
-        /* WATERMARKS */
-        .stamp { position: absolute; top: 10px; right: 10px; padding: 5px 12px; font-weight: 900; text-transform: uppercase; border-radius: 4px; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-        .stamp-live { background-color: var(--live-color); color: white; animation: pulse 1.5s infinite; border: 2px solid white; }
-        .stamp-sold { background-color: rgba(255, 255, 255, 0.9); color: var(--sold-color); border: 3px solid var(--sold-color); transform: rotate(-15deg); top: 40px; right: 20px; font-size: 1.2rem; padding: 5px 20px; border-radius: 8px; letter-spacing: 2px; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        /* The main white card overlapping the hero */
+        .main-card {
+            background: white;
+            max-width: 800px;
+            margin: -80px auto 40px; /* Negative top margin creates overlap */
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
 
-        /* AUTH MODAL */
-        #authModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-content { background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 380px; box-shadow: 0 20px 25px rgba(0,0,0,0.2); }
-        .tabs { display: flex; margin-bottom: 20px; border-bottom: 2px solid #e5e7eb; }
-        .tab { flex: 1; padding: 10px; text-align: center; cursor: pointer; font-weight: bold; color: #6b7280; transition: color 0.2s; }
-        .tab.active { color: var(--primary-color); border-bottom: 2px solid var(--primary-color); }
-        .form-group { margin-bottom: 15px; }
-        .form-group input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
-        .action-btn { width: 100%; padding: 12px; background: var(--header-bg); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1rem; }
-        .error-msg { color: #dc2626; font-size: 0.9rem; margin-bottom: 10px; display: none; text-align: center; background: #fee2e2; padding: 8px; border-radius: 4px; }
-        .close-reg { text-align: center; margin-top: 15px; cursor: pointer; color: #6b7280; font-size: 0.9rem; text-decoration: underline; }
-        .radio-group { display: flex; gap: 15px; margin-bottom: 15px; }
-        .radio-label { font-weight: normal; cursor: pointer; display: flex; align-items: center; gap: 5px; }
-        #nonLocalWarning { display: none; background: #fff7ed; border: 1px solid #fed7aa; padding: 10px; border-radius: 6px; margin-bottom: 15px; font-size: 0.85rem; color: #9a3412; }
+        .enter-btn {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: bold;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 1.2rem;
+            transition: transform 0.2s, background-color 0.2s;
+            display: inline-block;
+            text-decoration: none;
+            margin-top: 20px;
+        }
+        .enter-btn:hover { transform: scale(1.05); background-color: #1d4ed8; }
 
-        @media (max-width: 600px) { .section-header { flex-direction: column; gap: 15px; text-align: center; } }
+        /* Rules Button & Modal */
+        .info-btn {
+            background-color: transparent;
+            border: 2px solid #d1d5db;
+            color: #374151;
+            font-weight: 600;
+            padding: 8px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .info-btn:hover { border-color: var(--primary-color); color: var(--primary-color); }
+
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 30px; border-radius: 12px; width: 90%; max-width: 600px; max-height: 80vh; overflow-y: auto; position: relative; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
+        .close-modal-btn { position: absolute; top: 15px; right: 20px; font-size: 1.8rem; line-height: 1; cursor: pointer; color: #9ca3af; }
+        .close-modal-btn:hover { color: #374151; }
+        .rules-section { margin-bottom: 25px; text-align: left; }
+        .rules-section h3 { color: var(--primary-color); margin-bottom: 10px; font-size: 1.2rem; font-weight: bold; display: flex; align-items: center; gap: 8px;}
+        .rules-section ul { padding-left: 20px; line-height: 1.6; color: #4b5563; list-style-type: disc; }
+        .rules-section li { margin-bottom: 8px; }
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="brand-name">Eastern Shore Auction House</div>
-        <div class="tagline">Daphne, Spanish Fort, Fairhope area local Auction</div>
-    </header>
-
-    <div class="info-card">
-        <div class="schedule-title">Next Live Auction Begins</div>
-        <div class="schedule-time" id="scheduleDisplay">Loading schedule...</div>
-        <p>Log in or Create an Account to bid.</p>
-        <button onclick="openAuthModal()" class="enter-btn">Enter Auction Room</button>
+    <div class="hero-bg">
+        <h1 class="brand-font text-4xl md:text-5xl font-bold tracking-wide uppercase mb-2">Eastern Shore Auction House</h1>
+        <p class="text-gray-400 italic text-lg mb-8">Daphne, Spanish Fort, Fairhope area local Auction</p>
     </div>
 
-    <div class="catalog-section">
-        <div class="section-header">
-            <h2 class="section-title">Upcoming Lots</h2>
-            <a href="sell.html" class="sell-btn">Have an item to sell?</a>
+    <div class="main-card">
+        <h2 class="text-gray-500 font-bold text-sm tracking-widest uppercase mb-2">Next Live Auction Begins</h2>
+        <div id="scheduleDisplay" class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-6">
+            Loading schedule...
         </div>
         
-        <div class="grid" id="upcomingGrid">
-            <div style="grid-column: 1/-1; text-align:center; color:#999; padding:40px;">Loading upcoming lots...</div>
+        <p class="text-gray-600 mb-8 text-lg">
+            Log in or Create an Account to bid.
+        </p>
+
+        <a href="auction.html" class="enter-btn">Enter Auction Room</a>
+    </div>
+
+    <div class="max-w-6xl mx-auto px-4 py-8">
+        <div class="flex justify-between align-middle items-center border-b border-gray-200 pb-4 mb-8">
+            <h2 class="brand-font text-3xl font-bold text-gray-800">Upcoming Lots</h2>
+            <button class="info-btn" onclick="openRulesModal()">How It Works & Rules</button>
+        </div>
+
+        <div id="featuredGrid" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="col-span-3 text-center text-gray-500 py-10">Loading upcoming items...</div>
         </div>
     </div>
 
-    <div id="authModal">
+    <div id="rulesModal" class="modal-overlay" onclick="closeRulesModal(event)">
         <div class="modal-content">
-            <div class="tabs"><div class="tab active" onclick="switchTab('login')">Log In</div><div class="tab" onclick="switchTab('register')">Sign Up</div></div>
-            <div id="errorMsg" class="error-msg"></div>
-            <form id="loginForm" onsubmit="event.preventDefault(); handleLogin();">
-                <div class="form-group"><input type="email" id="loginEmail" placeholder="Email Address" required></div>
-                <div class="form-group"><input type="password" id="loginPass" placeholder="Password" required></div>
-                <button type="submit" class="action-btn">Log In</button>
-            </form>
-            <form id="registerForm" style="display:none;" onsubmit="event.preventDefault(); handleRegister();">
-                <div class="form-group"><input type="text" id="regName" placeholder="Create Username (Visible to others)" required></div>
-                <div class="form-group"><input type="email" id="regEmail" placeholder="Email Address" required></div>
-                <div class="form-group"><input type="password" id="regPass" placeholder="Create Password (6+ chars)" required></div>
-                <div class="form-group">
-                    <label>Are you local to Daphne/Fairhope/Spanish Fort?</label>
-                    <div class="radio-group">
-                        <label class="radio-label"><input type="radio" name="isLocal" value="yes" checked onchange="toggleLocalFields(true)"> Yes</label>
-                        <label class="radio-label"><input type="radio" name="isLocal" value="no" onchange="toggleLocalFields(false)"> No</label>
-                    </div>
-                </div>
-                <div id="nonLocalWarning">
-                    <strong>Note:</strong> This site is geared for local buy/sell. <br>
-                    Account will require Admin approval before bidding.
-                    <div class="form-group" style="margin-top:10px;">
-                        <input type="text" id="pickupPlan" placeholder="Can you pick up or deliver locally?">
-                    </div>
-                </div>
-                <button type="submit" class="action-btn">Create Account</button>
-            </form>
-            <div class="close-reg" onclick="document.getElementById('authModal').style.display='none'">Cancel</div>
+            <span class="close-modal-btn" onclick="closeRulesModal(event)">&times;</span>
+            <h2 class="brand-font" style="text-align:center; margin-top:0; margin-bottom: 20px; font-size: 1.8rem; font-weight: bold;">How It Works & Rules</h2>
+
+            <div class="rules-section">
+                <h3>⏰ The Live Auction Process</h3>
+                <ul>
+                    <li><strong>One Item at a Time:</strong> Unlike silent auctions, we sell one item live on the "block." You must be in the Live Auction Room to participate.</li>
+                    <li><strong>The Going, Going, Gone Timer:</strong> Every new bid resets the countdown timer (usually to 30 seconds). The item is not sold until the timer hits zero without any new bids.</li>
+                    <li><strong>Bidding:</strong> You can place quick incremental bids or set a <strong>Max Proxy Bid</strong>. The system will automatically bid for you in small increments up to your maximum amount to keep you in the lead.</li>
+                </ul>
+            </div>
+
+            <div class="rules-section">
+                <h3>📋 Participation Rules</h3>
+                <ul>
+                    <li><strong>Registration:</strong> You must have a registered account to view the live auction and place bids.</li>
+                    <li><strong>Bids are Binding:</strong> Placing a bid is a binding contract to purchase the item if you win.</li>
+                    <li><strong>Payment & Pickup:</strong> Winning bidders are expected to arrange payment and local pickup promptly after the auction event concludes.</li>
+                </ul>
+            </div>
+
+            <div class="rules-section">
+                <h3>📦 Selling With Us</h3>
+                <ul>
+                    <li>Registered users can submit items for consideration via their "My Account" page.</li>
+                    <li>All submissions are reviewed by our staff. If approved, they will be scheduled for an upcoming live event.</li>
+                </ul>
+            </div>
         </div>
     </div>
+
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, onValue, query, orderByChild, limitToLast } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // --- PASTE YOUR FIREBASE KEYS HERE ---
         const firebaseConfig = {
   apiKey: "AIzaSyCt0i8a7ZVRlNmSts9yM4uGwV7ghPU59rk",
   authDomain: "eastern-shore-auction.firebaseapp.com",
@@ -133,162 +150,75 @@
 };
 
         const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
         const db = getDatabase(app);
 
-        // --- 1. LOAD SCHEDULE ---
-        onValue(ref(db, 'auction_schedule'), (snapshot) => {
-            const text = snapshot.val();
-            if(text) {
-                document.getElementById('scheduleDisplay').innerText = text;
-            } else {
-                document.getElementById('scheduleDisplay').innerText = "Schedule coming soon...";
-            }
+        // 1. Load Schedule
+        const scheduleRef = ref(db, 'auction_schedule');
+        onValue(scheduleRef, (snapshot) => {
+            const data = snapshot.val();
+            document.getElementById('scheduleDisplay').innerText = data || "Schedule TBA";
         });
 
-        // --- 2. LOAD FEATURED ITEMS ---
-        let activeAuctionData = null;
-        let inventoryData = null;
+        // 2. Load Featured Items
+        const inventoryRef = ref(db, 'inventory');
+        // Query for items where is_featured is true
+        const featuredQuery = query(inventoryRef, orderByChild('is_featured'), limitToLast(50));
 
-        // Listen to Active Auction
-        onValue(ref(db, 'active_auction'), (snapshot) => {
-            activeAuctionData = snapshot.val();
-            renderGrid(); 
-        });
+        onValue(featuredQuery, (snapshot) => {
+            const grid = document.getElementById('featuredGrid');
+            grid.innerHTML = "";
+            const data = snapshot.val();
 
-        // Listen to Inventory
-        onValue(ref(db, 'inventory'), (snapshot) => {
-            inventoryData = snapshot.val();
-            renderGrid();
-        });
-
-        // Refresh check every second
-        setInterval(renderGrid, 1000);
-
-        function renderGrid() {
-            const grid = document.getElementById('upcomingGrid');
-            
-            if (!inventoryData) {
-                grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; color:#999;">Loading...</div>';
+            if (!data) {
+                grid.innerHTML = '<div class="col-span-3 text-center text-gray-500 py-10">No upcoming items scheduled yet.</div>';
                 return;
             }
 
-            const items = Object.entries(inventoryData).map(([key, val]) => ({ ...val, key }));
-            const featuredItems = items.filter(item => item.is_featured === true);
-            featuredItems.sort((a, b) => a.lot - b.lot);
+            // Filter client-side because Firebase query can return nulls for false values if not careful
+            const featuredItems = Object.values(data).filter(item => item.is_featured === true && item.times_run === 0);
 
             if (featuredItems.length === 0) {
-                grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; color:#999;">Stay tuned! New lots coming soon.</div>';
+                grid.innerHTML = '<div class="col-span-3 text-center text-gray-500 py-10">No upcoming items scheduled yet. Check back soon!</div>';
                 return;
             }
-
-            grid.innerHTML = ""; 
+            
+            // Sort by Lot number
+            featuredItems.sort((a, b) => a.lot - b.lot);
 
             featuredItems.forEach(item => {
-                const subtitleText = item.subtitle ? item.subtitle : "No details";
-                let stampHTML = "";
-
-                // TIME SENSITIVE BADGE LOGIC
-                if (activeAuctionData && item.key === activeAuctionData.inventory_key) {
-                    // Only show LIVE if time remains
-                    if (Date.now() < activeAuctionData.end_time) {
-                        stampHTML = '<div class="stamp stamp-live">LIVE NOW</div>';
-                    }
-                } 
-                else if (item.status_label && item.status_label.includes("SOLD")) {
-                    stampHTML = '<div class="stamp stamp-sold">SOLD</div>';
-                }
-
                 const card = document.createElement('div');
-                card.className = 'card';
+                card.className = "bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300";
                 card.innerHTML = `
-                    ${stampHTML}
-                    <img src="${item.image_url}" alt="${item.title}">
-                    <div class="card-body">
-                        <div class="card-title">${item.title}</div>
-                        <div class="card-lot">
-                            <strong>Lot #${item.lot}</strong> <br>
-                            ${subtitleText}
+                    <div class="h-48 bg-gray-200 relative">
+                        <img src="${item.image_url}" alt="${item.title}" class="w-full h-full object-cover">
+                        <div class="absolute top-0 right-0 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-bl-lg uppercase tracking-wider">
+                            UPCOMING
                         </div>
+                    </div>
+                    <div class="p-5">
+                        <h3 class="font-bold text-xl mb-1 text-gray-800 truncate">${item.title}</h3>
+                        <div class="text-sm text-gray-500 mb-3">Lot #${item.lot}</div>
+                        <p class="text-gray-600 text-sm line-clamp-2">${item.subtitle || item.description}</p>
                     </div>
                 `;
                 grid.appendChild(card);
             });
+        });
+
+        // --- MODAL LOGIC ---
+        window.openRulesModal = function() {
+            document.getElementById('rulesModal').style.display = 'flex';
+            // Prevent body scrolling when modal is open
+            document.body.style.overflow = 'hidden';
         }
 
-        // --- AUTH & UI LOGIC ---
-        window.toggleLocalFields = function(isLocal) {
-            const div = document.getElementById('nonLocalWarning');
-            const input = document.getElementById('pickupPlan');
-            if(isLocal) { div.style.display = 'none'; input.removeAttribute('required'); } 
-            else { div.style.display = 'block'; input.setAttribute('required', 'true'); }
-        }
-
-        window.openAuthModal = function() {
-            if(auth.currentUser) { window.location.href = "auction.html"; }
-            else { document.getElementById('authModal').style.display = 'flex'; }
-        }
-
-        window.switchTab = function(mode) {
-            document.getElementById('errorMsg').style.display = 'none';
-            if(mode === 'login') {
-                document.getElementById('loginForm').style.display = 'block';
-                document.getElementById('registerForm').style.display = 'none';
-                document.querySelectorAll('.tab')[0].classList.add('active');
-                document.querySelectorAll('.tab')[1].classList.remove('active');
-            } else {
-                document.getElementById('loginForm').style.display = 'none';
-                document.getElementById('registerForm').style.display = 'block';
-                document.querySelectorAll('.tab')[0].classList.remove('active');
-                document.querySelectorAll('.tab')[1].classList.add('active');
+        window.closeRulesModal = function(event) {
+            // Close if clicking the 'X' or the background overlay
+            if (!event || event.target === document.getElementById('rulesModal') || event.target.classList.contains('close-modal-btn')) {
+                document.getElementById('rulesModal').style.display = 'none';
+                // Re-enable body scrolling
+                document.body.style.overflow = 'auto';
             }
-        }
-
-        window.handleLogin = function() {
-            const email = document.getElementById('loginEmail').value;
-            const pass = document.getElementById('loginPass').value;
-            const btn = document.querySelector('#loginForm button');
-            btn.disabled = true; btn.innerText = "Verifying...";
-            signInWithEmailAndPassword(auth, email, pass)
-            .then(() => { window.location.href = "auction.html"; })
-            .catch((error) => { showError(error.message); btn.disabled = false; btn.innerText = "Log In"; });
-        }
-
-        window.handleRegister = function() {
-            const name = document.getElementById('regName').value;
-            const email = document.getElementById('regEmail').value;
-            const pass = document.getElementById('regPass').value;
-            const isLocal = document.querySelector('input[name="isLocal"]:checked').value === "yes";
-            const pickupPlan = document.getElementById('pickupPlan').value;
-            const btn = document.querySelector('#registerForm button');
-
-            if(pass.length < 6) { showError("Password must be at least 6 characters"); return; }
-            btn.disabled = true; btn.innerText = "Creating Account...";
-
-            createUserWithEmailAndPassword(auth, email, pass)
-            .then((userCredential) => {
-                const user = userCredential.user;
-                updateProfile(user, { displayName: name })
-                .then(() => {
-                    set(ref(db, 'users/' + user.uid), {
-                        name: name,
-                        email: email,
-                        is_local: isLocal,
-                        pickup_plan: isLocal ? "Local" : pickupPlan,
-                        is_approved: isLocal ? true : false,
-                        joined_at: Date.now()
-                    }).then(() => { window.location.href = "auction.html"; });
-                });
-            })
-            .catch((error) => { showError(error.message); btn.disabled = false; btn.innerText = "Create Account"; });
-        }
-
-        function showError(msg) {
-            const errDiv = document.getElementById('errorMsg');
-            errDiv.style.display = 'block';
-            let cleanMsg = msg.replace("Firebase: ", "").replace("auth/", "").replace(/-/g, " ");
-            cleanMsg = cleanMsg.charAt(0).toUpperCase() + cleanMsg.slice(1);
-            errDiv.innerText = cleanMsg;
         }
     </script>
 </body>
