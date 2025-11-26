@@ -1,179 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard | Eastern Shore Auction House</title>
-    <style>
-        /* --- CSS STYLES --- */
-        :root { --primary-color: #2563eb; --header-bg: #111827; --text-color: #1f2937; --bg-color: #f3f4f6; --success-color: #10b981; --live-color: #dc2626; --ended-color: #f59e0b; --fail-color: #6b7280; }
-        body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg-color); color: var(--text-color); margin: 0; }
-        
-        header { background: var(--header-bg); color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
-        .brand { font-family: "Georgia", serif; font-size: 1.5rem; font-weight: bold; }
-        .nav-links button { background: transparent; border: 1px solid #4b5563; color: white; padding: 8px 15px; cursor: pointer; border-radius: 4px; margin-left: 10px; }
-        .nav-links button.active { background: var(--primary-color); border-color: var(--primary-color); }
-        .nav-links button:hover { background: #374151; }
-
-        .container { max-width: 1200px; margin: 30px auto; padding: 20px; }
-        
-        table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #e5e7eb; }
-        th { background: #f9fafb; font-weight: bold; color: #6b7280; font-size: 0.85rem; text-transform: uppercase; }
-        tr { transition: all 0.3s ease; }
-        tr:hover { background: #f9fafb; }
-        
-        tr.live-active-row { background-color: #ecfdf5 !important; border-left: 5px solid var(--success-color); }
-        tr.live-ended-sold { background-color: #fffbeb !important; border-left: 5px solid var(--ended-color); }
-        tr.live-ended-unsold { background-color: #f3f4f6 !important; border-left: 5px solid var(--fail-color); opacity: 0.8; }
-
-        .live-badge { display: inline-block; background: var(--live-color); color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; margin-right: 8px; vertical-align: middle; text-transform: uppercase; animation: pulse 1.5s infinite; }
-        .sold-badge { display: inline-block; background: var(--ended-color); color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; margin-right: 8px; vertical-align: middle; text-transform: uppercase; }
-        .unsold-badge { display: inline-block; background: var(--fail-color); color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; margin-right: 8px; vertical-align: middle; text-transform: uppercase; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
-
-        .live-bid-info { font-weight: bold; font-size: 1rem; display: block; }
-        .live-bidder-name { font-size: 0.8rem; color: #6b7280; font-weight: normal; }
-        .status-pill { padding: 4px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; }
-        .status-new { background: #dbeafe; color: #1e40af; }
-        .status-run { background: #f3f4f6; color: #374151; }
-        .status-approved { background: #dcfce7; color: #166534; }
-        .status-pending { background: #fee2e2; color: #991b1b; }
-        .text-sold { color: #b45309; font-weight: bold; }
-        .text-passed { color: #6b7280; font-style: italic; }
-
-        input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; accent-color: var(--primary-color); }
-
-        .form-card { background: white; padding: 30px; border-radius: 8px; max-width: 600px; margin: 0 auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9rem; }
-        .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        .control-card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 30px; display: flex; align-items: center; gap: 15px; border-left: 5px solid var(--primary-color); }
-        .control-input { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
-
-        .btn { padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9rem; font-weight: bold; color: white; }
-        .btn-queue { background: #16a34a; }
-        .btn-edit { background: #2563eb; }
-        .btn-delete { background: #dc2626; }
-        .btn-save { background: #111827; width: 100%; padding: 12px; margin-top: 10px; }
-
-        .view-section { display: none; }
-        .view-section.active { display: block; }
-        .img-preview { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; vertical-align: middle; margin-right: 10px; }
-    </style>
-</head>
-<body>
-
-    <header>
-        <div class="brand">Admin Dashboard</div>
-        <div class="nav-links">
-            <button onclick="switchView('inventory')" class="active">Inventory</button>
-            <button onclick="switchView('users')">User Manager</button>
-            <button onclick="switchView('history')">Sales History</button>
-            <button onclick="switchView('add')">Add New Lot</button>
-            <button onclick="location.href='auction.html'" style="border-color:white;">Live Auction &rarr;</button>
-        </div>
-    </header>
-
-    <div class="container">
-        
-        <div id="inventoryView" class="view-section active">
-            <div class="control-card">
-                <h3>📅 Update Auction Date:</h3>
-                <input type="text" id="scheduleInput" class="control-input" placeholder="e.g. Tonight at 7:00 PM CST">
-                <button class="btn btn-edit" onclick="updateSchedule()">Update</button>
-            </div>
-
-            <h2>Item Inventory</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th style="text-align:center;">Feat</th>
-                        <th>Lot #</th>
-                        <th>Item</th>
-                        <th>Seller Name</th>
-                        <th>Status / Price</th>
-                        <th>Run</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="inventoryTableBody">
-                    <tr><td colspan="7" style="text-align:center;">Loading inventory...</td></tr>
-                </tbody>
-            </table>
-        </div>
-
-        <div id="usersView" class="view-section">
-            <h2>User Management</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Local?</th>
-                        <th>Pickup Plan</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="usersTableBody">
-                    <tr><td colspan="6" style="text-align:center;">Loading users...</td></tr>
-                </tbody>
-            </table>
-        </div>
-
-        <div id="historyView" class="view-section">
-            <h2>Sales History (Sold Lots)</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Lot #</th>
-                        <th>Item</th>
-                        <th>Sold Price</th>
-                        <th>Buyer Info</th>
-                        <th>Seller Info</th>
-                        <th>Date</th>
-                    </tr>
-                </thead>
-                <tbody id="salesTableBody">
-                    <tr><td colspan="6" style="text-align:center;">Loading history...</td></tr>
-                </tbody>
-            </table>
-        </div>
-
-        <div id="addView" class="view-section">
-            <h2 id="formTitle">Add New Lot</h2>
-            <div class="form-card">
-                <form onsubmit="event.preventDefault(); saveItem();">
-                    <input type="hidden" id="editKey"> 
-                    <div class="form-group"><label>Lot Number:</label><input type="number" id="inpLot" required placeholder="e.g. 101"></div>
-                    <div class="form-group"><label>Title:</label><input type="text" id="inpTitle" required></div>
-                    <div class="form-group"><label>Subtitle:</label><input type="text" id="inpSub" placeholder="Condition / Category"></div>
-                    
-                    <div class="form-group"><label>Seller Name / Username:</label><input type="text" id="inpSeller" placeholder="e.g. Jamie R."></div>
-                    
-                    <div class="form-group"><label>Start Bid ($):</label><input type="number" id="inpPrice" required></div>
-                    <div class="form-group"><label>Reserve Price ($):</label><input type="number" id="inpReserve" placeholder="Hidden Minimum"></div>
-                    <div class="form-group"><label>Main Image URL:</label><input type="text" id="inpImg" required></div>
-                    <div class="form-group"><label>Description:</label><textarea id="inpDesc" rows="4"></textarea></div>
-                    <h3>Extra Images</h3>
-                    <div class="form-group"><input type="text" id="inpThumb1" placeholder="URL 1"></div>
-                    <div class="form-group"><input type="text" id="inpThumb2" placeholder="URL 2"></div>
-                    <div class="form-group"><input type="text" id="inpThumb3" placeholder="URL 3"></div>
-                    <div class="form-group"><input type="text" id="inpThumb4" placeholder="URL 4"></div>
-                    <button type="submit" class="btn btn-save">Save Item</button>
-                </form>
-            </div>
-        </div>
-
-    </div>
-
-    <script type="module">
+<script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getDatabase, ref, onValue, set, push, remove, update, child, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // --- PASTE KEYS HERE ---
+        // --- PASTE YOUR KEYS HERE ---
         const firebaseConfig = {
   apiKey: "AIzaSyCt0i8a7ZVRlNmSts9yM4uGwV7ghPU59rk",
   authDomain: "eastern-shore-auction.firebaseapp.com",
@@ -230,7 +60,7 @@
             document.getElementById('formTitle').innerText = "Add New Lot";
         }
 
-        // --- HISTORY ---
+        // --- SALES HISTORY ---
         function loadHistory() {
             const refHist = ref(db, 'sales_history');
             onValue(refHist, (snapshot) => {
@@ -318,7 +148,7 @@
             document.querySelectorAll('.live-active-row, .live-ended-sold, .live-ended-unsold').forEach(row => {
                 row.classList.remove('live-active-row', 'live-ended-sold', 'live-ended-unsold');
                 const titleCell = row.querySelector('.item-title');
-                const badge = row.querySelector('.badge-live, .badge-sold, .badge-passed');
+                const badge = row.querySelector('.live-badge, .ended-badge');
                 if(badge) badge.remove();
                 const priceCell = row.querySelector('.price-cell');
                 priceCell.innerHTML = "$" + row.dataset.defaultPrice;
@@ -338,30 +168,30 @@
                     if (isEnded) {
                         if (hasBidder && currentBid >= reserve) {
                             row.classList.add('live-ended-sold');
-                            if (!row.querySelector('.badge-sold')) titleCell.insertAdjacentHTML('afterbegin', '<span class="badge badge-sold">SOLD</span>');
+                            if (!row.querySelector('.ended-badge')) titleCell.insertAdjacentHTML('afterbegin', '<span class="ended-badge">SOLD</span>');
                             priceCell.innerHTML = `<span class="live-bid-info" style="color: #b45309;">SOLD: $${currentBid.toLocaleString()}</span><span class="live-bidder-name">Winner: ${bidder}</span>`;
                         } else {
                             row.classList.add('live-ended-unsold');
-                            if (!row.querySelector('.badge-passed')) titleCell.insertAdjacentHTML('afterbegin', '<span class="badge badge-passed">PASSED</span>');
+                            if (!row.querySelector('.ended-badge')) titleCell.insertAdjacentHTML('afterbegin', '<span class="ended-badge">PASSED</span>');
                             priceCell.innerHTML = `<span class="live-bid-info" style="color: #6b7280;">Ended: $${currentBid.toLocaleString()}</span><span class="live-bidder-name" style="color:#dc2626;">Reserve Not Met</span>`;
                         }
                     } else {
                         row.classList.add('live-active-row');
-                        if (!row.querySelector('.badge-live')) titleCell.insertAdjacentHTML('afterbegin', '<span class="badge badge-live">LIVE</span>');
+                        if (!row.querySelector('.live-badge')) titleCell.insertAdjacentHTML('afterbegin', '<span class="live-badge">LIVE</span>');
                         priceCell.innerHTML = `<span class="live-bid-info" style="color: #10b981;">$${currentBid.toLocaleString()}</span><span class="live-bidder-name">High Bidder: ${bidder}</span>`;
                     }
                 }
             }
         }
 
-        // --- CRUD & QUEUE ---
+        // --- CRUD ---
         window.saveItem = function() {
             const key = document.getElementById('editKey').value;
             const data = {
                 lot: parseInt(document.getElementById('inpLot').value),
                 title: document.getElementById('inpTitle').value,
                 subtitle: document.getElementById('inpSub').value,
-                seller_name: document.getElementById('inpSeller').value, // SAVING NAME
+                seller_name: document.getElementById('inpSeller').value,
                 start_price: parseInt(document.getElementById('inpPrice').value),
                 reserve_price: parseInt(document.getElementById('inpReserve').value) || 0,
                 image_url: document.getElementById('inpImg').value,
@@ -388,7 +218,7 @@
                 document.getElementById('inpLot').value = data.lot;
                 document.getElementById('inpTitle').value = data.title;
                 document.getElementById('inpSub').value = data.subtitle;
-                document.getElementById('inpSeller').value = data.seller_name; // LOADING NAME
+                document.getElementById('inpSeller').value = data.seller_name;
                 document.getElementById('inpPrice').value = data.start_price;
                 document.getElementById('inpReserve').value = data.reserve_price || "";
                 document.getElementById('inpImg').value = data.image_url;
@@ -402,60 +232,73 @@
             });
         }
 
-        window.queueItem = function(key) {
-            if(!confirm("Put this item on the LIVE Auction Block?")) return;
-            get(ref(db, `inventory/${key}`)).then((snapshot) => {
-                const item = snapshot.val();
-                
-                // ARCHIVE OLD
+        // --- BULLETPROOF QUEUE ITEM ---
+        window.queueItem = function(newKey) {
+            // 1. Get NEW item data
+            get(ref(db, `inventory/${newKey}`)).then((newSnap) => {
+                const newItem = newSnap.val();
+
+                // 2. Get CURRENT active auction to archive it
                 get(ref(db, 'active_auction')).then((activeSnap) => {
                     const currentAuction = activeSnap.val();
+
+                    // Define the function to Start the New Auction
                     const startNew = () => {
                         const auctionData = {
-                            lot: item.lot,
-                            title: item.title, subtitle: item.subtitle, description: item.description,
-                            current_bid: item.start_price, image_url: item.image_url,
-                            reserve_price: item.reserve_price || 0,
-                            end_time: Date.now() + (6 * 60 * 1000),
-                            images: item.images,
+                            lot: newItem.lot, 
+                            title: newItem.title, subtitle: newItem.subtitle, description: newItem.description,
+                            current_bid: newItem.start_price, image_url: newItem.image_url,
+                            reserve_price: newItem.reserve_price || 0,
+                            end_time: Date.now() + (6 * 60 * 1000), // 6 minutes
+                            images: newItem.images,
                             high_bidder_max: 0, high_bidder_name: "", high_bidder_uid: "", bid_history: null,
-                            inventory_key: key, 
-                            seller_name: item.seller_name // PASS NAME TO LIVE
+                            inventory_key: newKey, seller_name: newItem.seller_name
                         };
                         set(ref(db, 'active_auction'), auctionData);
-                        update(ref(db, `inventory/${key}`), { times_run: (item.times_run || 0) + 1, status_label: "LIVE" });
+                        update(ref(db, `inventory/${newKey}`), { times_run: (newItem.times_run || 0) + 1, status_label: "LIVE" });
                         alert("Item is LIVE!");
                     };
 
-                    if (currentAuction && currentAuction.inventory_key) {
+                    // 3. Safe Archive Logic
+                    // Only attempt to archive if we have valid data and a valid key
+                    if (currentAuction && currentAuction.inventory_key && currentAuction.inventory_key !== "undefined") {
                         const reserve = currentAuction.reserve_price || 0;
                         const finalBid = currentAuction.current_bid || 0;
                         const hasBidder = !!currentAuction.high_bidder_uid;
                         let statusLabel = "PASSED";
                         let isSold = false;
+
                         if (hasBidder && finalBid >= reserve) { statusLabel = `SOLD: $${finalBid}`; isSold = true; } 
                         else { statusLabel = hasBidder ? "PASSED (Reserve)" : "PASSED (No Bids)"; }
+
+                        // Update the OLD item status in inventory
                         update(ref(db, `inventory/${currentAuction.inventory_key}`), { status_label: statusLabel });
 
                         if (isSold) {
                             get(ref(db, `users/${currentAuction.high_bidder_uid}`)).then((userSnap) => {
                                 const winnerEmail = userSnap.exists() ? userSnap.val().email : "Unknown";
                                 push(ref(db, 'sales_history'), {
-                                    lot: currentAuction.lot,
+                                    lot: currentAuction.lot, 
                                     item_title: currentAuction.title,
                                     final_price: finalBid,
                                     winner_name: currentAuction.high_bidder_name,
                                     winner_email: winnerEmail,
-                                    seller_name: currentAuction.seller_name, // SAVE SELLER NAME TO HISTORY
+                                    seller_name: currentAuction.seller_name, 
                                     date: Date.now()
                                 });
+                                startNew(); // Start next after saving history
+                            }).catch(() => {
+                                // If user fetch fails, force start anyway
                                 startNew();
                             });
-                        } else { startNew(); }
-                    } else { startNew(); }
+                        } else { 
+                            startNew(); 
+                        }
+                    } else { 
+                        // Data was corrupt or empty, just start fresh
+                        startNew(); 
+                    }
                 });
             });
         }
     </script>
-</body>
-</html>
