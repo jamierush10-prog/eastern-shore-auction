@@ -45,21 +45,12 @@
         .seller-info { margin-bottom: 20px; font-size: 0.95rem; color: #4b5563; display: none; }
         .seller-info strong { color: #1f2937; }
 
-        /* LOGISTICS BOX STYLE */
-        .logistics-box {
-            background-color: #f9fafb;
-            border: 1px solid #e5e7eb;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 0.9rem;
-            color: #4b5563;
-        }
+        /* LOGISTICS BOX */
+        .logistics-box { background-color: #f9fafb; border: 1px solid #e5e7eb; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 0.9rem; color: #4b5563; }
         .logistics-item { margin-bottom: 8px; display: flex; align-items: flex-start; gap: 10px; }
         .logistics-item:last-child { margin-bottom: 0; }
         .log-icon { font-size: 1.1rem; min-width: 25px; }
         .log-text strong { color: #1f2937; display: block; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; }
-
 
         .timer-block { background-color: #fee2e2; color: var(--urgent-color); padding: 15px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px; font-weight: bold; border: 1px solid #fca5a5; }
         .countdown { font-size: 1.5rem; font-variant-numeric: tabular-nums; }
@@ -73,34 +64,9 @@
         .increment-buttons { display: flex; gap: 10px; }
         .inc-btn { flex: 1; padding: 10px; background: white; border: 1px solid var(--primary-color); color: var(--primary-color); border-radius: 4px; font-weight: bold; cursor: pointer; transition: all 0.2s; }
         .inc-btn:hover { background: var(--primary-color); color: white; }
-        
-        /* UPDATED INPUT STYLING FOR $ SIGN */
         .bid-input-row { position: relative; width: 100%; }
-        
-        /* The Dollar Sign Overlay */
-        .currency-symbol {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #374151;
-            pointer-events: none; /* Lets clicks pass through to input */
-        }
-
-        input#bidInput { 
-            padding: 12px; 
-            padding-left: 30px; /* Extra space for the $ sign */
-            border: 1px solid var(--border-color); 
-            border-radius: 6px; 
-            font-size: 1.2rem; 
-            font-weight: bold; 
-            width: 100%; 
-            box-sizing: border-box; 
-            text-align: center; 
-        }
-
+        .currency-symbol { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); font-size: 1.2rem; font-weight: bold; color: #374151; pointer-events: none; }
+        input#bidInput { padding: 12px; padding-left: 30px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 1.2rem; font-weight: bold; width: 100%; box-sizing: border-box; text-align: center; }
         button.bid-btn { background-color: var(--primary-color); color: white; border: none; padding: 12px 24px; border-radius: 6px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s; width: 100%; }
         button.bid-btn:hover { background-color: #1d4ed8; }
         
@@ -188,29 +154,6 @@
             
             <div id="sellerInfo" class="seller-info">Seller: <strong id="sellerName">...</strong></div>
 
-            <div class="timer-block"><span>TIME REMAINING</span><span class="countdown" id="countdown">--:--</span></div>
-
-            <div class="pricing-card">
-                <div class="current-bid-label">Current Bid</div>
-                <div class="current-price" id="priceDisplay">Loading...</div>
-                <div class="bid-controls">
-                    <div class="user-badge"><span>Bidder: <strong id="displayUsername">...</strong></span></div>
-                    <div class="increment-buttons">
-                        <button class="inc-btn" onclick="addToBid(1)">+$1</button>
-                        <button class="inc-btn" onclick="addToBid(5)">+$5</button>
-                        <button class="inc-btn" onclick="addToBid(10)">+$10</button>
-                    </div>
-                    
-                    <div class="bid-input-row">
-                        <span class="currency-symbol">$</span>
-                        <input type="number" id="bidInput" placeholder="Total Max Bid" onfocus="this.select()">
-                    </div>
-
-                    <button class="bid-btn" onclick="openConfirm()">Place Max Bid</button>
-                    <div id="userMaxBidDisplay">Your current max bid is set to: <strong id="userMaxVal">...</strong></div>
-                </div>
-            </div>
-
             <div id="logisticsBox" class="logistics-box">
                 <div class="logistics-item">
                     <div class="log-icon">📍</div>
@@ -223,6 +166,27 @@
                 <div class="logistics-item">
                     <div class="log-icon">🚚</div>
                     <div class="log-text"><strong>Delivery:</strong> <span id="dispDel">...</span></div>
+                </div>
+            </div>
+
+            <div class="timer-block"><span>TIME REMAINING</span><span class="countdown" id="countdown">--:--</span></div>
+
+            <div class="pricing-card">
+                <div class="current-bid-label">Current Bid</div>
+                <div class="current-price" id="priceDisplay">Loading...</div>
+                <div class="bid-controls">
+                    <div class="user-badge"><span>Bidder: <strong id="displayUsername">...</strong></span></div>
+                    <div class="increment-buttons">
+                        <button class="inc-btn" onclick="addToBid(1)">+$1</button>
+                        <button class="inc-btn" onclick="addToBid(5)">+$5</button>
+                        <button class="inc-btn" onclick="addToBid(10)">+$10</button>
+                    </div>
+                    <div class="bid-input-row">
+                        <span class="currency-symbol">$</span>
+                        <input type="number" id="bidInput" placeholder="Total Max Bid" onfocus="this.select()">
+                    </div>
+                    <button class="bid-btn" onclick="openConfirm()">Place Max Bid</button>
+                    <div id="userMaxBidDisplay">Your current max bid is set to: <strong id="userMaxVal">...</strong></div>
                 </div>
             </div>
 
@@ -317,6 +281,7 @@
         window.logout = function() { signOut(auth).then(() => { window.location.href = "index.html"; }); }
         window.openAdminPanel = function() { window.location.href = 'admin.html'; }
 
+        // --- CHAT LOGIC ---
         const chatRef = query(ref(db, 'auction_chat'), limitToLast(50));
         window.sendChat = function() {
             const input = document.getElementById('chatInput');
@@ -340,24 +305,40 @@
             }
         });
 
+        // --- AUCTION DATA ---
         onValue(dbRef, (snapshot) => {
             const data = snapshot.val();
             if (data) {
                 globalAuctionData = data;
                 if (data.end_time > Date.now()) { auctionEndedProcessed = false; }
 
+                // --- SMART TOGGLE LOGIC FOR CLOSED AUCTIONS ---
+                const isClosed = (data.title === "Auction Closed");
+                const displayStyle = isClosed ? 'none' : 'block';
+                const gridStyle = isClosed ? 'none' : 'grid';
+                const flexStyle = isClosed ? 'none' : 'flex';
+
+                document.querySelector('.thumbnails').style.display = gridStyle;
+                document.querySelector('.history-section').style.display = displayStyle;
+                document.getElementById('logisticsBox').style.display = displayStyle;
+                document.querySelector('.timer-block').style.display = flexStyle;
+                document.querySelector('.pricing-card').style.display = displayStyle;
+                document.querySelector('.description-block').style.display = displayStyle;
+                document.getElementById('sellerInfo').style.display = isClosed ? 'none' : (data.seller_name ? 'block' : 'none');
+
+                // Populate Data
                 document.getElementById('itemTitle').innerText = data.title;
                 document.getElementById('itemSubtitle').innerText = data.subtitle;
                 document.getElementById('itemDescription').innerText = data.description;
                 document.getElementById('priceDisplay').innerText = "$" + data.current_bid.toLocaleString();
                 globalCurrentBid = data.current_bid;
                 
-                if (data.seller_name) {
+                // Update Seller info only if auction is active
+                if (!isClosed && data.seller_name) {
                     document.getElementById('sellerName').innerText = data.seller_name;
-                    document.getElementById('sellerInfo').style.display = 'block';
-                } else { document.getElementById('sellerInfo').style.display = 'none'; }
+                }
 
-                // LOGISTICS DISPLAY
+                // LOGISTICS
                 document.getElementById('dispLoc').innerText = data.location || "Not Specified";
                 document.getElementById('dispPay').innerText = data.payment_methods || "Cash";
                 document.getElementById('dispDel').innerText = data.delivery_method || "Local Pickup";
@@ -367,12 +348,14 @@
 
                 const mainImg = document.getElementById('mainImage');
                 if(!mainImg.getAttribute('data-locked')) mainImg.src = data.image_url;
-                updateThumbs(data.images);
+                
+                // Thumbs update only if not closed (optimization)
+                if (!isClosed) updateThumbs(data.images);
                 
                 updateTimer(data.end_time);
                 renderBidHistory(data.bid_history);
 
-                if (currentUser && data.high_bidder_uid === currentUser.uid) {
+                if (currentUser && data.high_bidder_uid === currentUser.uid && !isClosed) {
                     document.getElementById('userMaxBidDisplay').style.display = 'block';
                     document.getElementById('userMaxBidDisplay').classList.add('winning-bid-status');
                     document.getElementById('userMaxBidDisplay').innerHTML = `🎉 <strong>You are the highest bidder!</strong> <br>(Your max bid: $${data.high_bidder_max.toLocaleString()})`;
