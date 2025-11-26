@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Account | Eastern Shore Auction House</title>
+    <style>
+        :root { --primary-color: #2563eb; --header-bg: #111827; --text-color: #1f2937; --bg-color: #f3f4f6; }
+        body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg-color); color: var(--text-color); margin: 0; }
+        
+        /* HEADER */
+        header { background: var(--header-bg); color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .brand { font-family: "Georgia", serif; font-size: 1.5rem; font-weight: bold; }
+        .nav-link { color: #d1d5db; text-decoration: none; margin-left: 20px; cursor: pointer; }
+        .nav-link:hover { color: white; text-decoration: underline; }
+
+        .container { max-width: 1000px; margin: 30px auto; padding: 20px; }
+
+        /* PROFILE CARD */
+        .profile-card { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 30px; }
+        .section-title { border-bottom: 2px solid #e5e7eb; padding-bottom: 10px; margin-bottom: 20px; font-size: 1.5rem; font-weight: bold; }
+        
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 0.9rem; font-weight: bold; margin-bottom: 5px; color: #4b5563; }
+        .form-group input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .form-group input:disabled { background: #f3f4f6; color: #6b7280; cursor: not-allowed; }
+
+        .btn { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; color: white; }
+        .btn-save { background: var(--primary-color); }
+        .btn-reset { background: #4b5563; margin-left: 10px; }
+
+        /* LISTS SECTION */
+        .lists-container { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        .list-box { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .list-header { font-size: 1.2rem; font-weight: bold; margin-bottom: 15px; color: var(--primary-color); }
+        
+        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #e5e7eb; }
+        th { color: #6b7280; font-size: 0.8rem; text-transform: uppercase; }
+
+        @media (max-width: 768px) {
+            .form-grid, .lists-container { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand">My Account</div>
+        <div>
+            <a href="auction.html" class="nav-link">&larr; Back to Auction</a>
+            <span onclick="logout()" class="nav-link">Sign Out</span>
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <div class="profile-card">
+            <div class="section-title">Account Details</div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Username (Cannot Change)</label>
+                    <input type="text" id="accName" disabled>
+                </div>
+                <div class="form-group">
+                    <label>Member Since</label>
+                    <input type="text" id="accDate" disabled>
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="accEmail" disabled>
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" id="accPhone" placeholder="Add phone number">
+                </div>
+            </div>
+            <div style="margin-top: 20px;">
+                <button class="btn btn-save" onclick="saveProfile()">Save Changes</button>
+                <button class="btn btn-reset" onclick="resetPassword()">Send Password Reset Email</button>
+            </div>
+        </div>
+
+        <div class="lists-container">
+            
+            <div class="list-box">
+                <div class="list-header">📦 Items Purchased</div>
+                <table>
+                    <thead><tr><th>Date</th><th>Item</th><th>Price</th></tr></thead>
+                    <tbody id="purchaseList">
+                        <tr><td colspan="3">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="list-box">
+                <div class="list-header">💰 Items Sold</div>
+                <table>
+                    <thead><tr><th>Date</th><th>Item</th><th>Sold For</th></tr></thead>
+                    <tbody id="salesList">
+                        <tr><td colspan="3">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getDatabase, ref, onValue, update, child, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        // --- PASTE KEYS HERE ---
+        const firebaseConfig = {
+  apiKey: "AIzaSyCt0i8a7ZVRlNmSts9yM4uGwV7ghPU59rk",
+  authDomain: "eastern-shore-auction.firebaseapp.com",
+  databaseURL: "https://eastern-shore-auction-default-rtdb.firebaseio.com",
+  projectId: "eastern-shore-auction",
+  storageBucket: "eastern-shore-auction.firebasestorage.app",
+  messagingSenderId: "771348898846",
+  appId: "1:771348898846:web:3b6371e8f826747fdcba0f"
+};
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+        let currentUser = null;
+
+        // --- AUTH & LOAD ---
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                loadUserProfile(user.uid);
+                loadUserHistory(user.email);
+            } else {
+                window.location.href = "index.html";
+            }
+        });
+
+        window.logout = function() { signOut(auth).then(() => window.location.href = "index.html"); }
+
+        // --- 1. LOAD PROFILE ---
+        function loadUserProfile(uid) {
+            const userRef = ref(db, `users/${uid}`);
+            get(userRef).then((snapshot) => {
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    document.getElementById('accName').value = data.name || currentUser.displayName;
+                    document.getElementById('accEmail').value = data.email || currentUser.email;
+                    document.getElementById('accPhone').value = data.phone || "";
+                    
+                    const joinDate = data.joined_at ? new Date(data.joined_at).toLocaleDateString() : "N/A";
+                    document.getElementById('accDate').value = joinDate;
+                }
+            });
+        }
+
+        // --- 2. LOAD HISTORY (BOUGHT & SOLD) ---
+        function loadUserHistory(userEmail) {
+            const historyRef = ref(db, 'sales_history');
+            onValue(historyRef, (snapshot) => {
+                const purchasesTbody = document.getElementById('purchaseList');
+                const salesTbody = document.getElementById('salesList');
+                
+                purchasesTbody.innerHTML = "";
+                salesTbody.innerHTML = "";
+
+                const data = snapshot.val();
+                if (!data) {
+                    purchasesTbody.innerHTML = "<tr><td colspan='3'>No records found.</td></tr>";
+                    salesTbody.innerHTML = "<tr><td colspan='3'>No records found.</td></tr>";
+                    return;
+                }
+
+                const items = Object.values(data).sort((a, b) => b.date - a.date);
+                let boughtCount = 0;
+                let soldCount = 0;
+
+                items.forEach(item => {
+                    const dateStr = new Date(item.date).toLocaleDateString();
+                    
+                    // Check if User BOUGHT this
+                    if (item.winner_email && item.winner_email.toLowerCase() === userEmail.toLowerCase()) {
+                        boughtCount++;
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `<td>${dateStr}</td><td>${item.item_title}</td><td>$${item.final_price}</td>`;
+                        purchasesTbody.appendChild(tr);
+                    }
+
+                    // Check if User SOLD this
+                    if (item.seller_email && item.seller_email.toLowerCase() === userEmail.toLowerCase()) {
+                        soldCount++;
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `<td>${dateStr}</td><td>${item.item_title}</td><td>$${item.final_price}</td>`;
+                        salesTbody.appendChild(tr);
+                    }
+                });
+
+                if(boughtCount === 0) purchasesTbody.innerHTML = "<tr><td colspan='3'>No purchases yet.</td></tr>";
+                if(soldCount === 0) salesTbody.innerHTML = "<tr><td colspan='3'>No sales yet.</td></tr>";
+            });
+        }
+
+        // --- ACTIONS ---
+        window.saveProfile = function() {
+            const newPhone = document.getElementById('accPhone').value;
+            update(ref(db, `users/${currentUser.uid}`), {
+                phone: newPhone
+            }).then(() => {
+                alert("Profile Updated!");
+            });
+        }
+
+        window.resetPassword = function() {
+            if(confirm(`Send a password reset email to ${currentUser.email}?`)) {
+                sendPasswordResetEmail(auth, currentUser.email)
+                .then(() => {
+                    alert("Email sent! Check your inbox.");
+                })
+                .catch((error) => {
+                    alert("Error: " + error.message);
+                });
+            }
+        }
+    </script>
+</body>
+</html>
