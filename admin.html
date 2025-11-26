@@ -9,7 +9,6 @@
         :root { --primary-color: #2563eb; --header-bg: #111827; --text-color: #1f2937; --bg-color: #f3f4f6; --success-color: #10b981; --live-color: #dc2626; --ended-color: #f59e0b; --fail-color: #6b7280; }
         body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg-color); color: var(--text-color); margin: 0; }
         
-        /* HEADER */
         header { background: var(--header-bg); color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
         .brand { font-family: "Georgia", serif; font-size: 1.5rem; font-weight: bold; }
         .nav-links button { background: transparent; border: 1px solid #4b5563; color: white; padding: 8px 15px; cursor: pointer; border-radius: 4px; margin-left: 10px; }
@@ -25,12 +24,10 @@
         tr { transition: all 0.3s ease; }
         tr:hover { background: #f9fafb; }
         
-        /* LIVE ROW STYLES */
         tr.live-active-row { background-color: #ecfdf5 !important; border-left: 5px solid var(--success-color); }
         tr.live-ended-sold { background-color: #fffbeb !important; border-left: 5px solid var(--ended-color); }
         tr.live-ended-unsold { background-color: #f3f4f6 !important; border-left: 5px solid var(--fail-color); opacity: 0.8; }
 
-        /* BADGES */
         .badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; margin-right: 8px; vertical-align: middle; text-transform: uppercase; }
         .badge-live { background: var(--live-color); color: white; animation: pulse 1.5s infinite; }
         .badge-sold { background: var(--ended-color); color: white; }
@@ -40,7 +37,6 @@
         .live-bid-info { font-weight: bold; font-size: 1rem; display: block; }
         .live-bidder-name { font-size: 0.8rem; color: #6b7280; font-weight: normal; }
 
-        /* STATUS PILLS */
         .status-pill { padding: 4px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; }
         .status-new { background: #dbeafe; color: #1e40af; }
         .status-run { background: #f3f4f6; color: #374151; }
@@ -52,32 +48,28 @@
         .text-passed { color: #6b7280; font-style: italic; }
 
         input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; accent-color: var(--primary-color); }
-
-        /* CONTACT INFO IN TABLE */
         .contact-info { font-size: 0.9rem; }
         .contact-label { font-size: 0.75rem; color: #9ca3af; text-transform: uppercase; font-weight: bold; }
 
-        /* FORMS & MODALS */
         .form-card { background: white; padding: 30px; border-radius: 8px; max-width: 600px; margin: 0 auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; }
-        .modal-content { background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
-        
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9rem; }
         .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
         
-        .control-card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 30px; display: flex; align-items: center; justify-content: space-between; border-left: 5px solid var(--primary-color); }
-        .control-group { display: flex; align-items: center; gap: 10px; flex: 1; }
-        .control-input { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 4px; max-width: 300px; }
+        /* CONTROL CARD UPDATED */
+        .control-card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 30px; display: flex; flex-direction: column; gap: 15px; border-left: 5px solid var(--primary-color); }
+        .control-row { display: flex; gap: 15px; align-items: flex-end; }
+        .control-input-group { flex: 1; }
+        .control-input-group label { display: block; font-size: 0.85rem; font-weight: bold; color: #4b5563; margin-bottom: 5px; }
+        .control-input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
 
-        /* ACTIONS */
         .btn { padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9rem; font-weight: bold; color: white; }
         .btn-queue { background: #16a34a; }
         .btn-edit { background: #2563eb; }
         .btn-delete { background: #dc2626; }
-        .btn-ban { background: #991b1b; } /* Dark Red for Ban */
+        .btn-ban { background: #991b1b; }
         .btn-save { background: #111827; width: 100%; padding: 12px; margin-top: 10px; }
-        .btn-stop { background: #dc2626; padding: 10px 20px; }
+        .btn-stop { background: #dc2626; padding: 10px 20px; width: 100%; }
         .btn-manual { background: #4b5563; margin-bottom: 15px; }
 
         .view-section { display: none; }
@@ -102,11 +94,18 @@
         
         <div id="inventoryView" class="view-section active">
             <div class="control-card">
-                <div class="control-group">
-                    <h3>📅 Auction Date:</h3>
-                    <input type="text" id="scheduleInput" class="control-input" placeholder="e.g. Tonight at 7:00 PM CST">
-                    <button class="btn btn-edit" onclick="updateSchedule()">Update</button>
+                <div class="control-row">
+                    <div class="control-input-group">
+                        <label>📅 Next Auction Date:</label>
+                        <input type="text" id="scheduleInput" class="control-input" placeholder="e.g. Thursday at 7:30 PM">
+                    </div>
+                    <div class="control-input-group">
+                        <label>📢 Announcement Text:</label>
+                        <input type="text" id="announcementInput" class="control-input" placeholder="e.g. Log in to create account">
+                    </div>
+                    <button class="btn btn-edit" style="height:42px;" onclick="updateSettings()">Update All</button>
                 </div>
+                <hr style="border:0; border-top:1px solid #e5e7eb; margin:0;">
                 <button class="btn btn-stop" onclick="finalizeAuction()">⛔ End Current Auction</button>
             </div>
 
@@ -136,7 +135,8 @@
                     <tr>
                         <th>Name</th>
                         <th>Email</th>
-                        <th>Phone</th> <th>Local?</th>
+                        <th>Phone</th>
+                        <th>Local?</th>
                         <th>Status</th>
                         <th>Action</th>
                     </tr>
@@ -238,7 +238,7 @@
                         loadUsers();
                         loadHistory();
                         monitorActiveAuction();
-                        loadSchedule();
+                        loadSettings();
                     }
                 });
             } else {
@@ -246,15 +246,24 @@
             }
         });
 
-        // --- SCHEDULE ---
-        function loadSchedule() {
-            get(ref(db, 'auction_schedule')).then((snapshot) => {
-                if(snapshot.exists()) document.getElementById('scheduleInput').value = snapshot.val();
+        // --- SETTINGS (SCHEDULE & ANNOUNCEMENT) ---
+        function loadSettings() {
+            get(ref(db, 'settings')).then((snapshot) => {
+                if(snapshot.exists()) {
+                    const data = snapshot.val();
+                    document.getElementById('scheduleInput').value = data.schedule || "";
+                    document.getElementById('announcementInput').value = data.announcement || "";
+                }
             });
         }
-        window.updateSchedule = function() {
-            const newText = document.getElementById('scheduleInput').value;
-            set(ref(db, 'auction_schedule'), newText).then(() => { alert("Schedule updated!"); });
+
+        window.updateSettings = function() {
+            const schedule = document.getElementById('scheduleInput').value;
+            const announcement = document.getElementById('announcementInput').value;
+            update(ref(db, 'settings'), {
+                schedule: schedule,
+                announcement: announcement
+            }).then(() => { alert("Settings updated!"); });
         }
 
         // --- NAVIGATION ---
@@ -293,11 +302,9 @@
 
             onValue(refHist, (histSnap) => {
                 const historyData = histSnap.val();
-                
                 get(refUsers).then((userSnap) => {
                     const usersData = userSnap.val() || {};
                     const allUsers = Object.values(usersData);
-
                     const tbody = document.getElementById('salesTableBody');
                     tbody.innerHTML = "";
 
@@ -307,31 +314,33 @@
                     
                     items.forEach(item => {
                         const dateStr = new Date(item.date).toLocaleDateString();
-                        const lotNum = item.lot || "Old";
+                        let lotDisplay = item.lot;
+                        if (!lotDisplay || lotDisplay === 0 || lotDisplay === "0") {
+                            lotDisplay = `<span style="color:#9ca3af; font-style:italic;">#Old</span>`;
+                        } else {
+                            lotDisplay = `<strong>#${lotDisplay}</strong>`;
+                        }
 
                         const buyerProfile = allUsers.find(u => u.email && u.email.toLowerCase() === (item.winner_email || "").toLowerCase());
-                        const buyerPhone = buyerProfile && buyerProfile.phone ? buyerProfile.phone : "No Phone Listed";
+                        const buyerPhone = buyerProfile && buyerProfile.phone ? buyerProfile.phone : "N/A";
                         const buyerName = buyerProfile ? buyerProfile.name : item.winner_name;
+                        const buyerEmail = item.winner_email || "N/A";
 
                         const sellerProfile = allUsers.find(u => u.name && u.name.toLowerCase() === (item.seller_name || "").toLowerCase());
-                        const sellerPhone = sellerProfile && sellerProfile.phone ? sellerProfile.phone : "";
-                        const sellerEmail = sellerProfile ? sellerProfile.email : "";
+                        const sellerPhone = sellerProfile && sellerProfile.phone ? sellerProfile.phone : "N/A";
+                        const sellerEmail = sellerProfile ? sellerProfile.email : "N/A";
+                        const sellerName = item.seller_name || "House Item";
                         
                         const tr = document.createElement('tr');
                         tr.innerHTML = `
-                            <td><strong>#${lotNum}</strong></td>
-                            <td>${item.item_title}</td>
+                            <td>${lotDisplay}</td>
+                            <td>
+                                <img src="https://img.icons8.com/color/48/sold.png" class="status-icon" alt="Sold" style="width:20px; vertical-align:middle; margin-right:5px;">
+                                ${item.item_title}
+                            </td>
                             <td style="color:#16a34a; font-weight:bold;">$${item.final_price}</td>
-                            <td class="contact-info">
-                                <div style="font-weight:bold;">${buyerName}</div>
-                                <div>${item.winner_email}</div>
-                                <div style="color: #2563eb;">📞 ${buyerPhone}</div>
-                            </td>
-                            <td class="contact-info">
-                                <div style="font-weight:bold;">${item.seller_name || "House Item"}</div>
-                                ${sellerEmail ? `<div>${sellerEmail}</div>` : ''}
-                                ${sellerPhone ? `<div style="color: #2563eb;">📞 ${sellerPhone}</div>` : ''}
-                            </td>
+                            <td class="contact-info"><div style="font-weight:bold;">${buyerName}</div><div>${buyerEmail}</div><div style="color:#2563eb;">📞 ${buyerPhone}</div></td>
+                            <td class="contact-info"><div style="font-weight:bold;">${sellerName}</div><div>${sellerEmail}</div><div style="color:#2563eb;">📞 ${sellerPhone}</div></td>
                             <td>${dateStr}</td>
                         `;
                         tbody.appendChild(tr);
@@ -381,7 +390,7 @@
 
         window.toggleFeatured = function(key, status) { update(ref(db, `inventory/${key}`), { is_featured: status }); }
 
-        // --- USER MANAGEMENT (UPDATED) ---
+        // --- USERS ---
         function loadUsers() {
             const userRef = ref(db, 'users');
             onValue(userRef, (snapshot) => {
@@ -401,36 +410,18 @@
                         statusPill = '<span class="status-pill status-approved">Active</span>';
                         actionBtn = `<button class="btn btn-ban" onclick="banUser('${key}')">Ban</button>`;
                     } else {
-                        // If false, it could be pending or banned. For now, assume pending approval or ban state
                         statusPill = '<span class="status-pill status-pending">Pending/Banned</span>';
                         actionBtn = `<button class="btn btn-queue" onclick="approveUser('${key}')">Approve</button>`;
                     }
 
                     const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td><strong>${user.name}</strong></td>
-                        <td>${user.email}</td>
-                        <td>${phoneDisplay}</td>
-                        <td>${localDisplay}</td>
-                        <td>${statusPill}</td>
-                        <td>${actionBtn}</td>
-                    `;
+                    tr.innerHTML = `<td><strong>${user.name}</strong></td><td>${user.email}</td><td>${phoneDisplay}</td><td>${localDisplay}</td><td>${statusPill}</td><td>${actionBtn}</td>`;
                     tbody.appendChild(tr);
                 });
             });
         }
-
-        window.approveUser = function(uid) {
-            if(confirm("Approve this user to bid?")) {
-                update(ref(db, `users/${uid}`), { is_approved: true });
-            }
-        }
-
-        window.banUser = function(uid) {
-            if(confirm("BAN this user? They will be unable to place bids.")) {
-                update(ref(db, `users/${uid}`), { is_approved: false });
-            }
-        }
+        window.approveUser = function(uid) { if(confirm("Approve this user?")) update(ref(db, `users/${uid}`), { is_approved: true }); }
+        window.banUser = function(uid) { if(confirm("BAN this user?")) update(ref(db, `users/${uid}`), { is_approved: false }); }
 
         // --- MONITOR ---
         let activeAuctionData = null;
@@ -568,7 +559,7 @@
                         const auctionData = {
                             lot: newItem.lot, title: newItem.title, subtitle: newItem.subtitle, description: newItem.description,
                             current_bid: newItem.start_price, image_url: newItem.image_url, reserve_price: newItem.reserve_price || 0,
-                            end_time: Date.now() + (3 * 60 * 1000), images: newItem.images,
+                            end_time: Date.now() + (6 * 60 * 1000), images: newItem.images,
                             high_bidder_max: 0, high_bidder_name: "", high_bidder_uid: "", bid_history: null,
                             inventory_key: newKey, seller_name: newItem.seller_name
                         };
