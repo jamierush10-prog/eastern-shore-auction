@@ -34,18 +34,24 @@
         .btn-list { background: var(--primary-color); font-size: 1rem; }
         .btn-cancel { background: var(--danger-color); padding: 5px 10px; font-size: 0.8rem; }
         
+        /* Action Buttons in Table */
         .btn-rate { background: var(--gold-color); padding: 6px 12px; font-size: 0.8rem; color: #fff; text-shadow: 0 1px 1px rgba(0,0,0,0.2); margin-left: 5px; }
         .btn-contact { background: var(--info-color); padding: 6px 12px; font-size: 0.8rem; color: #fff; }
         
+        /* FEE BUTTON */
         .btn-pay { background: var(--purple-color); padding: 6px 12px; font-size: 0.8rem; color: #fff; margin-right: 5px; }
         .btn-pay:hover { background: #6d28d9; }
         
-        /* FINANCIAL TEXT STYLES */
-        .fin-row { font-size: 0.85rem; color: #4b5563; margin-bottom: 2px; }
-        .fin-label { font-weight: bold; color: #6b7280; text-transform: uppercase; font-size: 0.7rem; }
+        /* FINANCIAL TEXT */
+        .fin-block { background: #f9fafb; padding: 10px; border-radius: 6px; border: 1px solid #e5e7eb; min-width: 140px; }
+        .fin-row { font-size: 0.85rem; color: #4b5563; margin-bottom: 4px; display: flex; justify-content: space-between; }
+        .fin-label { font-weight: bold; color: #6b7280; font-size: 0.7rem; text-transform: uppercase; }
         .fin-val { font-weight: bold; color: #1f2937; }
         .fin-fee { color: var(--danger-color); }
-        .fin-net { color: var(--success-color); }
+        .fin-net { color: var(--success-color); border-top: 1px solid #ddd; padding-top: 4px; margin-top: 4px; }
+        
+        .alert-bad { color: #dc2626; font-weight: bold; font-size: 0.8rem; display: block; margin-top: 5px; background: #fee2e2; padding: 4px; border-radius: 4px; text-align: center; }
+        .alert-good { color: #16a34a; font-weight: bold; font-size: 0.8rem; display: block; margin-top: 5px; background: #dcfce7; padding: 4px; border-radius: 4px; text-align: center; }
 
         .lists-container { display: flex; flex-direction: column; gap: 30px; } 
         
@@ -64,14 +70,12 @@
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
 
-        /* PAYMENT LINKS & MODAL TEXT */
         .pay-link { display: block; width: 100%; padding: 12px; margin-bottom: 10px; text-align: center; text-decoration: none; font-weight: bold; color: white; border-radius: 6px; }
         .pay-venmo { background: #008CFF; }
         .pay-cashapp { background: #00D632; }
         .invoice-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; font-size: 1rem; }
         .invoice-total { font-weight: bold; border-top: 2px solid #333; border-bottom: none; margin-top: 10px; padding-top: 15px; font-size: 1.1rem; }
 
-        /* STAR RATING INPUT */
         .star-input { display: flex; flex-direction: row-reverse; justify-content: center; gap: 5px; font-size: 2rem; }
         .star-input input { display: none; }
         .star-input label { color: #ddd; cursor: pointer; transition: color 0.2s; }
@@ -122,7 +126,7 @@
             <div class="card">
                 <div class="section-title" style="color: var(--primary-color);">📦 Items Purchased (You Won)</div>
                 <table>
-                    <thead><tr><th>Date</th><th>Item</th><th>Seller</th><th>Financial Breakdown</th><th>Action</th></tr></thead>
+                    <thead><tr><th>Date</th><th>Item</th><th>Seller</th><th>Financials</th><th>Action</th></tr></thead>
                     <tbody id="purchaseList"><tr><td colspan="5">Loading...</td></tr></tbody>
                 </table>
             </div>
@@ -173,11 +177,9 @@
                 <div class="invoice-row" style="color:var(--danger-color)"><span>Auction Fee (10%):</span> <strong><span id="invFee">$0</span></strong></div>
                 <div class="invoice-row invoice-total" style="color:var(--success-color)"><span>Balance Due to Seller:</span> <strong><span id="invNet">$0</span></strong></div>
             </div>
-            
             <p style="margin-bottom:10px; font-size:0.9rem; font-weight:bold;">Step 1: Pay Fee via Venmo/CashApp</p>
             <a href="https://venmo.com/u/James-Rush-127" target="_blank" class="pay-link pay-venmo">Venmo (@James-Rush-127)</a>
             <a href="https://cash.app/$pawpawrush" target="_blank" class="pay-link pay-cashapp">CashApp ($pawpawrush)</a>
-            
             <p style="font-size:0.8rem; color:#666; margin:15px 0;">Step 2: After paying, click Confirm to notify the seller.</p>
             <input type="hidden" id="payKey">
             <button class="btn btn-save" style="width:100%" onclick="confirmFeePaid()">✅ I Have Sent Fee Payment</button>
@@ -221,7 +223,7 @@
         import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
         // --- PASTE KEYS HERE ---
-        const firebaseConfig = {
+       const firebaseConfig = {
   apiKey: "AIzaSyCt0i8a7ZVRlNmSts9yM4uGwV7ghPU59rk",
   authDomain: "eastern-shore-auction.firebaseapp.com",
   databaseURL: "https://eastern-shore-auction-default-rtdb.firebaseio.com",
@@ -260,6 +262,7 @@
             });
         }
 
+        // --- 1. PROFILE ---
         function loadUserProfile(uid) {
             const userRef = ref(db, `users/${uid}`);
             onValue(userRef, (snapshot) => {
@@ -272,11 +275,15 @@
                     document.getElementById('accDate').value = joinDate;
                     const avg = data.rating_count > 0 ? (data.rating_total / data.rating_count).toFixed(1) : "New";
                     document.getElementById('userRatingDisplay').innerHTML = `<span style="color:#f59e0b">★</span> <span class="rating-text">(${avg} / 5)</span>`;
+                } else {
+                    document.getElementById('accName').value = currentUser.displayName;
+                    document.getElementById('accEmail').value = currentUser.email;
+                    document.getElementById('accDate').value = "Not registered in DB";
                 }
             });
         }
 
-        // --- UPDATED HISTORY LOGIC WITH FEES ---
+        // --- 2. HISTORY LOGIC (UPDATED WITH SELLER FINANCIALS) ---
         function loadUserHistory(userEmail) {
             const historyRef = ref(db, 'sales_history');
             onValue(historyRef, (snapshot) => {
@@ -298,28 +305,22 @@
                         const sellerName = seller ? seller.name : (item.seller_name || "Unknown");
                         const sellerEmail = item.seller_email || "";
                         const sellerPhone = seller ? seller.phone : "N/A";
-
-                        // CALCULATE FEE (ROUND DOWN)
-                        const feeAmount = Math.floor(item.final_price * 0.10); 
+                        const feeAmount = Math.floor(item.final_price * 0.10);
                         const netAmount = item.final_price - feeAmount;
                         let feeAction = "";
-                        
-                        if (!item.fee_status || item.fee_status === 'pending') {
-                            feeAction = `<button class="btn btn-pay" onclick="openPayFeeModal('${item.key}', ${item.final_price})">Pay $${feeAmount} Fee</button>`;
-                        } else {
-                            feeAction = `<span class="alert-good">✅ Fee Paid</span>`;
-                        }
+                        if (!item.fee_status || item.fee_status === 'pending') { feeAction = `<button class="btn btn-pay" onclick="openPayFeeModal('${item.key}', ${item.final_price})">Pay $${feeAmount} Fee</button>`; } 
+                        else { feeAction = `<span class="alert-good">✅ Fee Paid</span>`; }
 
                         const tr = document.createElement('tr');
                         tr.innerHTML = `
-                            <td>${dateStr}</td>
-                            <td>${item.item_title}</td>
-                            <td>${sellerName}</td>
+                            <td>${dateStr}</td><td>${item.item_title}</td><td>${sellerName}</td>
                             <td>
-                                <div class="fin-row"><span class="fin-label">Total:</span> <span class="fin-val">$${item.final_price}</span></div>
-                                <div class="fin-row"><span class="fin-label">Fee:</span> <span class="fin-fee">$${feeAmount}</span></div>
-                                <div class="fin-row"><span class="fin-label">Owe Seller:</span> <span class="fin-net">$${netAmount}</span></div>
-                                <div style="margin-top:5px;">${feeAction}</div>
+                                <div class="fin-block">
+                                    <div class="fin-row"><span class="fin-label">Total Price:</span> <span class="fin-val">$${item.final_price}</span></div>
+                                    <div class="fin-row"><span class="fin-label">Auction Fee:</span> <span class="fin-fee">$${feeAmount}</span></div>
+                                    <div class="fin-row"><span class="fin-label">Due to Seller:</span> <span class="fin-net">$${netAmount}</span></div>
+                                    <div style="margin-top:8px;">${feeAction}</div>
+                                </div>
                             </td>
                             <td>
                                 <button class="btn btn-contact" onclick="viewContact('${sellerName}', '${sellerEmail}', '${sellerPhone}')">Contact</button>
@@ -328,34 +329,33 @@
                         purchasesTbody.appendChild(tr);
                     }
 
-                    // --- SELLER VIEW (YOU SOLD) ---
+                    // --- SELLER VIEW (YOU SOLD) - UPDATED ---
                     if (item.seller_email && item.seller_email.toLowerCase() === userEmail.toLowerCase()) {
                         const buyer = allUsersCache.find(u => u.email && u.email.toLowerCase() === (item.winner_email || "").toLowerCase());
                         const buyerName = buyer ? buyer.name : (item.winner_name || "Unknown");
                         const buyerEmail = item.winner_email || "";
                         const buyerPhone = buyer ? buyer.phone : "N/A";
                         
-                        // CALCULATE FEE
                         const feeAmount = Math.floor(item.final_price * 0.10);
                         const netAmount = item.final_price - feeAmount;
                         let feeStatusMsg = "";
 
                         if (!item.fee_status || item.fee_status === 'pending') {
-                            feeStatusMsg = `<span class="alert-bad">Fee Pending - Do Not Deliver</span>`;
+                            feeStatusMsg = `<span class="alert-bad">❌ Fee Pending</span><div style="font-size:0.75rem; color:#666;">Do Not Deliver Yet</div>`;
                         } else {
-                            feeStatusMsg = `<span class="alert-good">Fee Paid - Collect $${netAmount}</span>`;
+                            feeStatusMsg = `<span class="alert-good">✅ Fee Paid</span><div style="font-size:0.75rem; font-weight:bold; color:#16a34a;">Collect $${netAmount} from Buyer</div>`;
                         }
 
                         const tr = document.createElement('tr');
                         tr.innerHTML = `
-                            <td>${dateStr}</td>
-                            <td>${item.item_title}</td>
-                            <td>${buyerName}</td>
+                            <td>${dateStr}</td><td>${item.item_title}</td><td>${buyerName}</td>
                             <td>
-                                <div class="fin-row"><span class="fin-label">Sold For:</span> <span class="fin-val">$${item.final_price}</span></div>
-                                <div class="fin-row"><span class="fin-label">Fee Deducted:</span> <span class="fin-fee">-$${feeAmount}</span></div>
-                                <div class="fin-row"><span class="fin-label">You Collect:</span> <span class="fin-net">$${netAmount}</span></div>
-                                <div style="margin-top:5px;">${feeStatusMsg}</div>
+                                <div class="fin-block">
+                                    <div class="fin-row"><span class="fin-label">Sale Price:</span> <span class="fin-val">$${item.final_price}</span></div>
+                                    <div class="fin-row"><span class="fin-label">Fee (10%):</span> <span class="fin-fee">-$${feeAmount}</span></div>
+                                    <div class="fin-row"><span class="fin-label">Net Earnings:</span> <span class="fin-net">$${netAmount}</span></div>
+                                    <div style="margin-top:8px;">${feeStatusMsg}</div>
+                                </div>
                             </td>
                             <td>
                                 <button class="btn btn-contact" onclick="viewContact('${buyerName}', '${buyerEmail}', '${buyerPhone}')">Contact</button>
@@ -368,7 +368,7 @@
         }
 
         window.openPayFeeModal = function(key, price) {
-            const fee = Math.floor(price * 0.10); // ROUND DOWN
+            const fee = Math.floor(price * 0.10);
             const net = price - fee;
             document.getElementById('payKey').value = key;
             document.getElementById('invTotal').innerText = "$" + price;
@@ -379,13 +379,9 @@
 
         window.confirmFeePaid = function() {
             const key = document.getElementById('payKey').value;
-            if(!confirm("Confirm that you have sent the payment via Venmo or Cash App?")) return;
-            
-            update(ref(db, `sales_history/${key}`), {
-                fee_status: 'paid'
-            }).then(() => {
-                alert("Fee marked as paid! The seller has been notified.");
-                document.getElementById('payFeeModal').style.display = 'none';
+            if(!confirm("Confirm payment sent?")) return;
+            update(ref(db, `sales_history/${key}`), { fee_status: 'paid' }).then(() => {
+                alert("Fee marked as paid!"); document.getElementById('payFeeModal').style.display = 'none';
             });
         }
 
@@ -414,6 +410,7 @@
             }
         }
 
+        // --- LISTINGS LOGIC ---
         window.openListingModal = function() {
             document.getElementById('listSeller').value = document.getElementById('accName').value;
             document.getElementById('listingModal').style.display = 'flex';
@@ -429,13 +426,16 @@
         window.submitListing = async function() {
             const submitBtn = document.getElementById('submitListBtn');
             submitBtn.disabled = true; submitBtn.innerText = "Processing Images...";
+
             try {
                 const mainFile = document.getElementById('fileMain').files[0];
                 if(!mainFile) { alert("Main photo required."); submitBtn.disabled = false; return; }
+                
                 const mainUrl = await uploadImage(mainFile);
                 const thumb1Url = await uploadImage(document.getElementById('fileThumb1').files[0]);
                 const thumb2Url = await uploadImage(document.getElementById('fileThumb2').files[0]);
                 const thumb3Url = await uploadImage(document.getElementById('fileThumb3').files[0]);
+
                 const newItem = {
                     title: document.getElementById('listTitle').value,
                     subtitle: document.getElementById('listSub').value,
@@ -451,11 +451,19 @@
                     approval_status: "pending", lot: 0, times_run: 0, is_featured: false,
                     images: { thumb1: thumb1Url, thumb2: thumb2Url, thumb3: thumb3Url }
                 };
+
                 await push(ref(db, 'inventory'), newItem);
                 alert("Item submitted successfully!");
                 document.getElementById('listingModal').style.display = 'none';
                 document.querySelector('form').reset();
-            } catch (error) { console.error(error); alert("Error: " + error.message); } finally { submitBtn.disabled = false; submitBtn.innerText = "Submit Item"; }
+
+            } catch (error) {
+                console.error(error);
+                alert("Error: " + error.message);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Submit Item";
+            }
         }
 
         function loadUserListings(uid) {
