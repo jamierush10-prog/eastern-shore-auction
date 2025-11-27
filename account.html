@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Account | Eastern Shore Auction House</title>
     <style>
-        :root { --primary-color: #2563eb; --header-bg: #111827; --text-color: #1f2937; --bg-color: #f3f4f6; --success-color: #16a34a; --danger-color: #dc2626; --gold-color: #f59e0b; --info-color: #0891b2; }
+        :root { --primary-color: #2563eb; --header-bg: #111827; --text-color: #1f2937; --bg-color: #f3f4f6; --success-color: #16a34a; --danger-color: #dc2626; --gold-color: #f59e0b; --info-color: #0891b2; --purple-color: #7c3aed; }
         body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg-color); color: var(--text-color); margin: 0; }
         
         header { background: var(--header-bg); color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
@@ -23,24 +23,31 @@
         .form-group label { display: block; font-size: 0.9rem; font-weight: bold; margin-bottom: 5px; color: #4b5563; }
         .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
         .form-group input:disabled { background: #f3f4f6; color: #6b7280; cursor: not-allowed; }
-        
-        /* FILE UPLOAD STYLING */
-        input[type="file"] { padding: 6px; background: #f9fafb; }
 
         .profile-rating { margin-top: 5px; font-size: 1.2rem; color: var(--gold-color); }
         .rating-text { font-size: 0.8rem; color: #6b7280; margin-left: 5px; vertical-align: middle; }
 
+        /* BUTTONS */
         .btn { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; color: white; }
         .btn-save { background: var(--primary-color); }
         .btn-reset { background: #4b5563; margin-left: 10px; }
         .btn-list { background: var(--primary-color); font-size: 1rem; }
         .btn-cancel { background: var(--danger-color); padding: 5px 10px; font-size: 0.8rem; }
-        .btn-edit { background: var(--primary-color); padding: 5px 10px; font-size: 0.8rem; margin-right: 5px; }
         
+        /* Action Buttons in Table */
         .btn-rate { background: var(--gold-color); padding: 6px 12px; font-size: 0.8rem; color: #fff; text-shadow: 0 1px 1px rgba(0,0,0,0.2); margin-left: 5px; }
         .btn-contact { background: var(--info-color); padding: 6px 12px; font-size: 0.8rem; color: #fff; }
+        
+        /* FEE BUTTON */
+        .btn-pay { background: var(--purple-color); padding: 6px 12px; font-size: 0.8rem; color: #fff; margin-right: 5px; }
+        .btn-pay:hover { background: #6d28d9; }
+        
+        /* ALERTS */
+        .alert-bad { color: #dc2626; font-weight: bold; font-size: 0.85rem; display: block; margin-top: 5px; }
+        .alert-good { color: #16a34a; font-weight: bold; font-size: 0.85rem; display: block; margin-top: 5px; }
 
         .lists-container { display: flex; flex-direction: column; gap: 30px; } 
+        
         table { width: 100%; border-collapse: collapse; font-size: 0.9rem; margin-top: 10px; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e5e7eb; }
         th { color: #6b7280; font-size: 0.8rem; text-transform: uppercase; background: #f9fafb; }
@@ -52,9 +59,16 @@
         .st-sold { background: #111827; color: #fff; }
         .st-inactive { background: #f3f4f6; color: #9ca3af; text-decoration: line-through; }
 
+        /* MODAL */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
 
+        /* PAYMENT LINKS */
+        .pay-link { display: block; width: 100%; padding: 12px; margin-bottom: 10px; text-align: center; text-decoration: none; font-weight: bold; color: white; border-radius: 6px; }
+        .pay-venmo { background: #008CFF; }
+        .pay-cashapp { background: #00D632; }
+
+        /* STAR RATING INPUT */
         .star-input { display: flex; flex-direction: row-reverse; justify-content: center; gap: 5px; font-size: 2rem; }
         .star-input input { display: none; }
         .star-input label { color: #ddd; cursor: pointer; transition: color 0.2s; }
@@ -93,7 +107,7 @@
         </div>
 
         <div class="card">
-            <div class="section-title">My Listings</div>
+            <div class="section-title">My Listings (Items you are selling)</div>
             <table>
                 <thead><tr><th>Status</th><th>Item</th><th>Start Price</th><th>Result</th><th>Action</th></tr></thead>
                 <tbody id="myListingsBody"><tr><td colspan="5">Loading listings...</td></tr></tbody>
@@ -101,17 +115,19 @@
         </div>
 
         <div class="lists-container">
+            
             <div class="card">
-                <div class="section-title" style="color: var(--primary-color);">📦 Items Purchased</div>
+                <div class="section-title" style="color: var(--primary-color);">📦 Items Purchased (You Won)</div>
                 <table>
-                    <thead><tr><th>Date</th><th>Item</th><th>Seller</th><th>Price</th><th>Action</th></tr></thead>
+                    <thead><tr><th>Date</th><th>Item</th><th>Total</th><th>Fee Status (10%)</th><th>Action</th></tr></thead>
                     <tbody id="purchaseList"><tr><td colspan="5">Loading...</td></tr></tbody>
                 </table>
             </div>
+
             <div class="card">
-                <div class="section-title" style="color: var(--success-color);">💰 Items Sold</div>
+                <div class="section-title" style="color: var(--success-color);">💰 Items Sold (You Sold)</div>
                 <table>
-                    <thead><tr><th>Date</th><th>Item</th><th>Buyer</th><th>Sold For</th><th>Action</th></tr></thead>
+                    <thead><tr><th>Date</th><th>Item</th><th>Sold For</th><th>Fee / Net</th><th>Action</th></tr></thead>
                     <tbody id="salesList"><tr><td colspan="5">Loading...</td></tr></tbody>
                 </table>
             </div>
@@ -120,17 +136,11 @@
 
     <div id="listingModal" class="modal-overlay">
         <div class="modal-content">
-            <h2 id="listingModalTitle" style="margin-top:0;">List Item for Auction</h2>
+            <h2 style="margin-top:0;">List Item for Auction</h2>
             <form onsubmit="event.preventDefault(); submitListing();">
-                <input type="hidden" id="editKey"> <input type="hidden" id="existingMainUrl">
-                <input type="hidden" id="existingThumb1">
-                <input type="hidden" id="existingThumb2">
-                <input type="hidden" id="existingThumb3">
-
                 <div class="form-group"><label>Seller Name:</label><input type="text" id="listSeller" disabled></div>
                 <div class="form-group"><label>Item Title:</label><input type="text" id="listTitle" required></div>
                 <div class="form-group"><label>Subtitle:</label><input type="text" id="listSub" placeholder="Condition / Category"></div>
-                
                 <div class="form-group" style="background:#f0f9ff; padding:10px; border-radius:6px; border:1px solid #bae6fd;">
                     <label>📍 Item Location:</label><input type="text" id="listLoc" required>
                 </div>
@@ -140,24 +150,34 @@
                 <div class="form-group" style="background:#f0f9ff; padding:10px; border-radius:6px; border:1px solid #bae6fd;">
                     <label>🚚 Delivery Preference:</label><input type="text" id="listDel" required>
                 </div>
-
                 <div class="form-group"><label>Starting Price ($):</label><input type="number" id="listPrice" required></div>
-
-                <div class="form-group">
-                    <label>Main Photo:</label>
-                    <input type="file" id="fileMain" accept="image/*">
-                    <small style="color:#666; font-size:0.8rem;">(Required for new items. Leave blank to keep existing if editing)</small>
-                </div>
-                
+                <div class="form-group"><label>Main Photo (Required):</label><input type="file" id="fileMain" accept="image/*" required></div>
                 <div class="form-group"><label>Extra Photo 1:</label><input type="file" id="fileThumb1" accept="image/*"></div>
                 <div class="form-group"><label>Extra Photo 2:</label><input type="file" id="fileThumb2" accept="image/*"></div>
                 <div class="form-group"><label>Extra Photo 3:</label><input type="file" id="fileThumb3" accept="image/*"></div>
-
                 <div class="form-group"><label>Description:</label><textarea id="listDesc" rows="3" required></textarea></div>
-
                 <button type="submit" id="submitListBtn" class="btn btn-save" style="width:100%">Submit Item</button>
                 <button type="button" class="btn btn-reset" style="width:100%; margin:10px 0 0 0;" onclick="document.getElementById('listingModal').style.display='none'">Cancel</button>
             </form>
+        </div>
+    </div>
+
+    <div id="payFeeModal" class="modal-overlay">
+        <div class="modal-content" style="text-align: center;">
+            <h2>Pay Auction Fee (10%)</h2>
+            <p>Total Item Price: $<span id="payTotal">0</span></p>
+            <p style="font-size:1.2rem; margin-bottom:20px;"><strong>Fee Due: $<span id="payAmount" style="color:var(--danger-color)">0</span></strong></p>
+            
+            <p style="margin-bottom:10px; font-size:0.9rem;">Click to pay via:</p>
+            <a href="https://venmo.com/u/James-Rush-127" target="_blank" class="pay-link pay-venmo">Venmo (@James-Rush-127)</a>
+            <a href="https://cash.app/$pawpawrush" target="_blank" class="pay-link pay-cashapp">CashApp ($pawpawrush)</a>
+            
+            <hr style="margin:20px 0; border:0; border-top:1px solid #eee;">
+            
+            <p style="font-size:0.8rem; color:#666; margin-bottom:15px;">Once you have sent the payment, click Confirm below to notify the seller.</p>
+            <input type="hidden" id="payKey">
+            <button class="btn btn-save" style="width:100%" onclick="confirmFeePaid()">✅ I Have Sent Payment</button>
+            <button class="btn btn-reset" style="width:100%; margin-top:10px;" onclick="document.getElementById('payFeeModal').style.display='none'">Cancel</button>
         </div>
     </div>
 
@@ -197,7 +217,7 @@
         import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
         // --- PASTE KEYS HERE ---
-        const firebaseConfig = {
+const firebaseConfig = {
   apiKey: "AIzaSyCt0i8a7ZVRlNmSts9yM4uGwV7ghPU59rk",
   authDomain: "eastern-shore-auction.firebaseapp.com",
   databaseURL: "https://eastern-shore-auction-default-rtdb.firebaseio.com",
@@ -210,8 +230,7 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getDatabase(app);
-        const storage = getStorage(app);
-
+        const storage = getStorage(app); // Enable Storage
         let currentUser = null;
         let allUsersCache = []; 
 
@@ -237,7 +256,7 @@
             });
         }
 
-        // --- PROFILE & HISTORY ---
+        // --- 1. PROFILE ---
         function loadUserProfile(uid) {
             const userRef = ref(db, `users/${uid}`);
             onValue(userRef, (snapshot) => {
@@ -246,50 +265,15 @@
                     document.getElementById('accName').value = data.name || currentUser.displayName;
                     document.getElementById('accEmail').value = data.email || currentUser.email;
                     document.getElementById('accPhone').value = data.phone || "";
-                    document.getElementById('accDate').value = data.joined_at ? new Date(data.joined_at).toLocaleDateString() : "N/A";
+                    const joinDate = data.joined_at ? new Date(data.joined_at).toLocaleDateString() : "N/A";
+                    document.getElementById('accDate').value = joinDate;
                     const avg = data.rating_count > 0 ? (data.rating_total / data.rating_count).toFixed(1) : "New";
                     document.getElementById('userRatingDisplay').innerHTML = `<span style="color:#f59e0b">★</span> <span class="rating-text">(${avg} / 5)</span>`;
-                } else {
-                    document.getElementById('accName').value = currentUser.displayName;
-                    document.getElementById('accEmail').value = currentUser.email;
-                    document.getElementById('accDate').value = "Not registered in DB";
                 }
             });
         }
 
-        function loadUserListings(uid) {
-            const invRef = ref(db, 'inventory');
-            onValue(invRef, (snapshot) => {
-                const tbody = document.getElementById('myListingsBody');
-                tbody.innerHTML = "";
-                const data = snapshot.val();
-                if(!data) { tbody.innerHTML = "<tr><td colspan='5'>No items listed.</td></tr>"; return; }
-                const items = Object.entries(data).map(([key, val]) => ({ ...val, key })).filter(item => item.owner_uid === uid);
-                if(items.length === 0) { tbody.innerHTML = "<tr><td colspan='5'>No items listed.</td></tr>"; return; }
-                items.forEach(item => {
-                    let statusBadge = '<span class="status-badge st-review">Under Review</span>';
-                    let resultText = "-";
-                    if (item.approval_status === 'inactive') { statusBadge = '<span class="status-badge st-inactive">Inactive</span>'; } 
-                    else if (item.status_label && item.status_label.includes("SOLD")) { statusBadge = '<span class="status-badge st-sold">Sold</span>'; resultText = item.status_label; } 
-                    else if (item.is_featured) { statusBadge = '<span class="status-badge st-scheduled">Scheduled</span>'; } 
-                    else if (item.lot > 0) { statusBadge = '<span class="status-badge st-approved">Approved</span>'; }
-                    
-                    // Only show action buttons if NOT Sold
-                    let actionButtons = "";
-                    if (item.approval_status !== 'inactive' && !item.status_label?.includes("SOLD")) {
-                        actionButtons = `
-                            <button class="btn btn-edit" onclick="editListing('${item.key}')">Edit</button>
-                            <button class="btn btn-cancel" onclick="makeInactive('${item.key}')">Deactivate</button>
-                        `;
-                    }
-
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `<td>${statusBadge}</td><td>${item.title}</td><td>$${item.start_price}</td><td>${resultText}</td><td>${actionButtons}</td>`;
-                    tbody.appendChild(tr);
-                });
-            });
-        }
-
+        // --- 2. HISTORY LOGIC (UPDATED WITH FEES) ---
         function loadUserHistory(userEmail) {
             const historyRef = ref(db, 'sales_history');
             onValue(historyRef, (snapshot) => {
@@ -299,31 +283,99 @@
                 const data = snapshot.val();
                 if (!data) { purchasesTbody.innerHTML = "<tr><td colspan='5'>No records.</td></tr>"; salesTbody.innerHTML = "<tr><td colspan='5'>No records.</td></tr>"; return; }
 
-                const items = Object.values(data).sort((a, b) => b.date - a.date);
+                // Convert Object to Array of [Key, Value] pairs to capture the ID
+                const items = Object.entries(data).map(([key, val]) => ({ key, ...val }));
+                items.sort((a, b) => b.date - a.date);
+
                 items.forEach(item => {
                     const dateStr = new Date(item.date).toLocaleDateString();
+                    
+                    // --- BUYER VIEW ---
                     if (item.winner_email && item.winner_email.toLowerCase() === userEmail.toLowerCase()) {
                         const seller = allUsersCache.find(u => u.email && u.email.toLowerCase() === (item.seller_email || "").toLowerCase());
                         const sellerName = seller ? seller.name : (item.seller_name || "Unknown");
                         const sellerEmail = item.seller_email || "";
                         const sellerPhone = seller ? seller.phone : "N/A";
+
+                        // FEE LOGIC
+                        const feeAmount = Math.ceil(item.final_price * 0.10); // 10%
+                        let feeAction = "";
+                        
+                        if (!item.fee_status || item.fee_status === 'pending') {
+                            feeAction = `<button class="btn btn-pay" onclick="openPayFeeModal('${item.key}', ${item.final_price})">Pay $${feeAmount} Fee</button>`;
+                        } else {
+                            feeAction = `<span class="alert-good">✅ Fee Paid</span>`;
+                        }
+
                         const tr = document.createElement('tr');
-                        tr.innerHTML = `<td>${dateStr}</td><td>${item.item_title}</td><td>${sellerName}</td><td>$${item.final_price}</td><td><button class="btn btn-contact" onclick="viewContact('${sellerName}', '${sellerEmail}', '${sellerPhone}')">Contact</button><button class="btn btn-rate" onclick="openRateModal('${sellerEmail}', '${sellerName}')">Rate</button></td>`;
+                        tr.innerHTML = `
+                            <td>${dateStr}</td>
+                            <td>${item.item_title}</td>
+                            <td>${sellerName}</td>
+                            <td>$${item.final_price}<br>${feeAction}</td>
+                            <td>
+                                <button class="btn btn-contact" onclick="viewContact('${sellerName}', '${sellerEmail}', '${sellerPhone}')">Contact</button>
+                                <button class="btn btn-rate" onclick="openRateModal('${sellerEmail}', '${sellerName}')">Rate</button>
+                            </td>`;
                         purchasesTbody.appendChild(tr);
                     }
+
+                    // --- SELLER VIEW ---
                     if (item.seller_email && item.seller_email.toLowerCase() === userEmail.toLowerCase()) {
                         const buyer = allUsersCache.find(u => u.email && u.email.toLowerCase() === (item.winner_email || "").toLowerCase());
                         const buyerName = buyer ? buyer.name : (item.winner_name || "Unknown");
                         const buyerEmail = item.winner_email || "";
                         const buyerPhone = buyer ? buyer.phone : "N/A";
+                        
+                        // FEE STATUS FOR SELLER
+                        const feeAmount = Math.ceil(item.final_price * 0.10);
+                        const netAmount = item.final_price - feeAmount;
+                        let feeStatusMsg = "";
+
+                        if (!item.fee_status || item.fee_status === 'pending') {
+                            feeStatusMsg = `<span class="alert-bad">Fee Pending - Do Not Deliver</span>`;
+                        } else {
+                            feeStatusMsg = `<span class="alert-good">Fee Paid - Collect $${netAmount}</span>`;
+                        }
+
                         const tr = document.createElement('tr');
-                        tr.innerHTML = `<td>${dateStr}</td><td>${item.item_title}</td><td>${buyerName}</td><td>$${item.final_price}</td><td><button class="btn btn-contact" onclick="viewContact('${buyerName}', '${buyerEmail}', '${buyerPhone}')">Contact</button><button class="btn btn-rate" onclick="openRateModal('${buyerEmail}', '${buyerName}')">Rate</button></td>`;
+                        tr.innerHTML = `
+                            <td>${dateStr}</td>
+                            <td>${item.item_title}</td>
+                            <td>${buyerName}</td>
+                            <td>$${item.final_price}<br>${feeStatusMsg}</td>
+                            <td>
+                                <button class="btn btn-contact" onclick="viewContact('${buyerName}', '${buyerEmail}', '${buyerPhone}')">Contact</button>
+                                <button class="btn btn-rate" onclick="openRateModal('${buyerEmail}', '${buyerName}')">Rate</button>
+                            </td>`;
                         salesTbody.appendChild(tr);
                     }
                 });
             });
         }
 
+        // --- FEE PAYMENT LOGIC ---
+        window.openPayFeeModal = function(key, price) {
+            const fee = Math.ceil(price * 0.10);
+            document.getElementById('payKey').value = key;
+            document.getElementById('payTotal').innerText = price;
+            document.getElementById('payAmount').innerText = fee;
+            document.getElementById('payFeeModal').style.display = 'flex';
+        }
+
+        window.confirmFeePaid = function() {
+            const key = document.getElementById('payKey').value;
+            if(!confirm("Confirm that you have sent the payment via Venmo or Cash App?")) return;
+            
+            update(ref(db, `sales_history/${key}`), {
+                fee_status: 'paid'
+            }).then(() => {
+                alert("Fee marked as paid! The seller has been notified.");
+                document.getElementById('payFeeModal').style.display = 'none';
+            });
+        }
+
+        // --- CONTACT ---
         window.viewContact = function(name, email, phone) {
             document.getElementById('contactName').innerText = name;
             document.getElementById('contactEmail').innerText = email; document.getElementById('contactEmail').href = "mailto:" + email;
@@ -331,6 +383,7 @@
             document.getElementById('contactModal').style.display = 'flex';
         }
 
+        // --- RATING ---
         window.openRateModal = function(email, name) {
             if(!email || email.toLowerCase() === currentUser.email.toLowerCase()) { alert("Cannot rate."); return; }
             document.getElementById('rateTargetName').innerText = name;
@@ -349,55 +402,12 @@
             }
         }
 
-        // --- LISTINGS LOGIC ---
+        // --- LISTINGS ---
         window.openListingModal = function() {
-            resetListingForm();
-            document.getElementById('listingModalTitle').innerText = "List Item for Auction";
             document.getElementById('listSeller').value = document.getElementById('accName').value;
             document.getElementById('listingModal').style.display = 'flex';
         }
 
-        // NEW: EDIT LISTING
-        window.editListing = function(key) {
-            get(ref(db, `inventory/${key}`)).then((snapshot) => {
-                if (snapshot.exists()) {
-                    const data = snapshot.val();
-                    
-                    document.getElementById('listingModalTitle').innerText = "Edit Listing";
-                    document.getElementById('editKey').value = key;
-                    
-                    document.getElementById('listSeller').value = data.seller_name;
-                    document.getElementById('listTitle').value = data.title;
-                    document.getElementById('listSub').value = data.subtitle;
-                    document.getElementById('listLoc').value = data.location;
-                    document.getElementById('listPay').value = data.payment_methods;
-                    document.getElementById('listDel').value = data.delivery_method;
-                    document.getElementById('listPrice').value = data.start_price;
-                    document.getElementById('listDesc').value = data.description;
-                    
-                    // Save existing images to hidden fields
-                    document.getElementById('existingMainUrl').value = data.image_url || "";
-                    if(data.images) {
-                        document.getElementById('existingThumb1').value = data.images.thumb1 || "";
-                        document.getElementById('existingThumb2').value = data.images.thumb2 || "";
-                        document.getElementById('existingThumb3').value = data.images.thumb3 || "";
-                    }
-
-                    document.getElementById('listingModal').style.display = 'flex';
-                }
-            });
-        }
-        
-        function resetListingForm() {
-            document.querySelector('form').reset();
-            document.getElementById('editKey').value = "";
-            document.getElementById('existingMainUrl').value = "";
-            document.getElementById('existingThumb1').value = "";
-            document.getElementById('existingThumb2').value = "";
-            document.getElementById('existingThumb3').value = "";
-        }
-
-        // UPLOAD HELPER
         async function uploadImage(file) {
             if (!file) return "";
             const fileRef = sRef(storage, 'user_uploads/' + Date.now() + '_' + file.name);
@@ -410,23 +420,15 @@
             submitBtn.disabled = true; submitBtn.innerText = "Processing Images...";
 
             try {
-                const key = document.getElementById('editKey').value;
-
-                // Handle Images (New vs Existing)
                 const mainFile = document.getElementById('fileMain').files[0];
-                const thumb1File = document.getElementById('fileThumb1').files[0];
-                const thumb2File = document.getElementById('fileThumb2').files[0];
-                const thumb3File = document.getElementById('fileThumb3').files[0];
+                if(!mainFile) { alert("Main photo required."); submitBtn.disabled = false; return; }
+                
+                const mainUrl = await uploadImage(mainFile);
+                const thumb1Url = await uploadImage(document.getElementById('fileThumb1').files[0]);
+                const thumb2Url = await uploadImage(document.getElementById('fileThumb2').files[0]);
+                const thumb3Url = await uploadImage(document.getElementById('fileThumb3').files[0]);
 
-                // Use new upload OR fallback to existing URL
-                const mainUrl = mainFile ? await uploadImage(mainFile) : document.getElementById('existingMainUrl').value;
-                const t1Url = thumb1File ? await uploadImage(thumb1File) : document.getElementById('existingThumb1').value;
-                const t2Url = thumb2File ? await uploadImage(thumb2File) : document.getElementById('existingThumb2').value;
-                const t3Url = thumb3File ? await uploadImage(thumb3File) : document.getElementById('existingThumb3').value;
-
-                if(!mainUrl) { alert("Main photo required."); submitBtn.disabled = false; submitBtn.innerText = "Submit Item"; return; }
-
-                const itemData = {
+                const newItem = {
                     title: document.getElementById('listTitle').value,
                     subtitle: document.getElementById('listSub').value,
                     start_price: parseInt(document.getElementById('listPrice').value),
@@ -438,24 +440,14 @@
                     owner_uid: currentUser.uid,
                     seller_name: document.getElementById('listSeller').value,
                     seller_email: currentUser.email,
-                    // If editing, preserve approval status. If new, set pending.
-                    approval_status: key ? "pending" : "pending", // Force re-review on edit? Or keep existing? Let's set to pending on edit for safety.
-                    lot: 0, times_run: 0, is_featured: false,
-                    images: { thumb1: t1Url, thumb2: t2Url, thumb3: t3Url }
+                    approval_status: "pending", lot: 0, times_run: 0, is_featured: false,
+                    images: { thumb1: thumb1Url, thumb2: thumb2Url, thumb3: thumb3Url }
                 };
 
-                if(key) {
-                    // Update Existing
-                    await update(ref(db, `inventory/${key}`), itemData);
-                    alert("Listing updated! It is now under review.");
-                } else {
-                    // Create New
-                    await push(ref(db, 'inventory'), itemData);
-                    alert("Item submitted successfully!");
-                }
-
+                await push(ref(db, 'inventory'), newItem);
+                alert("Item submitted successfully!");
                 document.getElementById('listingModal').style.display = 'none';
-                resetListingForm();
+                document.querySelector('form').reset();
 
             } catch (error) {
                 console.error(error);
@@ -466,6 +458,27 @@
             }
         }
 
+        function loadUserListings(uid) {
+            const invRef = ref(db, 'inventory');
+            onValue(invRef, (snapshot) => {
+                const tbody = document.getElementById('myListingsBody');
+                tbody.innerHTML = "";
+                const data = snapshot.val();
+                if(!data) { tbody.innerHTML = "<tr><td colspan='5'>No items listed.</td></tr>"; return; }
+                const items = Object.entries(data).map(([key, val]) => ({ ...val, key })).filter(item => item.owner_uid === uid);
+                items.forEach(item => {
+                    let statusBadge = '<span class="status-badge st-review">Under Review</span>';
+                    let resultText = "-";
+                    if (item.approval_status === 'inactive') { statusBadge = '<span class="status-badge st-inactive">Inactive</span>'; } 
+                    else if (item.status_label && item.status_label.includes("SOLD")) { statusBadge = '<span class="status-badge st-sold">Sold</span>'; resultText = item.status_label; } 
+                    else if (item.is_featured) { statusBadge = '<span class="status-badge st-scheduled">Scheduled</span>'; } 
+                    else if (item.lot > 0) { statusBadge = '<span class="status-badge st-approved">Approved</span>'; }
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `<td>${statusBadge}</td><td>${item.title}</td><td>$${item.start_price}</td><td>${resultText}</td><td>${item.approval_status !== 'inactive' && !item.status_label?.includes("SOLD") ? `<button class="btn btn-cancel" onclick="makeInactive('${item.key}')">Deactivate</button>` : ''}</td>`;
+                    tbody.appendChild(tr);
+                });
+            });
+        }
         window.makeInactive = function(key) { if(confirm("Remove this item?")) update(ref(db, `inventory/${key}`), { approval_status: 'inactive' }); }
         
         window.saveProfile = function() {
