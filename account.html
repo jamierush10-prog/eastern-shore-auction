@@ -5,47 +5,61 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Account | Eastern Shore Auction House</title>
     <style>
-        /* --- SAME STYLES AS BEFORE --- */
         :root { --primary-color: #2563eb; --header-bg: #111827; --text-color: #1f2937; --bg-color: #f3f4f6; --success-color: #16a34a; --danger-color: #dc2626; --gold-color: #f59e0b; --info-color: #0891b2; }
         body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg-color); color: var(--text-color); margin: 0; }
+        
         header { background: var(--header-bg); color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
         .brand { font-family: "Georgia", serif; font-size: 1.5rem; font-weight: bold; }
         .nav-link { color: #d1d5db; text-decoration: none; margin-left: 20px; cursor: pointer; }
         .nav-link:hover { color: white; text-decoration: underline; }
+
         .container { max-width: 1000px; margin: 30px auto; padding: 20px; }
+
         .card { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 30px; }
         .section-title { border-bottom: 2px solid #e5e7eb; padding-bottom: 10px; margin-bottom: 20px; font-size: 1.5rem; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+        
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-size: 0.9rem; font-weight: bold; margin-bottom: 5px; color: #4b5563; }
         .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
         .form-group input:disabled { background: #f3f4f6; color: #6b7280; cursor: not-allowed; }
+        
+        /* FILE UPLOAD STYLING */
         input[type="file"] { padding: 6px; background: #f9fafb; }
+
         .profile-rating { margin-top: 5px; font-size: 1.2rem; color: var(--gold-color); }
         .rating-text { font-size: 0.8rem; color: #6b7280; margin-left: 5px; vertical-align: middle; }
+
         .btn { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; color: white; }
         .btn-save { background: var(--primary-color); }
         .btn-reset { background: #4b5563; margin-left: 10px; }
         .btn-list { background: var(--primary-color); font-size: 1rem; }
         .btn-cancel { background: var(--danger-color); padding: 5px 10px; font-size: 0.8rem; }
+        .btn-edit { background: var(--primary-color); padding: 5px 10px; font-size: 0.8rem; margin-right: 5px; }
+        
         .btn-rate { background: var(--gold-color); padding: 6px 12px; font-size: 0.8rem; color: #fff; text-shadow: 0 1px 1px rgba(0,0,0,0.2); margin-left: 5px; }
         .btn-contact { background: var(--info-color); padding: 6px 12px; font-size: 0.8rem; color: #fff; }
+
         .lists-container { display: flex; flex-direction: column; gap: 30px; } 
         table { width: 100%; border-collapse: collapse; font-size: 0.9rem; margin-top: 10px; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e5e7eb; }
         th { color: #6b7280; font-size: 0.8rem; text-transform: uppercase; background: #f9fafb; }
+        
         .status-badge { padding: 4px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; }
         .st-review { background: #fef3c7; color: #92400e; }
         .st-approved { background: #dbeafe; color: #1e40af; }
         .st-scheduled { background: #d1fae5; color: #065f46; }
         .st-sold { background: #111827; color: #fff; }
         .st-inactive { background: #f3f4f6; color: #9ca3af; text-decoration: line-through; }
+
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
+
         .star-input { display: flex; flex-direction: row-reverse; justify-content: center; gap: 5px; font-size: 2rem; }
         .star-input input { display: none; }
         .star-input label { color: #ddd; cursor: pointer; transition: color 0.2s; }
         .star-input input:checked ~ label, .star-input label:hover, .star-input label:hover ~ label { color: var(--gold-color); }
+
         @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
@@ -60,8 +74,12 @@
     </header>
 
     <div class="container">
+        
         <div class="card">
-            <div class="section-title">Account Details <button class="btn btn-list" onclick="openListingModal()">+ List an Item</button></div>
+            <div class="section-title">
+                Account Details
+                <button class="btn btn-list" onclick="openListingModal()">+ List an Item</button>
+            </div>
             <div class="form-grid">
                 <div class="form-group"><label>Username</label><input type="text" id="accName" disabled> <div id="userRatingDisplay" class="profile-rating"></div></div>
                 <div class="form-group"><label>Member Since</label><input type="text" id="accDate" disabled></div>
@@ -73,6 +91,7 @@
                 <button class="btn btn-reset" onclick="resetPassword()">Send Password Reset Email</button>
             </div>
         </div>
+
         <div class="card">
             <div class="section-title">My Listings</div>
             <table>
@@ -80,25 +99,38 @@
                 <tbody id="myListingsBody"><tr><td colspan="5">Loading listings...</td></tr></tbody>
             </table>
         </div>
+
         <div class="lists-container">
             <div class="card">
                 <div class="section-title" style="color: var(--primary-color);">📦 Items Purchased</div>
-                <table><thead><tr><th>Date</th><th>Item</th><th>Seller</th><th>Price</th><th>Action</th></tr></thead><tbody id="purchaseList"><tr><td colspan="5">Loading...</td></tr></tbody></table>
+                <table>
+                    <thead><tr><th>Date</th><th>Item</th><th>Seller</th><th>Price</th><th>Action</th></tr></thead>
+                    <tbody id="purchaseList"><tr><td colspan="5">Loading...</td></tr></tbody>
+                </table>
             </div>
             <div class="card">
                 <div class="section-title" style="color: var(--success-color);">💰 Items Sold</div>
-                <table><thead><tr><th>Date</th><th>Item</th><th>Buyer</th><th>Sold For</th><th>Action</th></tr></thead><tbody id="salesList"><tr><td colspan="5">Loading...</td></tr></tbody></table>
+                <table>
+                    <thead><tr><th>Date</th><th>Item</th><th>Buyer</th><th>Sold For</th><th>Action</th></tr></thead>
+                    <tbody id="salesList"><tr><td colspan="5">Loading...</td></tr></tbody>
+                </table>
             </div>
         </div>
     </div>
 
     <div id="listingModal" class="modal-overlay">
         <div class="modal-content">
-            <h2 style="margin-top:0;">List Item for Auction</h2>
+            <h2 id="listingModalTitle" style="margin-top:0;">List Item for Auction</h2>
             <form onsubmit="event.preventDefault(); submitListing();">
+                <input type="hidden" id="editKey"> <input type="hidden" id="existingMainUrl">
+                <input type="hidden" id="existingThumb1">
+                <input type="hidden" id="existingThumb2">
+                <input type="hidden" id="existingThumb3">
+
                 <div class="form-group"><label>Seller Name:</label><input type="text" id="listSeller" disabled></div>
                 <div class="form-group"><label>Item Title:</label><input type="text" id="listTitle" required></div>
                 <div class="form-group"><label>Subtitle:</label><input type="text" id="listSub" placeholder="Condition / Category"></div>
+                
                 <div class="form-group" style="background:#f0f9ff; padding:10px; border-radius:6px; border:1px solid #bae6fd;">
                     <label>📍 Item Location:</label><input type="text" id="listLoc" required>
                 </div>
@@ -108,12 +140,21 @@
                 <div class="form-group" style="background:#f0f9ff; padding:10px; border-radius:6px; border:1px solid #bae6fd;">
                     <label>🚚 Delivery Preference:</label><input type="text" id="listDel" required>
                 </div>
+
                 <div class="form-group"><label>Starting Price ($):</label><input type="number" id="listPrice" required></div>
-                <div class="form-group"><label>Main Photo (Required):</label><input type="file" id="fileMain" accept="image/*" required></div>
+
+                <div class="form-group">
+                    <label>Main Photo:</label>
+                    <input type="file" id="fileMain" accept="image/*">
+                    <small style="color:#666; font-size:0.8rem;">(Required for new items. Leave blank to keep existing if editing)</small>
+                </div>
+                
                 <div class="form-group"><label>Extra Photo 1:</label><input type="file" id="fileThumb1" accept="image/*"></div>
                 <div class="form-group"><label>Extra Photo 2:</label><input type="file" id="fileThumb2" accept="image/*"></div>
                 <div class="form-group"><label>Extra Photo 3:</label><input type="file" id="fileThumb3" accept="image/*"></div>
+
                 <div class="form-group"><label>Description:</label><textarea id="listDesc" rows="3" required></textarea></div>
+
                 <button type="submit" id="submitListBtn" class="btn btn-save" style="width:100%">Submit Item</button>
                 <button type="button" class="btn btn-reset" style="width:100%; margin:10px 0 0 0;" onclick="document.getElementById('listingModal').style.display='none'">Cancel</button>
             </form>
@@ -169,7 +210,8 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getDatabase(app);
-        const storage = getStorage(app); // Enable Storage
+        const storage = getStorage(app);
+
         let currentUser = null;
         let allUsersCache = []; 
 
@@ -195,6 +237,7 @@
             });
         }
 
+        // --- PROFILE & HISTORY ---
         function loadUserProfile(uid) {
             const userRef = ref(db, `users/${uid}`);
             onValue(userRef, (snapshot) => {
@@ -214,6 +257,39 @@
             });
         }
 
+        function loadUserListings(uid) {
+            const invRef = ref(db, 'inventory');
+            onValue(invRef, (snapshot) => {
+                const tbody = document.getElementById('myListingsBody');
+                tbody.innerHTML = "";
+                const data = snapshot.val();
+                if(!data) { tbody.innerHTML = "<tr><td colspan='5'>No items listed.</td></tr>"; return; }
+                const items = Object.entries(data).map(([key, val]) => ({ ...val, key })).filter(item => item.owner_uid === uid);
+                if(items.length === 0) { tbody.innerHTML = "<tr><td colspan='5'>No items listed.</td></tr>"; return; }
+                items.forEach(item => {
+                    let statusBadge = '<span class="status-badge st-review">Under Review</span>';
+                    let resultText = "-";
+                    if (item.approval_status === 'inactive') { statusBadge = '<span class="status-badge st-inactive">Inactive</span>'; } 
+                    else if (item.status_label && item.status_label.includes("SOLD")) { statusBadge = '<span class="status-badge st-sold">Sold</span>'; resultText = item.status_label; } 
+                    else if (item.is_featured) { statusBadge = '<span class="status-badge st-scheduled">Scheduled</span>'; } 
+                    else if (item.lot > 0) { statusBadge = '<span class="status-badge st-approved">Approved</span>'; }
+                    
+                    // Only show action buttons if NOT Sold
+                    let actionButtons = "";
+                    if (item.approval_status !== 'inactive' && !item.status_label?.includes("SOLD")) {
+                        actionButtons = `
+                            <button class="btn btn-edit" onclick="editListing('${item.key}')">Edit</button>
+                            <button class="btn btn-cancel" onclick="makeInactive('${item.key}')">Deactivate</button>
+                        `;
+                    }
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `<td>${statusBadge}</td><td>${item.title}</td><td>$${item.start_price}</td><td>${resultText}</td><td>${actionButtons}</td>`;
+                    tbody.appendChild(tr);
+                });
+            });
+        }
+
         function loadUserHistory(userEmail) {
             const historyRef = ref(db, 'sales_history');
             onValue(historyRef, (snapshot) => {
@@ -222,6 +298,7 @@
                 purchasesTbody.innerHTML = ""; salesTbody.innerHTML = "";
                 const data = snapshot.val();
                 if (!data) { purchasesTbody.innerHTML = "<tr><td colspan='5'>No records.</td></tr>"; salesTbody.innerHTML = "<tr><td colspan='5'>No records.</td></tr>"; return; }
+
                 const items = Object.values(data).sort((a, b) => b.date - a.date);
                 items.forEach(item => {
                     const dateStr = new Date(item.date).toLocaleDateString();
@@ -272,13 +349,55 @@
             }
         }
 
-        // --- LISTINGS LOGIC (UPDATED TO USE REAL STORAGE) ---
+        // --- LISTINGS LOGIC ---
         window.openListingModal = function() {
+            resetListingForm();
+            document.getElementById('listingModalTitle').innerText = "List Item for Auction";
             document.getElementById('listSeller').value = document.getElementById('accName').value;
             document.getElementById('listingModal').style.display = 'flex';
         }
 
-        // REAL UPLOAD FUNCTION
+        // NEW: EDIT LISTING
+        window.editListing = function(key) {
+            get(ref(db, `inventory/${key}`)).then((snapshot) => {
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    
+                    document.getElementById('listingModalTitle').innerText = "Edit Listing";
+                    document.getElementById('editKey').value = key;
+                    
+                    document.getElementById('listSeller').value = data.seller_name;
+                    document.getElementById('listTitle').value = data.title;
+                    document.getElementById('listSub').value = data.subtitle;
+                    document.getElementById('listLoc').value = data.location;
+                    document.getElementById('listPay').value = data.payment_methods;
+                    document.getElementById('listDel').value = data.delivery_method;
+                    document.getElementById('listPrice').value = data.start_price;
+                    document.getElementById('listDesc').value = data.description;
+                    
+                    // Save existing images to hidden fields
+                    document.getElementById('existingMainUrl').value = data.image_url || "";
+                    if(data.images) {
+                        document.getElementById('existingThumb1').value = data.images.thumb1 || "";
+                        document.getElementById('existingThumb2').value = data.images.thumb2 || "";
+                        document.getElementById('existingThumb3').value = data.images.thumb3 || "";
+                    }
+
+                    document.getElementById('listingModal').style.display = 'flex';
+                }
+            });
+        }
+        
+        function resetListingForm() {
+            document.querySelector('form').reset();
+            document.getElementById('editKey').value = "";
+            document.getElementById('existingMainUrl').value = "";
+            document.getElementById('existingThumb1').value = "";
+            document.getElementById('existingThumb2').value = "";
+            document.getElementById('existingThumb3').value = "";
+        }
+
+        // UPLOAD HELPER
         async function uploadImage(file) {
             if (!file) return "";
             const fileRef = sRef(storage, 'user_uploads/' + Date.now() + '_' + file.name);
@@ -288,18 +407,26 @@
 
         window.submitListing = async function() {
             const submitBtn = document.getElementById('submitListBtn');
-            submitBtn.disabled = true; submitBtn.innerText = "Uploading Images...";
+            submitBtn.disabled = true; submitBtn.innerText = "Processing Images...";
 
             try {
-                const mainFile = document.getElementById('fileMain').files[0];
-                if(!mainFile) { alert("Main photo required."); submitBtn.disabled = false; return; }
-                
-                const mainUrl = await uploadImage(mainFile);
-                const thumb1Url = await uploadImage(document.getElementById('fileThumb1').files[0]);
-                const thumb2Url = await uploadImage(document.getElementById('fileThumb2').files[0]);
-                const thumb3Url = await uploadImage(document.getElementById('fileThumb3').files[0]);
+                const key = document.getElementById('editKey').value;
 
-                const newItem = {
+                // Handle Images (New vs Existing)
+                const mainFile = document.getElementById('fileMain').files[0];
+                const thumb1File = document.getElementById('fileThumb1').files[0];
+                const thumb2File = document.getElementById('fileThumb2').files[0];
+                const thumb3File = document.getElementById('fileThumb3').files[0];
+
+                // Use new upload OR fallback to existing URL
+                const mainUrl = mainFile ? await uploadImage(mainFile) : document.getElementById('existingMainUrl').value;
+                const t1Url = thumb1File ? await uploadImage(thumb1File) : document.getElementById('existingThumb1').value;
+                const t2Url = thumb2File ? await uploadImage(thumb2File) : document.getElementById('existingThumb2').value;
+                const t3Url = thumb3File ? await uploadImage(thumb3File) : document.getElementById('existingThumb3').value;
+
+                if(!mainUrl) { alert("Main photo required."); submitBtn.disabled = false; submitBtn.innerText = "Submit Item"; return; }
+
+                const itemData = {
                     title: document.getElementById('listTitle').value,
                     subtitle: document.getElementById('listSub').value,
                     start_price: parseInt(document.getElementById('listPrice').value),
@@ -311,44 +438,34 @@
                     owner_uid: currentUser.uid,
                     seller_name: document.getElementById('listSeller').value,
                     seller_email: currentUser.email,
-                    approval_status: "pending", lot: 0, times_run: 0, is_featured: false,
-                    images: { thumb1: thumb1Url, thumb2: thumb2Url, thumb3: thumb3Url }
+                    // If editing, preserve approval status. If new, set pending.
+                    approval_status: key ? "pending" : "pending", // Force re-review on edit? Or keep existing? Let's set to pending on edit for safety.
+                    lot: 0, times_run: 0, is_featured: false,
+                    images: { thumb1: t1Url, thumb2: t2Url, thumb3: t3Url }
                 };
 
-                await push(ref(db, 'inventory'), newItem);
-                alert("Item submitted successfully!");
+                if(key) {
+                    // Update Existing
+                    await update(ref(db, `inventory/${key}`), itemData);
+                    alert("Listing updated! It is now under review.");
+                } else {
+                    // Create New
+                    await push(ref(db, 'inventory'), itemData);
+                    alert("Item submitted successfully!");
+                }
+
                 document.getElementById('listingModal').style.display = 'none';
-                document.querySelector('form').reset();
+                resetListingForm();
 
             } catch (error) {
                 console.error(error);
                 alert("Error: " + error.message);
             } finally {
-                submitBtn.disabled = false; submitBtn.innerText = "Submit Item";
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Submit Item";
             }
         }
 
-        function loadUserListings(uid) {
-            const invRef = ref(db, 'inventory');
-            onValue(invRef, (snapshot) => {
-                const tbody = document.getElementById('myListingsBody');
-                tbody.innerHTML = "";
-                const data = snapshot.val();
-                if(!data) { tbody.innerHTML = "<tr><td colspan='5'>No items listed.</td></tr>"; return; }
-                const items = Object.entries(data).map(([key, val]) => ({ ...val, key })).filter(item => item.owner_uid === uid);
-                items.forEach(item => {
-                    let statusBadge = '<span class="status-badge st-review">Under Review</span>';
-                    let resultText = "-";
-                    if (item.approval_status === 'inactive') { statusBadge = '<span class="status-badge st-inactive">Inactive</span>'; } 
-                    else if (item.status_label && item.status_label.includes("SOLD")) { statusBadge = '<span class="status-badge st-sold">Sold</span>'; resultText = item.status_label; } 
-                    else if (item.is_featured) { statusBadge = '<span class="status-badge st-scheduled">Scheduled</span>'; } 
-                    else if (item.lot > 0) { statusBadge = '<span class="status-badge st-approved">Approved</span>'; }
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `<td>${statusBadge}</td><td>${item.title}</td><td>$${item.start_price}</td><td>${resultText}</td><td>${item.approval_status !== 'inactive' && !item.status_label?.includes("SOLD") ? `<button class="btn btn-cancel" onclick="makeInactive('${item.key}')">Deactivate</button>` : ''}</td>`;
-                    tbody.appendChild(tr);
-                });
-            });
-        }
         window.makeInactive = function(key) { if(confirm("Remove this item?")) update(ref(db, `inventory/${key}`), { approval_status: 'inactive' }); }
         
         window.saveProfile = function() {
