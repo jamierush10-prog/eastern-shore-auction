@@ -223,7 +223,7 @@
         import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
         // --- PASTE KEYS HERE ---
-       const firebaseConfig = {
+        const firebaseConfig = {
   apiKey: "AIzaSyCt0i8a7ZVRlNmSts9yM4uGwV7ghPU59rk",
   authDomain: "eastern-shore-auction.firebaseapp.com",
   databaseURL: "https://eastern-shore-auction-default-rtdb.firebaseio.com",
@@ -236,7 +236,7 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getDatabase(app);
-        const storage = getStorage(app);
+        const storage = getStorage(app); // Enable Storage
         let currentUser = null;
         let allUsersCache = []; 
 
@@ -275,15 +275,11 @@
                     document.getElementById('accDate').value = joinDate;
                     const avg = data.rating_count > 0 ? (data.rating_total / data.rating_count).toFixed(1) : "New";
                     document.getElementById('userRatingDisplay').innerHTML = `<span style="color:#f59e0b">★</span> <span class="rating-text">(${avg} / 5)</span>`;
-                } else {
-                    document.getElementById('accName').value = currentUser.displayName;
-                    document.getElementById('accEmail').value = currentUser.email;
-                    document.getElementById('accDate').value = "Not registered in DB";
                 }
             });
         }
 
-        // --- 2. HISTORY LOGIC (UPDATED WITH SELLER FINANCIALS) ---
+        // --- 2. HISTORY LOGIC (UPDATED FOR LEGACY ITEMS) ---
         function loadUserHistory(userEmail) {
             const historyRef = ref(db, 'sales_history');
             onValue(historyRef, (snapshot) => {
@@ -299,7 +295,7 @@
                 items.forEach(item => {
                     const dateStr = new Date(item.date).toLocaleDateString();
                     
-                    // --- BUYER VIEW (YOU WON) ---
+                    // --- BUYER VIEW ---
                     if (item.winner_email && item.winner_email.toLowerCase() === userEmail.toLowerCase()) {
                         const seller = allUsersCache.find(u => u.email && u.email.toLowerCase() === (item.seller_email || "").toLowerCase());
                         const sellerName = seller ? seller.name : (item.seller_name || "Unknown");
@@ -314,23 +310,16 @@
                         const tr = document.createElement('tr');
                         tr.innerHTML = `
                             <td>${dateStr}</td><td>${item.item_title}</td><td>${sellerName}</td>
-                            <td>
-                                <div class="fin-block">
-                                    <div class="fin-row"><span class="fin-label">Total Price:</span> <span class="fin-val">$${item.final_price}</span></div>
-                                    <div class="fin-row"><span class="fin-label">Auction Fee:</span> <span class="fin-fee">$${feeAmount}</span></div>
-                                    <div class="fin-row"><span class="fin-label">Due to Seller:</span> <span class="fin-net">$${netAmount}</span></div>
-                                    <div style="margin-top:8px;">${feeAction}</div>
-                                </div>
-                            </td>
-                            <td>
-                                <button class="btn btn-contact" onclick="viewContact('${sellerName}', '${sellerEmail}', '${sellerPhone}')">Contact</button>
-                                <button class="btn btn-rate" onclick="openRateModal('${sellerEmail}', '${sellerName}')">Rate</button>
-                            </td>`;
+                            <td><div class="fin-block"><div class="fin-row"><span class="fin-label">Total:</span> <span class="fin-val">$${item.final_price}</span></div><div class="fin-row"><span class="fin-label">Fee:</span> <span class="fin-fee">$${feeAmount}</span></div><div class="fin-row"><span class="fin-label">Owe Seller:</span> <span class="fin-net">$${netAmount}</span></div><div style="margin-top:8px;">${feeAction}</div></div></td>
+                            <td><button class="btn btn-contact" onclick="viewContact('${sellerName}', '${sellerEmail}', '${sellerPhone}')">Contact</button><button class="btn btn-rate" onclick="openRateModal('${sellerEmail}', '${sellerName}')">Rate</button></td>`;
                         purchasesTbody.appendChild(tr);
                     }
 
-                    // --- SELLER VIEW (YOU SOLD) - UPDATED ---
-                    if (item.seller_email && item.seller_email.toLowerCase() === userEmail.toLowerCase()) {
+                    // --- SELLER VIEW (FIXED: CHECK EMAIL OR NAME) ---
+                    const isSeller = (item.seller_email && item.seller_email.toLowerCase() === userEmail.toLowerCase()) ||
+                                     (item.seller_name && item.seller_name === currentUser.displayName);
+
+                    if (isSeller) {
                         const buyer = allUsersCache.find(u => u.email && u.email.toLowerCase() === (item.winner_email || "").toLowerCase());
                         const buyerName = buyer ? buyer.name : (item.winner_name || "Unknown");
                         const buyerEmail = item.winner_email || "";
@@ -349,18 +338,8 @@
                         const tr = document.createElement('tr');
                         tr.innerHTML = `
                             <td>${dateStr}</td><td>${item.item_title}</td><td>${buyerName}</td>
-                            <td>
-                                <div class="fin-block">
-                                    <div class="fin-row"><span class="fin-label">Sale Price:</span> <span class="fin-val">$${item.final_price}</span></div>
-                                    <div class="fin-row"><span class="fin-label">Fee (10%):</span> <span class="fin-fee">-$${feeAmount}</span></div>
-                                    <div class="fin-row"><span class="fin-label">Net Earnings:</span> <span class="fin-net">$${netAmount}</span></div>
-                                    <div style="margin-top:8px;">${feeStatusMsg}</div>
-                                </div>
-                            </td>
-                            <td>
-                                <button class="btn btn-contact" onclick="viewContact('${buyerName}', '${buyerEmail}', '${buyerPhone}')">Contact</button>
-                                <button class="btn btn-rate" onclick="openRateModal('${buyerEmail}', '${buyerName}')">Rate</button>
-                            </td>`;
+                            <td><div class="fin-block"><div class="fin-row"><span class="fin-label">Sale:</span> <span class="fin-val">$${item.final_price}</span></div><div class="fin-row"><span class="fin-label">Fee (10%):</span> <span class="fin-fee">-$${feeAmount}</span></div><div class="fin-row"><span class="fin-label">Net:</span> <span class="fin-net">$${netAmount}</span></div><div style="margin-top:5px;">${feeStatusMsg}</div></div></td>
+                            <td><button class="btn btn-contact" onclick="viewContact('${buyerName}', '${buyerEmail}', '${buyerPhone}')">Contact</button><button class="btn btn-rate" onclick="openRateModal('${buyerEmail}', '${buyerName}')">Rate</button></td>`;
                         salesTbody.appendChild(tr);
                     }
                 });
@@ -410,7 +389,6 @@
             }
         }
 
-        // --- LISTINGS LOGIC ---
         window.openListingModal = function() {
             document.getElementById('listSeller').value = document.getElementById('accName').value;
             document.getElementById('listingModal').style.display = 'flex';
