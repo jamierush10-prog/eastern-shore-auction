@@ -27,10 +27,12 @@
         .gallery-section { display: flex; flex-direction: column; gap: 15px; }
         .main-image-wrapper { width: 100%; height: 400px; background-color: #eee; border-radius: 8px; overflow: hidden; border: 1px solid var(--border-color); position: relative; }
         .main-image-wrapper img { width: 100%; height: 100%; object-fit: contain; background: #fff; transition: opacity 0.2s ease; }
-        .thumbnails { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        
+        /* UPDATED THUMBNAILS CSS */
+        .thumbnails { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
         .thumbnail { aspect-ratio: 1/1; background-color: #f9fafb; border: 2px solid transparent; border-radius: 6px; overflow: hidden; cursor: pointer; transition: all 0.2s; }
         .thumbnail:hover { border-color: var(--primary-color); }
-        .thumbnail img { width: 100%; height: 100%; object-fit: cover; }
+        .thumbnail img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
         .history-section { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color); }
         .history-title { font-size: 0.9rem; font-weight: bold; text-transform: uppercase; color: #6b7280; margin-bottom: 10px; }
@@ -156,12 +158,15 @@
     <div class="auction-container">
         <div class="gallery-section">
             <div class="main-image-wrapper"><img id="mainImage" src="" alt="Auction Item" onerror="this.src='https://placehold.co/600x400?text=No+Image'"></div>
+            
             <div class="thumbnails">
-                <div class="thumbnail" onclick="changeImage(this)"><img id="thumb1" src="" onerror="this.style.display='none'"></div>
-                <div class="thumbnail" onclick="changeImage(this)"><img id="thumb2" src="" onerror="this.style.display='none'"></div>
-                <div class="thumbnail" onclick="changeImage(this)"><img id="thumb3" src="" onerror="this.style.display='none'"></div>
-                <div class="thumbnail" onclick="changeImage(this)"><img id="thumb4" src="" onerror="this.style.display='none'"></div>
+                <div class="thumbnail" onclick="changeImage(this)"><img id="thumbMain" src=""></div>
+                <div class="thumbnail" onclick="changeImage(this)"><img id="thumb1" src=""></div>
+                <div class="thumbnail" onclick="changeImage(this)"><img id="thumb2" src=""></div>
+                <div class="thumbnail" onclick="changeImage(this)"><img id="thumb3" src=""></div>
+                <div class="thumbnail" onclick="changeImage(this)"><img id="thumb4" src=""></div>
             </div>
+            
             <div class="history-section">
                 <div class="history-title">Full Bid History</div>
                 <div id="bidHistoryList"></div>
@@ -347,7 +352,6 @@
                 globalAuctionData = data;
                 if (data.end_time > Date.now()) { auctionEndedProcessed = false; }
 
-                // --- SMART TOGGLE LOGIC ---
                 const isClosed = (data.title === "Auction Closed");
                 const displayStyle = isClosed ? 'none' : 'block';
                 const gridStyle = isClosed ? 'none' : 'grid';
@@ -381,7 +385,9 @@
 
                 const mainImg = document.getElementById('mainImage');
                 if(!mainImg.getAttribute('data-locked')) mainImg.src = data.image_url;
-                if (!isClosed) updateThumbs(data.images);
+                
+                // UPDATED: Call updateThumbs with main image URL
+                if (!isClosed) updateThumbs(data.image_url, data.images);
                 
                 updateTimer(data.end_time);
                 renderBidHistory(data.bid_history);
@@ -401,7 +407,19 @@
             }
         });
 
-        function updateThumbs(images) {
+        // UPDATED: updateThumbs function to handle main image and extras
+        function updateThumbs(mainUrl, images) {
+            // Handle Main Thumbnail
+            const thumbMain = document.getElementById('thumbMain');
+            const parentMain = thumbMain.parentElement;
+            if (mainUrl) {
+                thumbMain.src = mainUrl;
+                parentMain.style.display = 'block';
+            } else {
+                parentMain.style.display = 'none';
+            }
+
+            // Handle Extra Thumbnails
             const imgIds = ['thumb1', 'thumb2', 'thumb3', 'thumb4'];
             imgIds.forEach(id => {
                 const el = document.getElementById(id);
@@ -481,7 +499,6 @@
             const currentBid = data.current_bid || 0;
             const hasBidder = !!data.high_bidder_uid;
 
-            // CHECK IF SOLD
             const isSold = hasBidder && (currentBid >= reserve);
 
             if (isSold) {
@@ -496,7 +513,6 @@
                 }
                 modal.style.display = 'flex';
             } 
-            // If NOT SOLD (Reserve not met), NO MODAL.
         }
 
         window.addToBid = function(amount) {
@@ -533,7 +549,6 @@
                 const currentLeaderUID = data.high_bidder_uid || "";
                 const currentPrice = data.current_bid;
 
-                // --- ANTI-SNIPING LOGIC ---
                 const now = Date.now();
                 let newEndTime = data.end_time;
                 if ((data.end_time - now) < 30000) {
