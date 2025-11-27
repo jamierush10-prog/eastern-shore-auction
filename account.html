@@ -5,31 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Account | Eastern Shore Auction House</title>
     <style>
+        /* --- SAME STYLES AS BEFORE --- */
         :root { --primary-color: #2563eb; --header-bg: #111827; --text-color: #1f2937; --bg-color: #f3f4f6; --success-color: #16a34a; --danger-color: #dc2626; --gold-color: #f59e0b; --info-color: #0891b2; }
         body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg-color); color: var(--text-color); margin: 0; }
-        
         header { background: var(--header-bg); color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
         .brand { font-family: "Georgia", serif; font-size: 1.5rem; font-weight: bold; }
         .nav-link { color: #d1d5db; text-decoration: none; margin-left: 20px; cursor: pointer; }
         .nav-link:hover { color: white; text-decoration: underline; }
-
         .container { max-width: 1000px; margin: 30px auto; padding: 20px; }
-
         .card { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 30px; }
         .section-title { border-bottom: 2px solid #e5e7eb; padding-bottom: 10px; margin-bottom: 20px; font-size: 1.5rem; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
-        
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-size: 0.9rem; font-weight: bold; margin-bottom: 5px; color: #4b5563; }
         .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
         .form-group input:disabled { background: #f3f4f6; color: #6b7280; cursor: not-allowed; }
-        
-        /* FILE UPLOAD STYLING */
         input[type="file"] { padding: 6px; background: #f9fafb; }
-
         .profile-rating { margin-top: 5px; font-size: 1.2rem; color: var(--gold-color); }
         .rating-text { font-size: 0.8rem; color: #6b7280; margin-left: 5px; vertical-align: middle; }
-
         .btn { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; color: white; }
         .btn-save { background: var(--primary-color); }
         .btn-reset { background: #4b5563; margin-left: 10px; }
@@ -37,27 +30,22 @@
         .btn-cancel { background: var(--danger-color); padding: 5px 10px; font-size: 0.8rem; }
         .btn-rate { background: var(--gold-color); padding: 6px 12px; font-size: 0.8rem; color: #fff; text-shadow: 0 1px 1px rgba(0,0,0,0.2); margin-left: 5px; }
         .btn-contact { background: var(--info-color); padding: 6px 12px; font-size: 0.8rem; color: #fff; }
-
         .lists-container { display: flex; flex-direction: column; gap: 30px; } 
         table { width: 100%; border-collapse: collapse; font-size: 0.9rem; margin-top: 10px; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e5e7eb; }
         th { color: #6b7280; font-size: 0.8rem; text-transform: uppercase; background: #f9fafb; }
-        
         .status-badge { padding: 4px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; }
         .st-review { background: #fef3c7; color: #92400e; }
         .st-approved { background: #dbeafe; color: #1e40af; }
         .st-scheduled { background: #d1fae5; color: #065f46; }
         .st-sold { background: #111827; color: #fff; }
         .st-inactive { background: #f3f4f6; color: #9ca3af; text-decoration: line-through; }
-
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
-
         .star-input { display: flex; flex-direction: row-reverse; justify-content: center; gap: 5px; font-size: 2rem; }
         .star-input input { display: none; }
         .star-input label { color: #ddd; cursor: pointer; transition: color 0.2s; }
         .star-input input:checked ~ label, .star-input label:hover, .star-input label:hover ~ label { color: var(--gold-color); }
-
         @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
@@ -72,12 +60,8 @@
     </header>
 
     <div class="container">
-        
         <div class="card">
-            <div class="section-title">
-                Account Details
-                <button class="btn btn-list" onclick="openListingModal()">+ List an Item</button>
-            </div>
+            <div class="section-title">Account Details <button class="btn btn-list" onclick="openListingModal()">+ List an Item</button></div>
             <div class="form-grid">
                 <div class="form-group"><label>Username</label><input type="text" id="accName" disabled> <div id="userRatingDisplay" class="profile-rating"></div></div>
                 <div class="form-group"><label>Member Since</label><input type="text" id="accDate" disabled></div>
@@ -89,7 +73,6 @@
                 <button class="btn btn-reset" onclick="resetPassword()">Send Password Reset Email</button>
             </div>
         </div>
-
         <div class="card">
             <div class="section-title">My Listings</div>
             <table>
@@ -97,21 +80,14 @@
                 <tbody id="myListingsBody"><tr><td colspan="5">Loading listings...</td></tr></tbody>
             </table>
         </div>
-
         <div class="lists-container">
             <div class="card">
                 <div class="section-title" style="color: var(--primary-color);">📦 Items Purchased</div>
-                <table>
-                    <thead><tr><th>Date</th><th>Item</th><th>Seller</th><th>Price</th><th>Action</th></tr></thead>
-                    <tbody id="purchaseList"><tr><td colspan="5">Loading...</td></tr></tbody>
-                </table>
+                <table><thead><tr><th>Date</th><th>Item</th><th>Seller</th><th>Price</th><th>Action</th></tr></thead><tbody id="purchaseList"><tr><td colspan="5">Loading...</td></tr></tbody></table>
             </div>
             <div class="card">
                 <div class="section-title" style="color: var(--success-color);">💰 Items Sold</div>
-                <table>
-                    <thead><tr><th>Date</th><th>Item</th><th>Buyer</th><th>Sold For</th><th>Action</th></tr></thead>
-                    <tbody id="salesList"><tr><td colspan="5">Loading...</td></tr></tbody>
-                </table>
+                <table><thead><tr><th>Date</th><th>Item</th><th>Buyer</th><th>Sold For</th><th>Action</th></tr></thead><tbody id="salesList"><tr><td colspan="5">Loading...</td></tr></tbody></table>
             </div>
         </div>
     </div>
@@ -123,7 +99,6 @@
                 <div class="form-group"><label>Seller Name:</label><input type="text" id="listSeller" disabled></div>
                 <div class="form-group"><label>Item Title:</label><input type="text" id="listTitle" required></div>
                 <div class="form-group"><label>Subtitle:</label><input type="text" id="listSub" placeholder="Condition / Category"></div>
-                
                 <div class="form-group" style="background:#f0f9ff; padding:10px; border-radius:6px; border:1px solid #bae6fd;">
                     <label>📍 Item Location:</label><input type="text" id="listLoc" required>
                 </div>
@@ -133,20 +108,12 @@
                 <div class="form-group" style="background:#f0f9ff; padding:10px; border-radius:6px; border:1px solid #bae6fd;">
                     <label>🚚 Delivery Preference:</label><input type="text" id="listDel" required>
                 </div>
-
                 <div class="form-group"><label>Starting Price ($):</label><input type="number" id="listPrice" required></div>
-
-                <div class="form-group">
-                    <label>Main Photo (Required):</label>
-                    <input type="file" id="fileMain" accept="image/*" required>
-                </div>
-                
+                <div class="form-group"><label>Main Photo (Required):</label><input type="file" id="fileMain" accept="image/*" required></div>
                 <div class="form-group"><label>Extra Photo 1:</label><input type="file" id="fileThumb1" accept="image/*"></div>
                 <div class="form-group"><label>Extra Photo 2:</label><input type="file" id="fileThumb2" accept="image/*"></div>
                 <div class="form-group"><label>Extra Photo 3:</label><input type="file" id="fileThumb3" accept="image/*"></div>
-
                 <div class="form-group"><label>Description:</label><textarea id="listDesc" rows="3" required></textarea></div>
-
                 <button type="submit" id="submitListBtn" class="btn btn-save" style="width:100%">Submit Item</button>
                 <button type="button" class="btn btn-reset" style="width:100%; margin:10px 0 0 0;" onclick="document.getElementById('listingModal').style.display='none'">Cancel</button>
             </form>
@@ -186,9 +153,10 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getDatabase, ref, onValue, update, child, get, push, runTransaction, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
         // --- PASTE KEYS HERE ---
-       const firebaseConfig = {
+        const firebaseConfig = {
   apiKey: "AIzaSyCt0i8a7ZVRlNmSts9yM4uGwV7ghPU59rk",
   authDomain: "eastern-shore-auction.firebaseapp.com",
   databaseURL: "https://eastern-shore-auction-default-rtdb.firebaseio.com",
@@ -201,6 +169,7 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getDatabase(app);
+        const storage = getStorage(app); // Enable Storage
         let currentUser = null;
         let allUsersCache = []; 
 
@@ -226,7 +195,6 @@
             });
         }
 
-        // --- PROFILE & HISTORY ---
         function loadUserProfile(uid) {
             const userRef = ref(db, `users/${uid}`);
             onValue(userRef, (snapshot) => {
@@ -236,7 +204,6 @@
                     document.getElementById('accEmail').value = data.email || currentUser.email;
                     document.getElementById('accPhone').value = data.phone || "";
                     document.getElementById('accDate').value = data.joined_at ? new Date(data.joined_at).toLocaleDateString() : "N/A";
-                    
                     const avg = data.rating_count > 0 ? (data.rating_total / data.rating_count).toFixed(1) : "New";
                     document.getElementById('userRatingDisplay').innerHTML = `<span style="color:#f59e0b">★</span> <span class="rating-text">(${avg} / 5)</span>`;
                 } else {
@@ -255,7 +222,6 @@
                 purchasesTbody.innerHTML = ""; salesTbody.innerHTML = "";
                 const data = snapshot.val();
                 if (!data) { purchasesTbody.innerHTML = "<tr><td colspan='5'>No records.</td></tr>"; salesTbody.innerHTML = "<tr><td colspan='5'>No records.</td></tr>"; return; }
-
                 const items = Object.values(data).sort((a, b) => b.date - a.date);
                 items.forEach(item => {
                     const dateStr = new Date(item.date).toLocaleDateString();
@@ -283,10 +249,8 @@
 
         window.viewContact = function(name, email, phone) {
             document.getElementById('contactName').innerText = name;
-            document.getElementById('contactEmail').innerText = email;
-            document.getElementById('contactEmail').href = "mailto:" + email;
-            document.getElementById('contactPhone').innerText = phone;
-            document.getElementById('contactPhone').href = "tel:" + phone;
+            document.getElementById('contactEmail').innerText = email; document.getElementById('contactEmail').href = "mailto:" + email;
+            document.getElementById('contactPhone').innerText = phone; document.getElementById('contactPhone').href = "tel:" + phone;
             document.getElementById('contactModal').style.display = 'flex';
         }
 
@@ -308,55 +272,46 @@
             }
         }
 
-        // --- LISTINGS LOGIC (BASE64 FIX) ---
+        // --- LISTINGS LOGIC (UPDATED TO USE REAL STORAGE) ---
         window.openListingModal = function() {
             document.getElementById('listSeller').value = document.getElementById('accName').value;
             document.getElementById('listingModal').style.display = 'flex';
         }
 
-        // HELPER: CONVERT IMAGE TO BASE64 STRING
-        const convertBase64 = (file) => {
-            return new Promise((resolve, reject) => {
-                const fileReader = new FileReader();
-                fileReader.readAsDataURL(file);
-                fileReader.onload = () => { resolve(fileReader.result); };
-                fileReader.onerror = (error) => { reject(error); };
-            });
+        // REAL UPLOAD FUNCTION
+        async function uploadImage(file) {
+            if (!file) return "";
+            const fileRef = sRef(storage, 'user_uploads/' + Date.now() + '_' + file.name);
+            await uploadBytes(fileRef, file);
+            return await getDownloadURL(fileRef);
         }
 
         window.submitListing = async function() {
             const submitBtn = document.getElementById('submitListBtn');
-            submitBtn.disabled = true;
-            submitBtn.innerText = "Processing Images...";
+            submitBtn.disabled = true; submitBtn.innerText = "Uploading Images...";
 
             try {
                 const mainFile = document.getElementById('fileMain').files[0];
                 if(!mainFile) { alert("Main photo required."); submitBtn.disabled = false; return; }
                 
-                // Convert images to text strings
-                const mainUrl = await convertBase64(mainFile);
-                
-                let thumb1Url = "", thumb2Url = "", thumb3Url = "";
-                if(document.getElementById('fileThumb1').files[0]) thumb1Url = await convertBase64(document.getElementById('fileThumb1').files[0]);
-                if(document.getElementById('fileThumb2').files[0]) thumb2Url = await convertBase64(document.getElementById('fileThumb2').files[0]);
-                if(document.getElementById('fileThumb3').files[0]) thumb3Url = await convertBase64(document.getElementById('fileThumb3').files[0]);
+                const mainUrl = await uploadImage(mainFile);
+                const thumb1Url = await uploadImage(document.getElementById('fileThumb1').files[0]);
+                const thumb2Url = await uploadImage(document.getElementById('fileThumb2').files[0]);
+                const thumb3Url = await uploadImage(document.getElementById('fileThumb3').files[0]);
 
                 const newItem = {
                     title: document.getElementById('listTitle').value,
                     subtitle: document.getElementById('listSub').value,
                     start_price: parseInt(document.getElementById('listPrice').value),
-                    image_url: mainUrl, // Saving Base64 string directly
+                    image_url: mainUrl,
                     description: document.getElementById('listDesc').value,
-                    
                     location: document.getElementById('listLoc').value,
                     payment_methods: document.getElementById('listPay').value,
                     delivery_method: document.getElementById('listDel').value,
-
                     owner_uid: currentUser.uid,
                     seller_name: document.getElementById('listSeller').value,
                     seller_email: currentUser.email,
                     approval_status: "pending", lot: 0, times_run: 0, is_featured: false,
-                    
                     images: { thumb1: thumb1Url, thumb2: thumb2Url, thumb3: thumb3Url }
                 };
 
@@ -369,8 +324,7 @@
                 console.error(error);
                 alert("Error: " + error.message);
             } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerText = "Submit Item";
+                submitBtn.disabled = false; submitBtn.innerText = "Submit Item";
             }
         }
 
