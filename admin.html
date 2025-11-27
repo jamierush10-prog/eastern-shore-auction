@@ -54,16 +54,17 @@
         input[type="file"] { padding: 6px; background: #f9fafb; }
 
         .form-card { background: white; padding: 30px; border-radius: 8px; max-width: 600px; margin: 0 auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; }
-        .modal-content { background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
-        
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9rem; }
         .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
         
-        .control-card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 30px; display: flex; align-items: center; justify-content: space-between; border-left: 5px solid var(--primary-color); }
-        .control-group { display: flex; align-items: center; gap: 10px; flex: 1; }
-        .control-input { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 4px; max-width: 300px; }
+        /* SETTINGS CARD */
+        .control-card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 30px; display: flex; flex-direction: column; gap: 15px; border-left: 5px solid var(--primary-color); }
+        .control-row { display: flex; gap: 15px; align-items: flex-end; }
+        .control-input-group { flex: 1; }
+        .control-input-group label { display: block; font-size: 0.85rem; font-weight: bold; color: #4b5563; margin-bottom: 5px; }
+        .control-input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        textarea.control-input { resize: vertical; min-height: 60px; font-family: inherit; }
 
         .btn { padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9rem; font-weight: bold; color: white; }
         .btn-queue { background: #16a34a; }
@@ -71,7 +72,7 @@
         .btn-delete { background: #dc2626; }
         .btn-ban { background: #991b1b; }
         .btn-save { background: #111827; width: 100%; padding: 12px; margin-top: 10px; }
-        .btn-stop { background: #dc2626; padding: 10px 20px; }
+        .btn-stop { background: #dc2626; padding: 10px 20px; width: 100%; }
         .btn-manual { background: #4b5563; margin-bottom: 15px; }
 
         .view-section { display: none; }
@@ -96,11 +97,20 @@
         
         <div id="inventoryView" class="view-section active">
             <div class="control-card">
-                <div class="control-group">
-                    <h3>📅 Auction Date:</h3>
-                    <input type="text" id="scheduleInput" class="control-input" placeholder="e.g. Tonight at 7:00 PM CST">
-                    <button class="btn btn-edit" onclick="updateSchedule()">Update</button>
+                <div class="control-row">
+                    <div class="control-input-group">
+                        <label>📅 Next Auction Date:</label>
+                        <input type="text" id="scheduleInput" class="control-input" placeholder="e.g. Thursday at 7:30 PM">
+                    </div>
                 </div>
+                <div class="control-row">
+                    <div class="control-input-group">
+                        <label>📢 Announcement Text (Use **text** for bold):</label>
+                        <textarea id="announcementInput" class="control-input" placeholder="Type announcement here..."></textarea>
+                    </div>
+                    <button class="btn btn-edit" style="height:fit-content; align-self:flex-end;" onclick="updateSettings()">Update All</button>
+                </div>
+                <hr style="border:0; border-top:1px solid #e5e7eb; margin:0;">
                 <button class="btn btn-stop" onclick="finalizeAuction()">⛔ End Current Auction</button>
             </div>
 
@@ -135,7 +145,9 @@
             <div class="form-card">
                 <form onsubmit="event.preventDefault(); saveItem();">
                     <input type="hidden" id="editKey"> 
-                    <input type="hidden" id="existingMainUrl"> <input type="hidden" id="existingThumb1">
+                    
+                    <input type="hidden" id="existingMainUrl">
+                    <input type="hidden" id="existingThumb1">
                     <input type="hidden" id="existingThumb2">
                     <input type="hidden" id="existingThumb3">
                     <input type="hidden" id="existingThumb4">
@@ -144,22 +156,33 @@
                     <div class="form-group"><label>Title:</label><input type="text" id="inpTitle" required></div>
                     <div class="form-group"><label>Subtitle:</label><input type="text" id="inpSub" placeholder="Condition / Category"></div>
                     <div class="form-group"><label>Seller Name:</label><input type="text" id="inpSeller" placeholder="e.g. Jamie R."></div>
+                    
+                    <div class="form-group" style="background:#f0f9ff; padding:10px; border-radius:6px; border:1px solid #bae6fd;">
+                        <label>📍 Item Location:</label><input type="text" id="inpLoc">
+                    </div>
+                    <div class="form-group" style="background:#f0f9ff; padding:10px; border-radius:6px; border:1px solid #bae6fd;">
+                        <label>💵 Payment Accepted:</label><input type="text" id="inpPay">
+                    </div>
+                    <div class="form-group" style="background:#f0f9ff; padding:10px; border-radius:6px; border:1px solid #bae6fd;">
+                        <label>🚚 Delivery Method:</label><input type="text" id="inpDel">
+                    </div>
+
                     <div class="form-group"><label>Start Bid ($):</label><input type="number" id="inpPrice" required></div>
                     <div class="form-group"><label>Reserve Price ($):</label><input type="number" id="inpReserve" placeholder="Hidden Minimum"></div>
                     
                     <div class="form-group">
                         <label>Main Image:</label>
                         <input type="file" id="inpImgFile" accept="image/*">
-                        <small style="color:#666">Leave blank to keep existing image</small>
+                        <small style="color:#666">Leave blank to keep current image</small>
                     </div>
 
                     <div class="form-group"><label>Description:</label><textarea id="inpDesc" rows="4"></textarea></div>
                     
-                    <h3>Extra Images</h3>
-                    <div class="form-group"><label>Extra 1:</label><input type="file" id="inpThumb1" accept="image/*"></div>
-                    <div class="form-group"><label>Extra 2:</label><input type="file" id="inpThumb2" accept="image/*"></div>
-                    <div class="form-group"><label>Extra 3:</label><input type="file" id="inpThumb3" accept="image/*"></div>
-                    <div class="form-group"><label>Extra 4:</label><input type="file" id="inpThumb4" accept="image/*"></div>
+                    <h3>Extra Images (Leave blank to keep)</h3>
+                    <div class="form-group"><input type="file" id="inpThumb1" accept="image/*"></div>
+                    <div class="form-group"><input type="file" id="inpThumb2" accept="image/*"></div>
+                    <div class="form-group"><input type="file" id="inpThumb3" accept="image/*"></div>
+                    <div class="form-group"><input type="file" id="inpThumb4" accept="image/*"></div>
                     
                     <button type="submit" id="adminSaveBtn" class="btn btn-save">Save Item</button>
                 </form>
@@ -214,7 +237,7 @@
                         loadUsers();
                         loadHistory();
                         monitorActiveAuction();
-                        loadSchedule();
+                        loadSettings();
                     }
                 });
             } else {
@@ -222,16 +245,27 @@
             }
         });
 
-        function loadSchedule() {
-            get(ref(db, 'auction_schedule')).then((snapshot) => {
-                if(snapshot.exists()) document.getElementById('scheduleInput').value = snapshot.val();
+        // --- SCHEDULE & ANNOUNCEMENT ---
+        function loadSettings() {
+            get(ref(db, 'settings')).then((snapshot) => {
+                if(snapshot.exists()) {
+                    const data = snapshot.val();
+                    document.getElementById('scheduleInput').value = data.schedule || "";
+                    document.getElementById('announcementInput').value = data.announcement || "";
+                }
             });
         }
-        window.updateSchedule = function() {
-            const newText = document.getElementById('scheduleInput').value;
-            set(ref(db, 'auction_schedule'), newText).then(() => { alert("Schedule updated!"); });
+
+        window.updateSettings = function() {
+            const schedule = document.getElementById('scheduleInput').value;
+            const announcement = document.getElementById('announcementInput').value;
+            update(ref(db, 'settings'), {
+                schedule: schedule,
+                announcement: announcement
+            }).then(() => { alert("Settings updated!"); });
         }
 
+        // --- NAVIGATION ---
         window.switchView = function(viewName) {
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
             document.getElementById(viewName + 'View').classList.add('active');
@@ -242,7 +276,7 @@
             document.querySelector('form').reset();
             document.getElementById('editKey').value = "";
             document.getElementById('formTitle').innerText = "Add New Lot";
-            // Clear hidden fields
+            // Reset hidden fields
             document.getElementById('existingMainUrl').value = "";
             document.getElementById('existingThumb1').value = "";
             document.getElementById('existingThumb2').value = "";
@@ -266,9 +300,11 @@
             });
         }
 
+        // --- SALES HISTORY ---
         function loadHistory() {
             const refHist = ref(db, 'sales_history');
             const refUsers = ref(db, 'users');
+
             onValue(refHist, (histSnap) => {
                 const historyData = histSnap.val();
                 get(refUsers).then((userSnap) => {
@@ -276,28 +312,46 @@
                     const allUsers = Object.values(usersData);
                     const tbody = document.getElementById('salesTableBody');
                     tbody.innerHTML = "";
+
                     if(!historyData) { tbody.innerHTML = "<tr><td colspan='6'>No sales yet.</td></tr>"; return; }
+                    
                     const items = Object.values(historyData).sort((a, b) => b.date - a.date);
+                    
                     items.forEach(item => {
                         const dateStr = new Date(item.date).toLocaleDateString();
-                        let lotDisplay = item.lot;
-                        if (!lotDisplay || lotDisplay === 0 || lotDisplay === "0") { lotDisplay = `<span style="color:#9ca3af; font-style:italic;">#Old</span>`; } else { lotDisplay = `<strong>#${lotDisplay}</strong>`; }
+                        let lotDisplay = item.lot || "Old";
+                        
+                        // Buyer Info
                         const buyerProfile = allUsers.find(u => u.email && u.email.toLowerCase() === (item.winner_email || "").toLowerCase());
                         const buyerPhone = buyerProfile && buyerProfile.phone ? buyerProfile.phone : "N/A";
                         const buyerName = buyerProfile ? buyerProfile.name : item.winner_name;
                         const buyerEmail = item.winner_email || "N/A";
+
+                        // Seller Info
                         const sellerProfile = allUsers.find(u => u.name && u.name.toLowerCase() === (item.seller_name || "").toLowerCase());
                         const sellerPhone = sellerProfile && sellerProfile.phone ? sellerProfile.phone : "N/A";
                         const sellerEmail = sellerProfile ? sellerProfile.email : "N/A";
                         const sellerName = item.seller_name || "House Item";
+                        
                         const tr = document.createElement('tr');
-                        tr.innerHTML = `<td>${lotDisplay}</td><td><img src="https://img.icons8.com/color/48/sold.png" style="width:20px; vertical-align:middle; margin-right:5px;"> ${item.item_title}</td><td style="color:#16a34a; font-weight:bold;">$${item.final_price}</td><td class="contact-info"><div style="font-weight:bold;">${buyerName}</div><div>${buyerEmail}</div><div style="color:#2563eb;">📞 ${buyerPhone}</div></td><td class="contact-info"><div style="font-weight:bold;">${sellerName}</div><div>${sellerEmail}</div><div style="color:#2563eb;">📞 ${sellerPhone}</div></td><td>${dateStr}</td>`;
+                        tr.innerHTML = `
+                            <td><strong>#${lotDisplay}</strong></td>
+                            <td>
+                                <img src="https://img.icons8.com/color/48/sold.png" style="width:20px; vertical-align:middle; margin-right:5px;">
+                                ${item.item_title}
+                            </td>
+                            <td style="color:#16a34a; font-weight:bold;">$${item.final_price}</td>
+                            <td class="contact-info"><div style="font-weight:bold;">${buyerName}</div><div>${buyerEmail}</div><div style="color:#2563eb;">📞 ${buyerPhone}</div></td>
+                            <td class="contact-info"><div style="font-weight:bold;">${sellerName}</div><div>${sellerEmail}</div><div style="color:#2563eb;">📞 ${sellerPhone}</div></td>
+                            <td>${dateStr}</td>
+                        `;
                         tbody.appendChild(tr);
                     });
                 });
             });
         }
 
+        // --- INVENTORY ---
         function loadInventory() {
             const invRef = ref(db, 'inventory');
             onValue(invRef, (snapshot) => {
@@ -316,7 +370,20 @@
                     if(item.status_label && item.status_label.includes("SOLD")) { statusDisplay = `<span class="text-sold">${item.status_label}</span>`; } 
                     else if(item.status_label && item.status_label.includes("PASSED")) { statusDisplay = `<span class="text-passed">${item.status_label}</span>`; } 
                     else { statusDisplay = `Start: $${item.start_price}<br><small style="color:#999">Reserve: $${item.reserve_price || 0}</small>`; }
-                    tr.innerHTML = `<td style="text-align:center;"><input type="checkbox" ${isChecked} onchange="toggleFeatured('${item.key}', this.checked)"></td><td><strong>#${item.lot}</strong></td><td class="item-cell"><img src="${item.image_url}" class="img-preview"><span class="item-title">${item.title}</span></td><td>${item.seller_name || "N/A"}</td><td class="price-cell">${statusDisplay}</td><td><span class="status-pill ${item.times_run > 0 ? 'status-run' : 'status-new'}">${item.times_run || 0} Times</span></td><td><button class="btn btn-queue" onclick="queueItem('${item.key}')">📢 Queue</button> <button class="btn btn-edit" onclick="editItem('${item.key}')">✏️ Edit</button> <button class="btn btn-delete" onclick="deleteItem('${item.key}')">🗑️</button></td>`;
+
+                    tr.innerHTML = `
+                        <td style="text-align:center;"><input type="checkbox" ${isChecked} onchange="toggleFeatured('${item.key}', this.checked)"></td>
+                        <td><strong>#${item.lot}</strong></td>
+                        <td class="item-cell"><img src="${item.image_url}" class="img-preview"><span class="item-title">${item.title}</span></td>
+                        <td>${item.seller_name || "N/A"}</td>
+                        <td class="price-cell">${statusDisplay}</td>
+                        <td><span class="status-pill ${item.times_run > 0 ? 'status-run' : 'status-new'}">${item.times_run || 0} Times</span></td>
+                        <td>
+                            <button class="btn btn-queue" onclick="queueItem('${item.key}')">📢 Queue</button>
+                            <button class="btn btn-edit" onclick="editItem('${item.key}')">✏️ Edit</button>
+                            <button class="btn btn-delete" onclick="deleteItem('${item.key}')">🗑️</button>
+                        </td>
+                    `;
                     tbody.appendChild(tr);
                 });
             });
@@ -324,6 +391,7 @@
 
         window.toggleFeatured = function(key, status) { update(ref(db, `inventory/${key}`), { is_featured: status }); }
 
+        // --- USERS ---
         function loadUsers() {
             const userRef = ref(db, 'users');
             onValue(userRef, (snapshot) => {
@@ -333,12 +401,12 @@
                 if(!data) { tbody.innerHTML = "<tr><td colspan='6'>No registered users.</td></tr>"; return; }
                 Object.entries(data).forEach(([key, user]) => {
                     const isApproved = user.is_approved === true;
-                    const tr = document.createElement('tr');
                     const phoneDisplay = user.phone ? user.phone : '<span style="color:#9ca3af">N/A</span>';
                     const localDisplay = user.is_local ? 'Yes' : 'No';
                     let statusPill = '', actionBtn = '';
                     if(isApproved) { statusPill = '<span class="status-pill status-approved">Active</span>'; actionBtn = `<button class="btn btn-ban" onclick="banUser('${key}')">Ban</button>`; } 
                     else { statusPill = '<span class="status-pill status-pending">Pending/Banned</span>'; actionBtn = `<button class="btn btn-queue" onclick="approveUser('${key}')">Approve</button>`; }
+                    const tr = document.createElement('tr');
                     tr.innerHTML = `<td><strong>${user.name}</strong></td><td>${user.email}</td><td>${phoneDisplay}</td><td>${localDisplay}</td><td>${statusPill}</td><td>${actionBtn}</td>`;
                     tbody.appendChild(tr);
                 });
@@ -347,6 +415,7 @@
         window.approveUser = function(uid) { if(confirm("Approve this user?")) update(ref(db, `users/${uid}`), { is_approved: true }); }
         window.banUser = function(uid) { if(confirm("BAN this user?")) update(ref(db, `users/${uid}`), { is_approved: false }); }
 
+        // --- MONITOR ---
         let activeAuctionData = null;
         function monitorActiveAuction() {
             const activeRef = ref(db, 'active_auction');
@@ -363,6 +432,7 @@
                 const priceCell = row.querySelector('.price-cell');
                 priceCell.innerHTML = "$" + row.dataset.defaultPrice;
             });
+
             if (activeAuctionData && activeAuctionData.inventory_key) {
                 const row = document.getElementById(`row-${activeAuctionData.inventory_key}`);
                 if (row) {
@@ -373,6 +443,7 @@
                     const currentBid = activeAuctionData.current_bid || 0;
                     const reserve = activeAuctionData.reserve_price || 0;
                     const hasBidder = !!activeAuctionData.high_bidder_uid;
+
                     if (isEnded) {
                         if (hasBidder && currentBid >= reserve) {
                             row.classList.add('live-ended-sold');
@@ -392,7 +463,7 @@
             }
         }
 
-        // --- FILE UPLOAD HELPER ---
+        // --- FILE UPLOAD ---
         async function uploadImage(file) {
             if (!file) return "";
             const fileRef = sRef(storage, 'admin_uploads/' + Date.now() + '_' + file.name);
@@ -400,7 +471,7 @@
             return await getDownloadURL(fileRef);
         }
 
-        // --- SAVE/EDIT ITEM WITH FILE UPLOAD ---
+        // --- CRUD & QUEUE ---
         window.saveItem = async function() {
             const btn = document.getElementById('adminSaveBtn');
             btn.disabled = true; btn.innerText = "Uploading...";
@@ -408,33 +479,46 @@
             try {
                 const key = document.getElementById('editKey').value;
                 
-                // Get Files
+                // Handle Files
                 const mainFile = document.getElementById('inpImgFile').files[0];
                 const thumb1File = document.getElementById('inpThumb1').files[0];
                 const thumb2File = document.getElementById('inpThumb2').files[0];
                 const thumb3File = document.getElementById('inpThumb3').files[0];
                 const thumb4File = document.getElementById('inpThumb4').files[0];
 
-                // Upload if file exists, else keep old URL
-                const mainUrl = mainFile ? await uploadImage(mainFile) : (document.getElementById('inpImg').value || "");
-                const t1Url = thumb1File ? await uploadImage(thumb1File) : (document.getElementById('existingThumb1').value || "");
-                const t2Url = thumb2File ? await uploadImage(thumb2File) : (document.getElementById('existingThumb2').value || "");
-                const t3Url = thumb3File ? await uploadImage(thumb3File) : (document.getElementById('existingThumb3').value || "");
-                const t4Url = thumb4File ? await uploadImage(thumb4File) : (document.getElementById('existingThumb4').value || "");
-
-                // Use the existing text input if no file uploaded (backward compatibility for old items)
-                // Actually, for admin, we can just prioritize the new logic.
-                // If it's a new item and no file, require it.
-                if(!key && !mainUrl) { alert("Main image required."); btn.disabled = false; btn.innerText = "Save Item"; return; }
+                // Upload or use existing
+                const mainUrl = mainFile ? await uploadImage(mainFile) : document.getElementById('inpImg').value; // Use text input if filled
+                const t1Url = thumb1File ? await uploadImage(thumb1File) : document.getElementById('existingThumb1').value;
+                const t2Url = thumb2File ? await uploadImage(thumb2File) : document.getElementById('existingThumb2').value;
+                const t3Url = thumb3File ? await uploadImage(thumb3File) : document.getElementById('existingThumb3').value;
+                const t4Url = thumb4File ? await uploadImage(thumb4File) : document.getElementById('existingThumb4').value;
+                
+                // Admin can still use text URL if they want, so we check file first, then text field
+                // But since we are editing, if no new file, we need the old URL.
+                // Simplified logic:
+                // If NEW FILE -> Upload & Use
+                // If NO NEW FILE -> Check if we are editing -> Use Hidden Field. 
+                // If Text input used -> Use that.
+                
+                // Just grab the text input value. EditItem fills it. 
+                // If user uploads file, we overwrite it.
+                let finalMainUrl = document.getElementById('inpImg').value; 
+                if(mainFile) finalMainUrl = await uploadImage(mainFile);
 
                 const data = {
                     lot: parseInt(document.getElementById('inpLot').value),
                     title: document.getElementById('inpTitle').value,
                     subtitle: document.getElementById('inpSub').value,
                     seller_name: document.getElementById('inpSeller').value,
+                    
+                    // LOGISTICS
+                    location: document.getElementById('inpLoc').value,
+                    payment_methods: document.getElementById('inpPay').value,
+                    delivery_method: document.getElementById('inpDel').value,
+
                     start_price: parseInt(document.getElementById('inpPrice').value),
                     reserve_price: parseInt(document.getElementById('inpReserve').value) || 0,
-                    image_url: mainUrl,
+                    image_url: finalMainUrl,
                     description: document.getElementById('inpDesc').value,
                     times_run: 0, is_featured: false,
                     images: { thumb1: t1Url, thumb2: t2Url, thumb3: t3Url, thumb4: t4Url }
@@ -447,9 +531,9 @@
                         update(ref(db, `inventory/${key}`), data); alert("Item Updated"); resetForm(); switchView('inventory');
                     });
                 } else { push(ref(db, 'inventory'), data); alert("Item Added"); resetForm(); switchView('inventory'); }
+
             } catch (e) {
-                console.error(e);
-                alert("Error: " + e.message);
+                console.error(e); alert("Error: " + e.message);
             } finally {
                 btn.disabled = false; btn.innerText = "Save Item";
             }
@@ -458,8 +542,10 @@
         window.deleteItem = function(key) { if(confirm("Delete item?")) remove(ref(db, `inventory/${key}`)); }
         
         window.editItem = function(key) {
-            resetForm(); document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            resetForm(); 
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
             document.getElementById('addView').classList.add('active'); document.getElementById('formTitle').innerText = "Edit Item";
+            
             get(ref(db, `inventory/${key}`)).then((snapshot) => {
                 const data = snapshot.val();
                 document.getElementById('editKey').value = key;
@@ -467,18 +553,23 @@
                 document.getElementById('inpTitle').value = data.title;
                 document.getElementById('inpSub').value = data.subtitle;
                 document.getElementById('inpSeller').value = data.seller_name;
+                
+                // LOGISTICS
+                document.getElementById('inpLoc').value = data.location || "";
+                document.getElementById('inpPay').value = data.payment_methods || "";
+                document.getElementById('inpDel').value = data.delivery_method || "";
+
                 document.getElementById('inpPrice').value = data.start_price;
                 document.getElementById('inpReserve').value = data.reserve_price || "";
+                document.getElementById('inpImg').value = data.image_url;
+                document.getElementById('inpDesc').value = data.description;
                 
-                // Populate Hidden Fields for Existing Images
-                document.getElementById('inpImg').value = data.image_url; // Keep for reference/logic
                 if(data.images) {
                     document.getElementById('existingThumb1').value = data.images.thumb1 || "";
                     document.getElementById('existingThumb2').value = data.images.thumb2 || "";
                     document.getElementById('existingThumb3').value = data.images.thumb3 || "";
                     document.getElementById('existingThumb4').value = data.images.thumb4 || "";
                 }
-                document.getElementById('inpDesc').value = data.description;
             });
         }
 
@@ -487,18 +578,23 @@
             get(ref(db, 'active_auction')).then((snapshot) => {
                 const currentAuction = snapshot.val();
                 if (!currentAuction || !currentAuction.inventory_key) { alert("No active auction to finalize."); return; }
+
                 const reserve = currentAuction.reserve_price || 0;
                 const finalBid = currentAuction.current_bid || 0;
                 const hasBidder = !!currentAuction.high_bidder_uid;
                 let statusLabel = "PASSED";
                 let isSold = false;
+
                 if (hasBidder && finalBid >= reserve) { statusLabel = `SOLD: $${finalBid}`; isSold = true; } 
                 else { statusLabel = hasBidder ? "PASSED (Reserve)" : "PASSED (No Bids)"; }
+
                 update(ref(db, `inventory/${currentAuction.inventory_key}`), { status_label: statusLabel });
+
                 const closeAuction = () => {
                     set(ref(db, 'active_auction'), { title: "Auction Closed", subtitle: "Check back later", current_bid: 0, image_url: "https://placehold.co/600x400?text=Auction+Closed", end_time: 0 });
                     alert("Auction finalized and saved!");
                 };
+
                 if (isSold) {
                     get(ref(db, `users/${currentAuction.high_bidder_uid}`)).then((userSnap) => {
                         const winnerEmail = userSnap.exists() ? userSnap.val().email : "Unknown";
@@ -517,7 +613,7 @@
                         const auctionData = {
                             lot: newItem.lot, title: newItem.title, subtitle: newItem.subtitle, description: newItem.description,
                             current_bid: newItem.start_price, image_url: newItem.image_url, reserve_price: newItem.reserve_price || 0,
-                            end_time: Date.now() + (3 * 60 * 1000), images: newItem.images, // CHANGED TO 3 MINUTES
+                            end_time: Date.now() + (3 * 60 * 1000), images: newItem.images, // 3 MINUTES
                             high_bidder_max: 0, high_bidder_name: "", high_bidder_uid: "", bid_history: null,
                             inventory_key: newKey, seller_name: newItem.seller_name,
                             location: newItem.location, payment_methods: newItem.payment_methods, delivery_method: newItem.delivery_method
@@ -526,6 +622,7 @@
                         update(ref(db, `inventory/${newKey}`), { times_run: (newItem.times_run || 0) + 1, status_label: "LIVE" });
                         alert("Item is LIVE!");
                     };
+
                     if (currentAuction && currentAuction.inventory_key && currentAuction.inventory_key !== "undefined") {
                         const reserve = currentAuction.reserve_price || 0;
                         const finalBid = currentAuction.current_bid || 0;
@@ -535,6 +632,7 @@
                         if (hasBidder && finalBid >= reserve) { statusLabel = `SOLD: $${finalBid}`; isSold = true; } 
                         else { statusLabel = hasBidder ? "PASSED (Reserve)" : "PASSED (No Bids)"; }
                         update(ref(db, `inventory/${currentAuction.inventory_key}`), { status_label: statusLabel });
+
                         if (isSold) {
                             get(ref(db, `users/${currentAuction.high_bidder_uid}`)).then((userSnap) => {
                                 const winnerEmail = userSnap.exists() ? userSnap.val().email : "Unknown";
