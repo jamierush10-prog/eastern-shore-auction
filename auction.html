@@ -27,8 +27,6 @@
         .gallery-section { display: flex; flex-direction: column; gap: 15px; }
         .main-image-wrapper { width: 100%; height: 400px; background-color: #eee; border-radius: 8px; overflow: hidden; border: 1px solid var(--border-color); position: relative; }
         .main-image-wrapper img { width: 100%; height: 100%; object-fit: contain; background: #fff; transition: opacity 0.2s ease; }
-        
-        /* THUMBNAILS */
         .thumbnails { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
         .thumbnail { aspect-ratio: 1/1; background-color: #f9fafb; border: 2px solid transparent; border-radius: 6px; overflow: hidden; cursor: pointer; transition: all 0.2s; }
         .thumbnail:hover { border-color: var(--primary-color); }
@@ -79,11 +77,10 @@
         .bid-input-row { position: relative; width: 100%; }
         .currency-symbol { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); font-size: 1.2rem; font-weight: bold; color: #374151; pointer-events: none; }
         input#bidInput { padding: 12px; padding-left: 30px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 1.2rem; font-weight: bold; width: 100%; box-sizing: border-box; text-align: center; }
-        
         button.bid-btn { background-color: var(--primary-color); color: white; border: none; padding: 12px 24px; border-radius: 6px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s; width: 100%; }
         button.bid-btn:hover { background-color: #1d4ed8; }
         button.bid-btn:disabled { background-color: #9ca3af; cursor: not-allowed; }
-
+        
         #userMaxBidDisplay { margin-top: 10px; font-size: 0.9rem; color: var(--primary-color); text-align: center; display: none; background: #dbeafe; padding: 8px; border-radius: 4px; }
         .winning-bid-status { background-color: #dcfce7 !important; color: #166534 !important; border-color: #86efac !important; }
         
@@ -116,11 +113,13 @@
         /* MODALS */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 30px; border-radius: 8px; text-align: center; width: 90%; max-width: 400px; box-shadow: 0 20px 25px rgba(0,0,0,0.2); position: relative; }
+        
         .confirm-amount { font-size: 2rem; font-weight: 800; color: var(--primary-color); margin: 10px 0; }
         .confirm-actions { display: flex; gap: 10px; margin-top: 20px; }
         .confirm-btn { flex: 1; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
         .btn-yes { background: var(--primary-color); color: white; }
         .btn-no { background: #e5e7eb; color: #374151; }
+
         #winnerIcon { font-size: 4rem; margin-bottom: 10px; }
         #winnerText { font-size: 1.8rem; font-weight: bold; margin: 10px 0; color: var(--text-color); }
         #winnerDetail { font-size: 1.1rem; color: #6b7280; margin-bottom: 20px; }
@@ -149,7 +148,9 @@
             <span style="color:#4b5563">|</span>
             <div onclick="logout()" class="nav-link">Sign Out</div>
         </div>
+
         <div class="brand-name">Eastern Shore Auction House</div>
+        
         <div class="header-right"><button id="adminPanelBtn" onclick="openAdminPanel()">ADMIN DASHBOARD</button></div>
     </header>
 
@@ -178,9 +179,18 @@
             </div>
 
             <div id="logisticsBox" class="logistics-box">
-                <div class="logistics-item"><div class="log-icon">📍</div><div class="log-text"><strong>Location:</strong> <span id="dispLoc">...</span></div></div>
-                <div class="logistics-item"><div class="log-icon">💵</div><div class="log-text"><strong>Payment:</strong> <span id="dispPay">...</span></div></div>
-                <div class="logistics-item"><div class="log-icon">🚚</div><div class="log-text"><strong>Delivery:</strong> <span id="dispDel">...</span></div></div>
+                <div class="logistics-item">
+                    <div class="log-icon">📍</div>
+                    <div class="log-text"><strong>Location:</strong> <span id="dispLoc">...</span></div>
+                </div>
+                <div class="logistics-item">
+                    <div class="log-icon">💵</div>
+                    <div class="log-text"><strong>Payment:</strong> <span id="dispPay">...</span></div>
+                </div>
+                <div class="logistics-item">
+                    <div class="log-icon">🚚</div>
+                    <div class="log-text"><strong>Delivery:</strong> <span id="dispDel">...</span></div>
+                </div>
             </div>
 
             <div class="timer-block" id="timerBox"><span>TIME REMAINING</span><span class="countdown" id="countdown">--:--</span></div>
@@ -253,9 +263,11 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getDatabase, ref, onValue, set, get, push, update, child, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, onValue, set, get, push, update, child, query, limitToLast, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // --- PASTE KEYS HERE ---
+        // -------------------------------------------------
+        // PASTE YOUR FIREBASE CONFIG HERE BEFORE DEPLOYING
+        // -------------------------------------------------
        const firebaseConfig = {
   apiKey: "AIzaSyCt0i8a7ZVRlNmSts9yM4uGwV7ghPU59rk",
   authDomain: "eastern-shore-auction.firebaseapp.com",
@@ -266,12 +278,14 @@
   appId: "1:771348898846:web:3b6371e8f826747fdcba0f"
 };
 
+        // Initialize
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getDatabase(app);
         const auctionId = "active_auction"; 
         const dbRef = ref(db, auctionId);
 
+        // State
         let currentUser = null;
         let isUserApproved = false;
         let globalCurrentBid = 0;
@@ -280,20 +294,36 @@
         let userCache = {}; 
         let timerInterval = null;
 
+        // --- SAFETY TIMER (Prevent infinite loading) ---
+        setTimeout(() => {
+            const loader = document.getElementById('pageLoading');
+            if(loader && loader.style.display !== 'none') {
+                loader.style.display = 'none';
+                console.warn("Forced loader hide (Auth timeout)");
+            }
+        }, 3000); // 3 seconds max wait
+
+        // --- AUTH STATE ---
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 currentUser = user;
                 document.getElementById('displayUsername').innerText = user.displayName || "Bidder";
+                
+                // Check Permissions
                 preloadUserCache();
                 get(child(ref(db), `admins/${user.uid}`)).then((snapshot) => { if (snapshot.exists() && snapshot.val() === true) document.getElementById('adminPanelBtn').style.display = 'block'; });
                 get(child(ref(db), `users/${user.uid}`)).then((snapshot) => { if(snapshot.exists()) { isUserApproved = snapshot.val().is_approved === true; } });
+                
                 document.getElementById('pageLoading').style.display = 'none';
-            } else { window.location.href = "index.html"; }
+            } else {
+                window.location.href = "index.html";
+            }
         });
 
         window.logout = function() { signOut(auth).then(() => { window.location.href = "index.html"; }); }
         window.openAdminPanel = function() { window.location.href = 'admin.html'; }
 
+        // --- CACHE HELPERS ---
         function preloadUserCache() {
             get(ref(db, 'users')).then((snapshot) => {
                 if (snapshot.exists()) {
@@ -304,6 +334,7 @@
         }
         function getAvatarUrlByName(name) { return (userCache[name] && userCache[name].profile_image_url) ? userCache[name].profile_image_url : "https://www.gravatar.com/avatar/?d=mp"; }
 
+        // --- CHAT ---
         const chatRef = query(ref(db, 'auction_chat'), limitToLast(50));
         window.sendChat = function() {
             const input = document.getElementById('chatInput');
@@ -312,9 +343,12 @@
             push(ref(db, 'auction_chat'), { user: currentUser.displayName, text: msg, timestamp: Date.now() });
             input.value = "";
         }
-        window.clearChat = function() { if(confirm("Clear chat?")) set(ref(db, 'auction_chat'), null); }
+        window.clearChat = function() {
+            if(confirm("Clear all chat?")) set(ref(db, 'auction_chat'), null);
+        }
         onValue(chatRef, (snapshot) => {
-            const chatWindow = document.getElementById('chatWindow'); chatWindow.innerHTML = "";
+            const chatWindow = document.getElementById('chatWindow');
+            chatWindow.innerHTML = "";
             const data = snapshot.val();
             if(data) {
                 Object.values(data).forEach(msg => {
@@ -324,17 +358,18 @@
             }
         });
 
+        // --- AUCTION LOGIC ---
         onValue(dbRef, (snapshot) => {
             const data = snapshot.val();
             if (data) {
                 globalAuctionData = data;
-                // Reset processed flag if new auction started
                 if (data.end_time > Date.now()) { auctionEndedProcessed = false; }
                 updateUI(data);
             }
         });
 
         function updateUI(data) {
+            // Logic: if Title = "Auction Closed", hide stuff
             const isClosed = (data.title === "Auction Closed");
             const displayStyle = isClosed ? 'none' : 'block';
             const gridStyle = isClosed ? 'none' : 'grid';
@@ -371,7 +406,7 @@
             if(!mainImg.getAttribute('data-locked')) mainImg.src = data.image_url;
             if (!isClosed) updateThumbs(data.images);
             
-            updateTimer(); // Check time logic
+            updateTimer();
             renderBidHistory(data.bid_history);
 
             if (currentUser && data.high_bidder_uid === currentUser.uid && !isClosed) {
@@ -380,6 +415,8 @@
                 document.getElementById('userMaxBidDisplay').innerHTML = `🎉 <strong>You are the highest bidder!</strong> <br>(Your max bid: $${data.high_bidder_max.toLocaleString()})`;
             } else {
                 document.getElementById('userMaxBidDisplay').style.display = 'none';
+                document.getElementById('userMaxBidDisplay').classList.remove('winning-bid-status');
+                document.getElementById('userMaxBidDisplay').innerHTML = '';
             }
         }
 
@@ -387,11 +424,162 @@
             const imgIds = ['thumb1', 'thumb2', 'thumb3', 'thumb4'];
             imgIds.forEach(id => {
                 const el = document.getElementById(id);
-                if (images && images[id]) { el.src = images[id]; el.parentElement.style.display = 'block'; } else { el.parentElement.style.display = 'none'; }
+                if (images && images[id]) { el.src = images[id]; el.parentElement.style.display = 'block'; } 
+                else { el.parentElement.style.display = 'none'; }
             });
         }
         
         window.changeImage = function(div) {
             const img = div.querySelector('img');
             const main = document.getElementById('mainImage');
-            if(img.
+            if(img.src) {
+                main.style.opacity = 0;
+                setTimeout(() => { main.src = img.src; main.style.opacity = 1; main.setAttribute('data-locked', 'true'); }, 200);
+            }
+        }
+
+        function renderBidHistory(historyObj) {
+            const list = document.getElementById('bidHistoryList');
+            list.innerHTML = ""; 
+            if (!historyObj) { list.innerHTML = '<div class="bid-item" style="color:#9ca3af;">No bids yet...</div>'; return; }
+            const bidsArray = Object.values(historyObj);
+            bidsArray.sort((a, b) => b.amount - a.amount);
+            bidsArray.forEach(bid => {
+                const row = document.createElement('div');
+                row.className = 'bid-item';
+                const avatarUrl = getAvatarUrlByName(bid.bidder_name);
+                row.innerHTML = `<div class="bidder-flex"><img src="${avatarUrl}" class="mini-avatar"><span>${bid.bidder_name}</span></div><span class="bid-amount">$${bid.amount.toLocaleString()}</span>`;
+                list.appendChild(row);
+            });
+        }
+
+        function updateTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                const now = Date.now();
+                const distance = globalAuctionData.end_time - now;
+                const timerElement = document.getElementById('countdown');
+                const bidBtn = document.querySelector('.bid-btn');
+                const incBtns = document.querySelectorAll('.inc-btn');
+                
+                // Force Closed Check
+                if(globalAuctionData.title === "Auction Closed") {
+                    clearInterval(timerInterval);
+                    timerElement.innerText = "--:--";
+                    document.getElementById('timerBox').classList.add('timer-ended');
+                    return;
+                }
+
+                if (distance < 0) {
+                    clearInterval(timerInterval);
+                    timerElement.textContent = "ENDED";
+                    bidBtn.disabled = true; bidBtn.textContent = "Auction Closed"; bidBtn.style.backgroundColor = "#9ca3af";
+                    incBtns.forEach(b => b.disabled = true);
+                    document.getElementById('timerBox').classList.add('timer-ended');
+
+                    if (!auctionEndedProcessed) {
+                        showWinnerModal(globalAuctionData);
+                        auctionEndedProcessed = true;
+                    }
+                } else {
+                    bidBtn.disabled = false; bidBtn.textContent = "Place Max Bid"; bidBtn.style.backgroundColor = ""; 
+                    incBtns.forEach(b => b.disabled = false);
+                    document.getElementById('timerBox').classList.remove('timer-ended');
+                    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                    timerElement.textContent = (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds < 10 ? "0" + seconds : seconds);
+                }
+            }, 1000);
+        }
+
+        function showWinnerModal(data) {
+            // CHECK IF SOLD (Reserve Met + Bidder)
+            const reserve = data.reserve_price || 0;
+            const currentBid = data.current_bid || 0;
+            const hasBidder = !!data.high_bidder_uid;
+            const isSold = hasBidder && (currentBid >= reserve);
+
+            if (isSold) {
+                const modal = document.getElementById('winnerModal');
+                const text = document.getElementById('winnerText');
+                const detail = document.getElementById('winnerDetail');
+                const img = document.getElementById('winnerGif');
+
+                if (currentUser && data.high_bidder_uid === currentUser.uid) {
+                    text.innerText = "Congratulations!"; text.style.color = "#16a34a"; 
+                    detail.innerText = "You won this item for $" + currentBid.toLocaleString();
+                    img.src = "https://media.giphy.com/media/26u4cqiYI30juCOGY/giphy.gif";
+                } else {
+                    text.innerText = "SOLD!"; text.style.color = "#1f2937";
+                    detail.innerText = "Sold to " + (data.high_bidder_name || "Unknown") + " for $" + currentBid.toLocaleString();
+                    img.src = "https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExcGJrenUwMW84Mmpia3dpazF1b3JmZTdyNWI2d3Izd2tudGVlbzRuYyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l41YAbDsTJXKANjmE/giphy.gif";
+                }
+                modal.style.display = 'flex';
+            }
+        }
+
+        window.addToBid = function(amount) {
+            const input = document.getElementById('bidInput');
+            let currentVal = parseInt(input.value) || (globalCurrentBid);
+            if(currentVal <= globalCurrentBid) currentVal = globalCurrentBid;
+            input.value = currentVal + amount;
+        }
+
+        window.openConfirm = function() {
+            const amount = parseInt(document.getElementById('bidInput').value);
+            if(!amount || amount <= globalCurrentBid) { alert("Bid must be higher than current price."); return; }
+            document.getElementById('confirmAmountDisplay').innerText = "$" + amount.toLocaleString();
+            document.getElementById('confirmModal').style.display = 'flex';
+        }
+
+        window.closeConfirm = function() { document.getElementById('confirmModal').style.display = 'none'; }
+
+        window.submitFinalBid = function() {
+            if(!currentUser) return;
+            if(!isUserApproved) { alert("Account pending approval."); closeConfirm(); return; }
+            const myMaxBid = parseInt(document.getElementById('bidInput').value);
+            closeConfirm();
+
+            get(dbRef).then((snapshot) => {
+                const data = snapshot.val();
+                if (Date.now() > data.end_time) { alert("Auction has ended!"); return; }
+
+                const currentLeaderMax = data.high_bidder_max || 0;
+                const currentLeaderUID = data.high_bidder_uid || "";
+                const currentPrice = data.current_bid;
+
+                const now = Date.now();
+                let newEndTime = data.end_time;
+                if ((data.end_time - now) < 30000) { newEndTime = now + 30000; }
+
+                if (currentUser.uid === currentLeaderUID) {
+                    if (myMaxBid > currentLeaderMax) {
+                        update(dbRef, { high_bidder_max: myMaxBid, end_time: newEndTime });
+                        alert("Max bid increased.");
+                    } else { alert("You are already highest bidder."); }
+                    return;
+                }
+
+                if (myMaxBid > currentLeaderMax) {
+                    let newPrice = (currentLeaderMax > 0) ? (currentLeaderMax + 1) : (data.current_bid + 1);
+                    if(newPrice < data.current_bid + 1) newPrice = data.current_bid + 1;
+                    update(dbRef, { 
+                        current_bid: newPrice, high_bidder_max: myMaxBid, high_bidder_uid: currentUser.uid, high_bidder_name: currentUser.displayName, end_time: newEndTime 
+                    });
+                    const historyRef = ref(db, auctionId + '/bid_history');
+                    push(historyRef, { bidder_name: currentUser.displayName, amount: newPrice, timestamp: Date.now() });
+                    alert("You are high bidder!");
+                } else {
+                    let newPrice = myMaxBid + 1;
+                    if (myMaxBid === currentLeaderMax) newPrice = myMaxBid;
+                    update(dbRef, { current_bid: newPrice, end_time: newEndTime });
+                    const historyRef = ref(db, auctionId + '/bid_history');
+                    push(historyRef, { bidder_name: currentUser.displayName, amount: myMaxBid, timestamp: Date.now() });
+                    push(historyRef, { bidder_name: data.high_bidder_name, amount: newPrice, timestamp: Date.now() + 1 });
+                    alert("Outbid by proxy!");
+                }
+            });
+        };
+    </script>
+</body>
+</html>
