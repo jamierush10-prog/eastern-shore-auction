@@ -18,37 +18,45 @@
         .card { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 30px; }
         .section-title { border-bottom: 2px solid #e5e7eb; padding-bottom: 10px; margin-bottom: 20px; font-size: 1.5rem; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
         
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        /* NEW PROFILE DISPLAY STYLES */
+        .profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 20px; }
+        .profile-item { display: flex; flex-direction: column; }
+        .profile-label { font-size: 0.85rem; font-weight: bold; color: #6b7280; text-transform: uppercase; margin-bottom: 5px; }
+        .profile-value { font-size: 1.1rem; font-weight: 500; color: #1f2937; }
+
+        /* RATING STARS */
+        .profile-rating { font-size: 1rem; color: var(--gold-color); margin-left: 10px; }
+        .rating-text { font-size: 0.8rem; color: #6b7280; vertical-align: middle; }
+
+        /* BUTTONS */
+        .btn { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; color: white; text-decoration: none; display: inline-block; }
+        .btn-save { background: var(--primary-color); }
+        .btn-reset { background: #4b5563; font-size: 0.9rem; }
+        .btn-list { background: var(--primary-color); font-size: 1rem; }
+        .btn-cancel { background: var(--danger-color); padding: 5px 10px; font-size: 0.8rem; }
+        .btn-edit-profile { background: #0f766e; font-size: 0.9rem; margin-right: 10px; }
+        
+        .btn-rate { background: var(--gold-color); padding: 6px 12px; font-size: 0.8rem; color: #fff; text-shadow: 0 1px 1px rgba(0,0,0,0.2); margin-left: 5px; }
+        .btn-contact { background: var(--info-color); padding: 6px 12px; font-size: 0.8rem; color: #fff; }
+        .btn-pay { background: var(--purple-color); padding: 6px 12px; font-size: 0.8rem; color: #fff; margin-right: 5px; }
+        .btn-pay:hover { background: #6d28d9; }
+
+        /* MODALS */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
+
+        /* FORMS INSIDE MODALS */
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-size: 0.9rem; font-weight: bold; margin-bottom: 5px; color: #4b5563; }
         .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        .form-group input:disabled { background: #f3f4f6; color: #6b7280; cursor: not-allowed; }
-
-        .profile-rating { margin-top: 5px; font-size: 1.2rem; color: var(--gold-color); }
-        .rating-text { font-size: 0.8rem; color: #6b7280; margin-left: 5px; vertical-align: middle; }
-
-        /* BUTTONS */
-        .btn { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; color: white; }
-        .btn-save { background: var(--primary-color); }
-        .btn-reset { background: #4b5563; margin-left: 10px; }
-        .btn-list { background: var(--primary-color); font-size: 1rem; }
-        .btn-cancel { background: var(--danger-color); padding: 5px 10px; font-size: 0.8rem; }
         
-        /* Action Buttons in Table */
-        .btn-rate { background: var(--gold-color); padding: 6px 12px; font-size: 0.8rem; color: #fff; text-shadow: 0 1px 1px rgba(0,0,0,0.2); margin-left: 5px; }
-        .btn-contact { background: var(--info-color); padding: 6px 12px; font-size: 0.8rem; color: #fff; }
-        
-        /* FINANCIAL TEXT */
-        .fin-row { font-size: 0.85rem; color: #4b5563; margin-bottom: 2px; }
-        .fin-label { font-weight: bold; color: #6b7280; text-transform: uppercase; font-size: 0.7rem; }
-        .fin-val { font-weight: bold; color: #1f2937; font-size: 1.1rem; }
-        
+        /* TABLES & LISTS */
         .lists-container { display: flex; flex-direction: column; gap: 30px; } 
-        
         table { width: 100%; border-collapse: collapse; font-size: 0.9rem; margin-top: 10px; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e5e7eb; vertical-align: top; }
         th { color: #6b7280; font-size: 0.8rem; text-transform: uppercase; background: #f9fafb; }
-        
+
+        /* BADGES & EXTRAS */
         .status-badge { padding: 4px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; }
         .st-review { background: #fef3c7; color: #92400e; }
         .st-approved { background: #dbeafe; color: #1e40af; }
@@ -56,19 +64,22 @@
         .st-sold { background: #111827; color: #fff; }
         .st-inactive { background: #f3f4f6; color: #9ca3af; text-decoration: line-through; }
 
-        /* MODAL */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-content { background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
-
-        /* FILE UPLOAD */
-        input[type="file"] { padding: 6px; background: #f9fafb; }
-
+        .fin-row { font-size: 0.85rem; color: #4b5563; margin-bottom: 2px; }
+        .fin-label { font-weight: bold; color: #6b7280; text-transform: uppercase; font-size: 0.7rem; }
+        .fin-val { font-weight: bold; color: #1f2937; font-size: 1.1rem; }
+        .pay-link { display: block; width: 100%; padding: 12px; margin-bottom: 10px; text-align: center; text-decoration: none; font-weight: bold; color: white; border-radius: 6px; }
+        .pay-venmo { background: #008CFF; }
+        .pay-cashapp { background: #00D632; }
+        
         .star-input { display: flex; flex-direction: row-reverse; justify-content: center; gap: 5px; font-size: 2rem; }
         .star-input input { display: none; }
         .star-input label { color: #ddd; cursor: pointer; transition: color 0.2s; }
         .star-input input:checked ~ label, .star-input label:hover, .star-input label:hover ~ label { color: var(--gold-color); }
+        
+        /* UPLOAD */
+        input[type="file"] { padding: 6px; background: #f9fafb; }
 
-        @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 768px) { .profile-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -88,15 +99,32 @@
                 Account Details
                 <button class="btn btn-list" onclick="openListingModal()">+ List an Item</button>
             </div>
-            <div class="form-grid">
-                <div class="form-group"><label>Username</label><input type="text" id="accName" disabled> <div id="userRatingDisplay" class="profile-rating"></div></div>
-                <div class="form-group"><label>Member Since</label><input type="text" id="accDate" disabled></div>
-                <div class="form-group"><label>Email</label><input type="email" id="accEmail" disabled></div>
-                <div class="form-group"><label>Phone</label><input type="tel" id="accPhone" placeholder="Add phone number"></div>
+            
+            <div class="profile-grid">
+                <div class="profile-item">
+                    <span class="profile-label">Username</span>
+                    <div class="profile-value">
+                        <span id="dispName">Loading...</span>
+                        <span id="userRatingDisplay" class="profile-rating"></span>
+                    </div>
+                </div>
+                <div class="profile-item">
+                    <span class="profile-label">Member Since</span>
+                    <div id="dispDate" class="profile-value">...</div>
+                </div>
+                <div class="profile-item">
+                    <span class="profile-label">Email</span>
+                    <div id="dispEmail" class="profile-value">...</div>
+                </div>
+                <div class="profile-item">
+                    <span class="profile-label">Phone Number</span>
+                    <div id="dispPhone" class="profile-value">...</div>
+                </div>
             </div>
-            <div style="margin-top: 20px;">
-                <button class="btn btn-save" onclick="saveProfile()">Save Changes</button>
-                <button class="btn btn-reset" onclick="resetPassword()">Send Password Reset Email</button>
+
+            <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 20px;">
+                <button class="btn btn-edit-profile" onclick="openEditProfileModal()">Edit Contact Info</button>
+                <button class="btn btn-reset" onclick="resetPassword()">Reset Password</button>
             </div>
         </div>
 
@@ -113,7 +141,7 @@
             <div class="card">
                 <div class="section-title" style="color: var(--primary-color);">📦 Items Purchased (You Won)</div>
                 <table>
-                    <thead><tr><th>Date</th><th>Item</th><th>Seller</th><th>Price</th><th>Action</th></tr></thead>
+                    <thead><tr><th>Date</th><th>Item</th><th>Seller</th><th>Financials</th><th>Action</th></tr></thead>
                     <tbody id="purchaseList"><tr><td colspan="5">Loading...</td></tr></tbody>
                 </table>
             </div>
@@ -121,10 +149,31 @@
             <div class="card">
                 <div class="section-title" style="color: var(--success-color);">💰 Items Sold (You Sold)</div>
                 <table>
-                    <thead><tr><th>Date</th><th>Item</th><th>Buyer</th><th>Sold For</th><th>Action</th></tr></thead>
+                    <thead><tr><th>Date</th><th>Item</th><th>Buyer</th><th>Financial Breakdown</th><th>Action</th></tr></thead>
                     <tbody id="salesList"><tr><td colspan="5">Loading...</td></tr></tbody>
                 </table>
             </div>
+        </div>
+    </div>
+
+    <div id="editProfileModal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 style="margin-top:0;">Edit Contact Info</h2>
+            <form onsubmit="event.preventDefault(); saveProfileChanges();">
+                <div class="form-group">
+                    <label>Email Address (Contact):</label>
+                    <input type="email" id="editEmailInput" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone Number:</label>
+                    <input type="tel" id="editPhoneInput" required>
+                </div>
+                <div style="background:#f9fafb; padding:10px; border-radius:6px; font-size:0.85rem; color:#666; margin-bottom:15px;">
+                    Note: Changing email here updates your contact info for buyers/sellers, but does not change your login email.
+                </div>
+                <button type="submit" class="btn btn-save" style="width:100%">Save Changes</button>
+                <button type="button" class="btn btn-reset" style="width:100%; margin:10px 0 0 0;" onclick="document.getElementById('editProfileModal').style.display='none'">Cancel</button>
+            </form>
         </div>
     </div>
 
@@ -132,7 +181,7 @@
         <div class="modal-content">
             <h2 style="margin-top:0;">List Item for Auction</h2>
             <form onsubmit="event.preventDefault(); submitListing();">
-                <div class="form-group"><label>Seller Name:</label><input type="text" id="listSeller" disabled></div>
+                <div class="form-group"><label>Seller Name (You):</label><input type="text" id="listSeller" disabled></div>
                 <div class="form-group"><label>Item Title:</label><input type="text" id="listTitle" required></div>
                 <div class="form-group"><label>Subtitle:</label><input type="text" id="listSub" placeholder="Condition / Category"></div>
                 <div class="form-group" style="background:#f0f9ff; padding:10px; border-radius:6px; border:1px solid #bae6fd;">
@@ -153,6 +202,24 @@
                 <button type="submit" id="submitListBtn" class="btn btn-save" style="width:100%">Submit Item</button>
                 <button type="button" class="btn btn-reset" style="width:100%; margin:10px 0 0 0;" onclick="document.getElementById('listingModal').style.display='none'">Cancel</button>
             </form>
+        </div>
+    </div>
+
+    <div id="payFeeModal" class="modal-overlay">
+        <div class="modal-content">
+            <h2>Pay Auction Fee</h2>
+            <div style="text-align:left; margin-bottom:20px;">
+                <div class="invoice-row"><span>Total Sale Price:</span> <span id="invTotal">$0</span></div>
+                <div class="invoice-row" style="color:var(--danger-color)"><span>Auction Fee (10%):</span> <strong><span id="invFee">$0</span></strong></div>
+                <div class="invoice-row invoice-total" style="color:var(--success-color)"><span>Balance Due to Seller:</span> <strong><span id="invNet">$0</span></strong></div>
+            </div>
+            <p style="margin-bottom:10px; font-size:0.9rem; font-weight:bold;">Step 1: Pay Fee via Venmo/CashApp</p>
+            <a href="https://venmo.com/u/James-Rush-127" target="_blank" class="pay-link pay-venmo">Venmo (@James-Rush-127)</a>
+            <a href="https://cash.app/$pawpawrush" target="_blank" class="pay-link pay-cashapp">CashApp ($pawpawrush)</a>
+            <p style="font-size:0.8rem; color:#666; margin:15px 0;">Step 2: After paying, click Confirm to notify the seller.</p>
+            <input type="hidden" id="payKey">
+            <button class="btn btn-save" style="width:100%" onclick="confirmFeePaid()">✅ I Have Sent Fee Payment</button>
+            <button class="btn btn-reset" style="width:100%; margin-top:10px;" onclick="document.getElementById('payFeeModal').style.display='none'">Cancel</button>
         </div>
     </div>
 
@@ -231,23 +298,52 @@
             });
         }
 
+        // --- 1. PROFILE LOGIC (NEW: Edit Modal) ---
         function loadUserProfile(uid) {
             const userRef = ref(db, `users/${uid}`);
             onValue(userRef, (snapshot) => {
                 if (snapshot.exists()) {
                     const data = snapshot.val();
-                    document.getElementById('accName').value = data.name || currentUser.displayName;
-                    document.getElementById('accEmail').value = data.email || currentUser.email;
-                    document.getElementById('accPhone').value = data.phone || "";
+                    // Update TEXT elements, not inputs
+                    document.getElementById('dispName').innerText = data.name || currentUser.displayName;
+                    document.getElementById('dispEmail').innerText = data.email || currentUser.email;
+                    document.getElementById('dispPhone').innerText = data.phone || "Not Set";
+                    
                     const joinDate = data.joined_at ? new Date(data.joined_at).toLocaleDateString() : new Date().toLocaleDateString();
-                    document.getElementById('accDate').value = joinDate;
+                    document.getElementById('dispDate').innerText = joinDate;
+
                     const avg = data.rating_count > 0 ? (data.rating_total / data.rating_count).toFixed(1) : "New";
                     document.getElementById('userRatingDisplay').innerHTML = `<span style="color:#f59e0b">★</span> <span class="rating-text">(${avg} / 5)</span>`;
+                } else {
+                    // Fallback creation if missing
+                    set(ref(db, `users/${uid}`), {
+                        name: currentUser.displayName, email: currentUser.email, phone: "", is_local: true, is_approved: true, joined_at: Date.now()
+                    });
                 }
             });
         }
 
-        // --- HISTORY LOGIC (NO FEES) ---
+        // Open Edit Profile Modal
+        window.openEditProfileModal = function() {
+            document.getElementById('editEmailInput').value = document.getElementById('dispEmail').innerText;
+            document.getElementById('editPhoneInput').value = document.getElementById('dispPhone').innerText !== "Not Set" ? document.getElementById('dispPhone').innerText : "";
+            document.getElementById('editProfileModal').style.display = 'flex';
+        }
+
+        window.saveProfileChanges = function() {
+            const newEmail = document.getElementById('editEmailInput').value;
+            const newPhone = document.getElementById('editPhoneInput').value;
+            
+            update(ref(db, `users/${currentUser.uid}`), {
+                email: newEmail,
+                phone: newPhone
+            }).then(() => {
+                alert("Profile Updated!");
+                document.getElementById('editProfileModal').style.display = 'none';
+            });
+        }
+
+        // --- 2. HISTORY LOGIC ---
         function loadUserHistory(userEmail) {
             const historyRef = ref(db, 'sales_history');
             onValue(historyRef, (snapshot) => {
@@ -257,7 +353,9 @@
                 const data = snapshot.val();
                 if (!data) { purchasesTbody.innerHTML = "<tr><td colspan='5'>No records.</td></tr>"; salesTbody.innerHTML = "<tr><td colspan='5'>No records.</td></tr>"; return; }
 
-                const items = Object.values(data).sort((a, b) => b.date - a.date);
+                const items = Object.entries(data).map(([key, val]) => ({ key, ...val }));
+                items.sort((a, b) => b.date - a.date);
+
                 items.forEach(item => {
                     const dateStr = new Date(item.date).toLocaleDateString();
                     
@@ -267,21 +365,68 @@
                         const sellerName = seller ? seller.name : (item.seller_name || "Unknown");
                         const sellerEmail = item.seller_email || "";
                         const sellerPhone = seller ? seller.phone : "N/A";
+
+                        const feeAmount = Math.floor(item.final_price * 0.10);
+                        const netAmount = item.final_price - feeAmount;
+                        let feeAction = "";
+                        if (!item.fee_status || item.fee_status === 'pending') { feeAction = `<button class="btn btn-pay" onclick="openPayFeeModal('${item.key}', ${item.final_price})">Pay $${feeAmount} Fee</button>`; } 
+                        else { feeAction = `<span class="alert-good">✅ Fee Paid</span>`; }
+
                         const tr = document.createElement('tr');
-                        tr.innerHTML = `<td>${dateStr}</td><td>${item.item_title}</td><td>${sellerName}</td><td><span class="fin-val">$${item.final_price}</span></td><td><button class="btn btn-contact" onclick="viewContact('${sellerName}', '${sellerEmail}', '${sellerPhone}')">Contact</button><button class="btn btn-rate" onclick="openRateModal('${sellerEmail}', '${sellerName}')">Rate</button></td>`;
+                        tr.innerHTML = `
+                            <td>${dateStr}</td><td>${item.item_title}</td><td>${sellerName}</td>
+                            <td><div class="fin-block"><div class="fin-row"><span class="fin-label">Total:</span> <span class="fin-val">$${item.final_price}</span></div><div class="fin-row"><span class="fin-label">Fee:</span> <span class="fin-fee">$${feeAmount}</span></div><div class="fin-row"><span class="fin-label">Owe Seller:</span> <span class="fin-net">$${netAmount}</span></div><div style="margin-top:8px;">${feeAction}</div></div></td>
+                            <td><button class="btn btn-contact" onclick="viewContact('${sellerName}', '${sellerEmail}', '${sellerPhone}')">Contact</button><button class="btn btn-rate" onclick="openRateModal('${sellerEmail}', '${sellerName}')">Rate</button></td>`;
                         purchasesTbody.appendChild(tr);
                     }
+
                     // SOLD
-                    if (item.seller_email && item.seller_email.toLowerCase() === userEmail.toLowerCase()) {
+                    // Check email match OR username match (for legacy items)
+                    const isSeller = (item.seller_email && item.seller_email.toLowerCase() === userEmail.toLowerCase()) || 
+                                     (item.seller_name && item.seller_name === currentUser.displayName);
+
+                    if (isSeller) {
                         const buyer = allUsersCache.find(u => u.email && u.email.toLowerCase() === (item.winner_email || "").toLowerCase());
                         const buyerName = buyer ? buyer.name : (item.winner_name || "Unknown");
                         const buyerEmail = item.winner_email || "";
                         const buyerPhone = buyer ? buyer.phone : "N/A";
+                        
+                        const feeAmount = Math.floor(item.final_price * 0.10);
+                        const netAmount = item.final_price - feeAmount;
+                        let feeStatusMsg = "";
+
+                        if (!item.fee_status || item.fee_status === 'pending') {
+                            feeStatusMsg = `<span class="alert-bad">❌ Fee Pending</span><div style="font-size:0.75rem; color:#666;">Do Not Deliver Yet</div>`;
+                        } else {
+                            feeStatusMsg = `<span class="alert-good">✅ Fee Paid</span><div style="font-size:0.75rem; font-weight:bold; color:#16a34a;">Collect $${netAmount} from Buyer</div>`;
+                        }
+
                         const tr = document.createElement('tr');
-                        tr.innerHTML = `<td>${dateStr}</td><td>${item.item_title}</td><td>${buyerName}</td><td><span class="fin-val">$${item.final_price}</span></td><td><button class="btn btn-contact" onclick="viewContact('${buyerName}', '${buyerEmail}', '${buyerPhone}')">Contact</button><button class="btn btn-rate" onclick="openRateModal('${buyerEmail}', '${buyerName}')">Rate</button></td>`;
+                        tr.innerHTML = `
+                            <td>${dateStr}</td><td>${item.item_title}</td><td>${buyerName}</td>
+                            <td><div class="fin-block"><div class="fin-row"><span class="fin-label">Sale:</span> <span class="fin-val">$${item.final_price}</span></div><div class="fin-row"><span class="fin-label">Fee (10%):</span> <span class="fin-fee">-$${feeAmount}</span></div><div class="fin-row"><span class="fin-label">Net:</span> <span class="fin-net">$${netAmount}</span></div><div style="margin-top:5px;">${feeStatusMsg}</div></div></td>
+                            <td><button class="btn btn-contact" onclick="viewContact('${buyerName}', '${buyerEmail}', '${buyerPhone}')">Contact</button><button class="btn btn-rate" onclick="openRateModal('${buyerEmail}', '${buyerName}')">Rate</button></td>`;
                         salesTbody.appendChild(tr);
                     }
                 });
+            });
+        }
+
+        window.openPayFeeModal = function(key, price) {
+            const fee = Math.floor(price * 0.10);
+            const net = price - fee;
+            document.getElementById('payKey').value = key;
+            document.getElementById('invTotal').innerText = "$" + price;
+            document.getElementById('invFee').innerText = "-$" + fee;
+            document.getElementById('invNet').innerText = "$" + net;
+            document.getElementById('payFeeModal').style.display = 'flex';
+        }
+
+        window.confirmFeePaid = function() {
+            const key = document.getElementById('payKey').value;
+            if(!confirm("Confirm payment sent?")) return;
+            update(ref(db, `sales_history/${key}`), { fee_status: 'paid' }).then(() => {
+                alert("Fee marked as paid!"); document.getElementById('payFeeModal').style.display = 'none';
             });
         }
 
@@ -310,8 +455,9 @@
             }
         }
 
+        // --- LISTINGS LOGIC ---
         window.openListingModal = function() {
-            document.getElementById('listSeller').value = document.getElementById('accName').value;
+            document.getElementById('listSeller').value = document.getElementById('accName').innerText; // Fixed to read innerText
             document.getElementById('listingModal').style.display = 'flex';
         }
 
@@ -378,14 +524,6 @@
         }
         window.makeInactive = function(key) { if(confirm("Remove this item?")) update(ref(db, `inventory/${key}`), { approval_status: 'inactive' }); }
         
-        window.saveProfile = function() {
-            const newPhone = document.getElementById('accPhone').value;
-            const userRef = ref(db, `users/${currentUser.uid}`);
-            get(userRef).then((snapshot) => {
-                if(snapshot.exists()) { update(userRef, { phone: newPhone }).then(() => alert("Profile Updated!")); } 
-                else { set(userRef, { name: currentUser.displayName, email: currentUser.email, phone: newPhone, is_local: true, is_approved: true, joined_at: Date.now() }).then(() => { alert("Profile Created & Saved!"); location.reload(); }); }
-            });
-        }
         window.resetPassword = function() {
             if(confirm(`Send a password reset email?`)) {
                 sendPasswordResetEmail(auth, currentUser.email).then(() => alert("Email sent!")).catch((error) => alert("Error: " + error.message));
