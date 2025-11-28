@@ -8,17 +8,32 @@
         :root { --primary-color: #2563eb; --header-bg: #111827; --text-color: #1f2937; --bg-color: #f3f4f6; --success-color: #16a34a; --danger-color: #dc2626; --gold-color: #f59e0b; --info-color: #0891b2; --purple-color: #7c3aed; }
         body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg-color); color: var(--text-color); margin: 0; }
         
+        /* HEADER */
         header { background: var(--header-bg); color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
         .brand { font-family: "Georgia", serif; font-size: 1.5rem; font-weight: bold; }
-        .nav-link { color: #d1d5db; text-decoration: none; margin-left: 20px; cursor: pointer; }
+        .header-right { display: flex; align-items: center; gap: 20px; }
+        .nav-link { color: #d1d5db; text-decoration: none; cursor: pointer; }
         .nav-link:hover { color: white; text-decoration: underline; }
+
+        /* ADMIN BUTTON */
+        #adminPanelBtn { 
+            display: none; /* Secret! */
+            background-color: var(--danger-color); 
+            color: white; 
+            border: 1px solid white; 
+            padding: 8px 15px; 
+            border-radius: 4px; 
+            font-size: 0.8rem; 
+            cursor: pointer; 
+            font-weight: bold; 
+        }
 
         .container { max-width: 1000px; margin: 30px auto; padding: 20px; }
 
         .card { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 30px; }
         .section-title { border-bottom: 2px solid #e5e7eb; padding-bottom: 10px; margin-bottom: 20px; font-size: 1.5rem; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
         
-        /* --- NEW PROFILE IMAGE STYLES --- */
+        /* PROFILE STYLES */
         .profile-header { display: flex; align-items: center; gap: 30px; margin-bottom: 30px; }
         .profile-img-container { position: relative; width: 120px; height: 120px; }
         .profile-avatar-large { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); background: #e5e7eb; }
@@ -30,13 +45,11 @@
         .profile-item { display: flex; flex-direction: column; }
         .profile-label { font-size: 0.85rem; font-weight: bold; color: #6b7280; text-transform: uppercase; margin-bottom: 5px; }
         .profile-value { font-size: 1.1rem; font-weight: 500; color: #1f2937; display: flex; align-items: center; }
-
-        /* RATING STARS */
         .profile-rating { font-size: 1rem; color: var(--gold-color); margin-left: 10px; }
         .rating-text { font-size: 0.8rem; color: #6b7280; vertical-align: middle; }
 
         /* BUTTONS */
-        .btn { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; color: white; text-decoration: none; display: inline-block; }
+        .btn { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; color: white; display: inline-block; }
         .btn-save { background: var(--primary-color); }
         .btn-reset { background: #4b5563; font-size: 0.9rem; }
         .btn-list { background: var(--primary-color); font-size: 1rem; }
@@ -44,20 +57,13 @@
         .btn-edit-profile { background: #0f766e; font-size: 0.9rem; margin-right: 10px; }
         .btn-rate { background: var(--gold-color); padding: 6px 12px; font-size: 0.8rem; color: #fff; text-shadow: 0 1px 1px rgba(0,0,0,0.2); margin-left: 5px; }
         .btn-contact { background: var(--info-color); padding: 6px 12px; font-size: 0.8rem; color: #fff; }
-        .btn-pay { background: var(--purple-color); padding: 6px 12px; font-size: 0.8rem; color: #fff; margin-right: 5px; }
 
-        /* MODALS & FORMS */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-content { background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; font-size: 0.9rem; font-weight: bold; margin-bottom: 5px; color: #4b5563; }
-        .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        
-        /* TABLES & BADGES */
+        /* TABLES */
         .lists-container { display: flex; flex-direction: column; gap: 30px; } 
         table { width: 100%; border-collapse: collapse; font-size: 0.9rem; margin-top: 10px; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e5e7eb; vertical-align: middle; }
         th { color: #6b7280; font-size: 0.8rem; text-transform: uppercase; background: #f9fafb; }
+        
         .status-badge { padding: 4px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; }
         .st-review { background: #fef3c7; color: #92400e; }
         .st-approved { background: #dbeafe; color: #1e40af; }
@@ -65,25 +71,19 @@
         .st-sold { background: #111827; color: #fff; }
         .st-inactive { background: #f3f4f6; color: #9ca3af; text-decoration: line-through; }
 
-        /* FINANCIALS */
-        .fin-block { display: flex; flex-direction: column; gap: 2px; }
-        .fin-row { font-size: 0.85rem; color: #4b5563; display: flex; justify-content: space-between; width: 140px; }
-        .fin-label { font-weight: bold; color: #6b7280; text-transform: uppercase; font-size: 0.7rem; }
-        .fin-val { font-weight: bold; color: #1f2937; }
-        .fin-fee { color: var(--danger-color); }
-        .fin-net { color: var(--success-color); font-size: 1rem; border-top: 1px solid #e5e7eb; padding-top: 2px; margin-top: 2px; }
-        .alert-good { color: var(--success-color); font-weight: bold; font-size: 0.85rem; }
-        .alert-bad { color: var(--danger-color); font-weight: bold; font-size: 0.85rem; }
+        /* MODALS */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 0.9rem; font-weight: bold; margin-bottom: 5px; color: #4b5563; }
+        .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        input[type="file"] { padding: 6px; background: #f9fafb; }
 
-        .pay-link { display: block; width: 100%; padding: 12px; margin-bottom: 10px; text-align: center; text-decoration: none; font-weight: bold; color: white; border-radius: 6px; }
-        .pay-venmo { background: #008CFF; }
-        .pay-cashapp { background: #00D632; }
-
+        /* STAR RATING */
         .star-input { display: flex; flex-direction: row-reverse; justify-content: center; gap: 5px; font-size: 2rem; }
         .star-input input { display: none; }
         .star-input label { color: #ddd; cursor: pointer; transition: color 0.2s; }
         .star-input input:checked ~ label, .star-input label:hover, .star-input label:hover ~ label { color: var(--gold-color); }
-        input[type="file"] { padding: 6px; background: #f9fafb; }
 
         @media (max-width: 768px) { .profile-header { flex-direction: column; text-align: center; } .profile-grid { grid-template-columns: 1fr; width: 100%; } .profile-value { justify-content: center; } }
     </style>
@@ -92,7 +92,9 @@
 
     <header>
         <div class="brand">My Account</div>
-        <div>
+        <div class="header-right">
+            <button id="adminPanelBtn" onclick="location.href='admin.html'">ADMIN DASHBOARD</button>
+            
             <a href="auction.html" class="nav-link">&larr; Back to Auction</a>
             <span onclick="logout()" class="nav-link">Sign Out</span>
         </div>
@@ -154,14 +156,14 @@
             <div class="card">
                 <div class="section-title" style="color: var(--primary-color);">📦 Items Purchased (You Won)</div>
                 <table>
-                    <thead><tr><th>Date</th><th>Item</th><th>Seller</th><th>Financials</th><th>Action</th></tr></thead>
+                    <thead><tr><th>Date</th><th>Item</th><th>Seller</th><th>Price</th><th>Action</th></tr></thead>
                     <tbody id="purchaseList"><tr><td colspan="5">Loading...</td></tr></tbody>
                 </table>
             </div>
             <div class="card">
                 <div class="section-title" style="color: var(--success-color);">💰 Items Sold (You Sold)</div>
                 <table>
-                    <thead><tr><th>Date</th><th>Item</th><th>Buyer</th><th>Financial Breakdown</th><th>Action</th></tr></thead>
+                    <thead><tr><th>Date</th><th>Item</th><th>Buyer</th><th>Sold For</th><th>Action</th></tr></thead>
                     <tbody id="salesList"><tr><td colspan="5">Loading...</td></tr></tbody>
                 </table>
             </div>
@@ -209,24 +211,6 @@
         </div>
     </div>
 
-    <div id="payFeeModal" class="modal-overlay">
-        <div class="modal-content">
-            <h2>Pay Auction Fee</h2>
-            <div style="text-align:left; margin-bottom:20px; background:#f9fafb; padding:15px; border-radius:8px;">
-                <div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>Total Sale Price:</span> <span id="invTotal" style="font-weight:bold;">$0</span></div>
-                <div style="display:flex; justify-content:space-between; margin-bottom:5px; color:var(--danger-color);"><span>Auction Fee (10%):</span> <span id="invFee" style="font-weight:bold;">$0</span></div>
-                <div style="display:flex; justify-content:space-between; border-top:2px solid #e5e7eb; padding-top:5px; color:var(--success-color); font-size:1.1rem;"><span>Balance Due to Seller:</span> <span id="invNet" style="font-weight:bold;">$0</span></div>
-            </div>
-            <p style="margin-bottom:10px; font-size:0.9rem; font-weight:bold;">Step 1: Pay Fee via Venmo/CashApp</p>
-            <a href="https://venmo.com/u/James-Rush-127" target="_blank" class="pay-link pay-venmo">Venmo (@James-Rush-127)</a>
-            <a href="https://cash.app/$pawpawrush" target="_blank" class="pay-link pay-cashapp">CashApp ($pawpawrush)</a>
-            <p style="font-size:0.8rem; color:#666; margin:15px 0;">Step 2: After paying, click Confirm to notify the seller.</p>
-            <input type="hidden" id="payKey">
-            <button class="btn btn-save" style="width:100%" onclick="confirmFeePaid()">✅ I Have Sent Fee Payment</button>
-            <button class="btn btn-reset" style="width:100%; margin-top:10px;" onclick="document.getElementById('payFeeModal').style.display='none'">Cancel</button>
-        </div>
-    </div>
-
     <div id="contactModal" class="modal-overlay">
         <div class="modal-content" style="text-align: center;">
             <h2>Contact Info</h2>
@@ -263,7 +247,7 @@
         import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
         // --- PASTE KEYS HERE ---
-        const firebaseConfig = {
+      const firebaseConfig = {
   apiKey: "AIzaSyCt0i8a7ZVRlNmSts9yM4uGwV7ghPU59rk",
   authDomain: "eastern-shore-auction.firebaseapp.com",
   databaseURL: "https://eastern-shore-auction-default-rtdb.firebaseio.com",
@@ -302,19 +286,22 @@
             });
         }
 
-        // --- PROFILE LOGIC ---
         function loadUserProfile(uid) {
             const userRef = ref(db, `users/${uid}`);
             onValue(userRef, (snapshot) => {
                 if (snapshot.exists()) {
                     const data = snapshot.val();
+                    // ADMIN CHECK: Show Dashboard button if user is in admin list
+                    get(child(ref(db), `admins/${uid}`)).then((adminSnap) => {
+                        if (adminSnap.exists() && adminSnap.val() === true) {
+                            document.getElementById('adminPanelBtn').style.display = 'block';
+                        }
+                    });
+
                     document.getElementById('dispName').innerText = data.name || currentUser.displayName;
                     document.getElementById('dispEmail').innerText = data.email || currentUser.email;
                     document.getElementById('dispPhone').innerText = data.phone || "Not Set";
-                    // LOAD PROFILE IMAGE
-                    if(data.profile_image_url) {
-                        document.getElementById('currentProfileImg').src = data.profile_image_url;
-                    }
+                    if(data.profile_image_url) document.getElementById('currentProfileImg').src = data.profile_image_url;
                     
                     const joinDate = data.joined_at ? new Date(data.joined_at).toLocaleDateString() : new Date().toLocaleDateString();
                     document.getElementById('dispDate').innerText = joinDate;
@@ -327,45 +314,25 @@
             });
         }
 
-        // --- NEW: HANDLE PROFILE IMAGE UPLOAD ---
         window.handleProfileImageUpload = async function(input) {
             const file = input.files[0];
             if (!file) return;
-            
-            // Show uploading state (optional: you could add a spinner here)
             document.querySelector('.profile-upload-overlay').innerText = "Uploading...";
-
             try {
-                // 1. Upload to Firebase Storage
-                // We use the UID in the filename to overwrite previous images for this user
                 const fileRef = sRef(storage, `profile_images/${currentUser.uid}_profile.jpg`);
                 await uploadBytes(fileRef, file);
                 const downloadURL = await getDownloadURL(fileRef);
-
-                // 2. Update User Database Profile
-                await update(ref(db, `users/${currentUser.uid}`), {
-                    profile_image_url: downloadURL
-                });
-
-                // Image will update automatically via the onValue listener in loadUserProfile
+                await update(ref(db, `users/${currentUser.uid}`), { profile_image_url: downloadURL });
                 alert("Profile image updated!");
-
-            } catch (error) {
-                console.error("Error uploading profile image:", error);
-                alert("Failed to upload image. Please try again.");
-            } finally {
-                 document.querySelector('.profile-upload-overlay').innerText = "Click to Change";
-                 input.value = ''; // Reset input
-            }
+            } catch (error) { console.error(error); alert("Failed to upload image."); } 
+            finally { document.querySelector('.profile-upload-overlay').innerText = "Click to Change"; input.value = ''; }
         }
-
 
         window.openEditProfileModal = function() {
             document.getElementById('editEmailInput').value = document.getElementById('dispEmail').innerText;
             document.getElementById('editPhoneInput').value = document.getElementById('dispPhone').innerText !== "Not Set" ? document.getElementById('dispPhone').innerText : "";
             document.getElementById('editProfileModal').style.display = 'flex';
         }
-
         window.saveProfileChanges = function() {
             const newEmail = document.getElementById('editEmailInput').value;
             const newPhone = document.getElementById('editPhoneInput').value;
@@ -374,7 +341,6 @@
             });
         }
 
-        // --- HISTORY LOGIC ---
         function loadUserHistory(userEmail) {
             const historyRef = ref(db, 'sales_history');
             onValue(historyRef, (snapshot) => {
@@ -384,60 +350,37 @@
                 const data = snapshot.val();
                 if (!data) { purchasesTbody.innerHTML = "<tr><td colspan='5'>No records.</td></tr>"; salesTbody.innerHTML = "<tr><td colspan='5'>No records.</td></tr>"; return; }
 
-                const items = Object.entries(data).map(([key, val]) => ({ key, ...val }));
-                items.sort((a, b) => b.date - a.date);
-
+                const items = Object.values(data).sort((a, b) => b.date - a.date);
                 items.forEach(item => {
                     const dateStr = new Date(item.date).toLocaleDateString();
-                    // BOUGHT
                     if (item.winner_email && item.winner_email.toLowerCase() === userEmail.toLowerCase()) {
                         const seller = allUsersCache.find(u => u.email && u.email.toLowerCase() === (item.seller_email || "").toLowerCase());
                         const sellerName = seller ? seller.name : (item.seller_name || "Unknown");
                         const sellerEmail = item.seller_email || "";
                         const sellerPhone = seller ? seller.phone : "N/A";
-                        const feeAmount = Math.floor(item.final_price * 0.10);
-                        const netAmount = item.final_price - feeAmount;
-                        let feeAction = "";
-                        if (!item.fee_status || item.fee_status === 'pending') { feeAction = `<button class="btn btn-pay" onclick="openPayFeeModal('${item.key}', ${item.final_price})">Pay Fee</button>`; } 
-                        else { feeAction = `<span class="alert-good">✅ Fee Paid</span>`; }
                         const tr = document.createElement('tr');
-                        tr.innerHTML = `<td>${dateStr}</td><td>${item.item_title}</td><td>${sellerName}</td><td><div class="fin-block"><div class="fin-row"><span class="fin-label">Total:</span> <span class="fin-val">$${item.final_price}</span></div><div class="fin-row"><span class="fin-label">Fee:</span> <span class="fin-fee">$${feeAmount}</span></div><div class="fin-row"><span class="fin-label">Owe Seller:</span> <span class="fin-net">$${netAmount}</span></div><div style="margin-top:8px;">${feeAction}</div></div></td><td><button class="btn btn-contact" onclick="viewContact('${sellerName}', '${sellerEmail}', '${sellerPhone}')">Contact</button><button class="btn btn-rate" onclick="openRateModal('${sellerEmail}', '${sellerName}')">Rate</button></td>`;
+                        tr.innerHTML = `<td>${dateStr}</td><td>${item.item_title}</td><td>${sellerName}</td><td><div class="fin-row"><span class="fin-val">$${item.final_price}</span></div></td><td><button class="btn btn-contact" onclick="viewContact('${sellerName}', '${sellerEmail}', '${sellerPhone}')">Contact</button><button class="btn btn-rate" onclick="openRateModal('${sellerEmail}', '${sellerName}')">Rate</button></td>`;
                         purchasesTbody.appendChild(tr);
                     }
-                    // SOLD
                     const isSeller = (item.seller_email && item.seller_email.toLowerCase() === userEmail.toLowerCase()) || (item.seller_name && item.seller_name === currentUser.displayName);
                     if (isSeller) {
                         const buyer = allUsersCache.find(u => u.email && u.email.toLowerCase() === (item.winner_email || "").toLowerCase());
                         const buyerName = buyer ? buyer.name : (item.winner_name || "Unknown");
                         const buyerEmail = item.winner_email || "";
                         const buyerPhone = buyer ? buyer.phone : "N/A";
-                        const feeAmount = Math.floor(item.final_price * 0.10);
-                        const netAmount = item.final_price - feeAmount;
-                        let feeStatusMsg = (!item.fee_status || item.fee_status === 'pending') ? `<span class="alert-bad">❌ Fee Pending</span><div style="font-size:0.75rem; color:#666;">Do Not Deliver Yet</div>` : `<span class="alert-good">✅ Fee Paid</span><div style="font-size:0.75rem; font-weight:bold; color:#16a34a;">Collect $${netAmount} from Buyer</div>`;
                         const tr = document.createElement('tr');
-                        tr.innerHTML = `<td>${dateStr}</td><td>${item.item_title}</td><td>${buyerName}</td><td><div class="fin-block"><div class="fin-row"><span class="fin-label">Sale:</span> <span class="fin-val">$${item.final_price}</span></div><div class="fin-row"><span class="fin-label">Fee (10%):</span> <span class="fin-fee">-$${feeAmount}</span></div><div class="fin-row"><span class="fin-label">Net:</span> <span class="fin-net">$${netAmount}</span></div><div style="margin-top:5px;">${feeStatusMsg}</div></div></td><td><button class="btn btn-contact" onclick="viewContact('${buyerName}', '${buyerEmail}', '${buyerPhone}')">Contact</button><button class="btn btn-rate" onclick="openRateModal('${buyerEmail}', '${buyerName}')">Rate</button></td>`;
+                        tr.innerHTML = `<td>${dateStr}</td><td>${item.item_title}</td><td>${buyerName}</td><td><div class="fin-row"><span class="fin-val">$${item.final_price}</span></div></td><td><button class="btn btn-contact" onclick="viewContact('${buyerName}', '${buyerEmail}', '${buyerPhone}')">Contact</button><button class="btn btn-rate" onclick="openRateModal('${buyerEmail}', '${buyerName}')">Rate</button></td>`;
                         salesTbody.appendChild(tr);
                     }
                 });
             });
         }
 
-        window.openPayFeeModal = function(key, price) {
-            const fee = Math.floor(price * 0.10);
-            const net = price - fee;
-            document.getElementById('payKey').value = key;
-            document.getElementById('invTotal').innerText = "$" + price;
-            document.getElementById('invFee').innerText = "-$" + fee;
-            document.getElementById('invNet').innerText = "$" + net;
-            document.getElementById('payFeeModal').style.display = 'flex';
-        }
-        window.confirmFeePaid = function() {
-            const key = document.getElementById('payKey').value;
-            if(!confirm("Confirm payment sent?")) return;
-            update(ref(db, `sales_history/${key}`), { fee_status: 'paid' }).then(() => { alert("Fee marked as paid!"); document.getElementById('payFeeModal').style.display = 'none'; });
-        }
         window.viewContact = function(name, email, phone) {
-            document.getElementById('contactName').innerText = name; document.getElementById('contactEmail').innerText = email; document.getElementById('contactEmail').href = "mailto:" + email; document.getElementById('contactPhone').innerText = phone; document.getElementById('contactPhone').href = "tel:" + phone; document.getElementById('contactModal').style.display = 'flex';
+            document.getElementById('contactName').innerText = name;
+            document.getElementById('contactEmail').innerText = email; document.getElementById('contactEmail').href = "mailto:" + email;
+            document.getElementById('contactPhone').innerText = phone; document.getElementById('contactPhone').href = "tel:" + phone;
+            document.getElementById('contactModal').style.display = 'flex';
         }
         window.openRateModal = function(email, name) {
             if(!email || email.toLowerCase() === currentUser.email.toLowerCase()) { alert("Cannot rate."); return; }
@@ -447,27 +390,52 @@
             const email = document.getElementById('rateTargetEmail').value;
             const stars = parseInt(document.querySelector('input[name="rating"]:checked').value);
             const targetUser = allUsersCache.find(u => u.email && u.email.toLowerCase() === email.toLowerCase());
-            if(targetUser) { runTransaction(ref(db, `users/${targetUser.uid}`), (userData) => { if (userData) { userData.rating_total = (userData.rating_total || 0) + stars; userData.rating_count = (userData.rating_count || 0) + 1; } return userData; }).then(() => { alert("Rating submitted!"); document.getElementById('ratingModal').style.display = 'none'; }); }
+            if(targetUser) {
+                runTransaction(ref(db, `users/${targetUser.uid}`), (userData) => {
+                    if (userData) { userData.rating_total = (userData.rating_total || 0) + stars; userData.rating_count = (userData.rating_count || 0) + 1; }
+                    return userData;
+                }).then(() => { alert("Rating submitted!"); document.getElementById('ratingModal').style.display = 'none'; });
+            }
         }
 
-        // --- LISTINGS LOGIC ---
-        window.openListingModal = function() { document.getElementById('listSeller').value = document.getElementById('dispName').innerText; document.getElementById('listingModal').style.display = 'flex'; }
-        async function uploadImage(file) { if (!file) return ""; const fileRef = sRef(storage, 'user_uploads/' + Date.now() + '_' + file.name); await uploadBytes(fileRef, file); return await getDownloadURL(fileRef); }
+        window.openListingModal = function() {
+            document.getElementById('listSeller').value = document.getElementById('dispName').innerText;
+            document.getElementById('listingModal').style.display = 'flex';
+        }
+        async function uploadImage(file) {
+            if (!file) return "";
+            const fileRef = sRef(storage, 'user_uploads/' + Date.now() + '_' + file.name);
+            await uploadBytes(fileRef, file);
+            return await getDownloadURL(fileRef);
+        }
         window.submitListing = async function() {
             const submitBtn = document.getElementById('submitListBtn'); submitBtn.disabled = true; submitBtn.innerText = "Processing Images...";
             try {
                 const mainFile = document.getElementById('fileMain').files[0]; if(!mainFile) { alert("Main photo required."); submitBtn.disabled = false; return; }
-                const mainUrl = await uploadImage(mainFile); const thumb1Url = await uploadImage(document.getElementById('fileThumb1').files[0]); const thumb2Url = await uploadImage(document.getElementById('fileThumb2').files[0]); const thumb3Url = await uploadImage(document.getElementById('fileThumb3').files[0]);
-                const newItem = { title: document.getElementById('listTitle').value, subtitle: document.getElementById('listSub').value, start_price: parseInt(document.getElementById('listPrice').value), image_url: mainUrl, description: document.getElementById('listDesc').value, location: document.getElementById('listLoc').value, payment_methods: document.getElementById('listPay').value, delivery_method: document.getElementById('listDel').value, owner_uid: currentUser.uid, seller_name: document.getElementById('listSeller').value, seller_email: currentUser.email, approval_status: "pending", lot: 0, times_run: 0, is_featured: false, images: { thumb1: thumb1Url, thumb2: thumb2Url, thumb3: thumb3Url } };
+                const mainUrl = await uploadImage(mainFile);
+                const thumb1Url = await uploadImage(document.getElementById('fileThumb1').files[0]); const thumb2Url = await uploadImage(document.getElementById('fileThumb2').files[0]); const thumb3Url = await uploadImage(document.getElementById('fileThumb3').files[0]);
+                const newItem = {
+                    title: document.getElementById('listTitle').value, subtitle: document.getElementById('listSub').value, start_price: parseInt(document.getElementById('listPrice').value),
+                    image_url: mainUrl, description: document.getElementById('listDesc').value, location: document.getElementById('listLoc').value, payment_methods: document.getElementById('listPay').value, delivery_method: document.getElementById('listDel').value,
+                    owner_uid: currentUser.uid, seller_name: document.getElementById('listSeller').value, seller_email: currentUser.email, approval_status: "pending", lot: 0, times_run: 0, is_featured: false,
+                    images: { thumb1: thumb1Url, thumb2: thumb2Url, thumb3: thumb3Url }
+                };
                 await push(ref(db, 'inventory'), newItem); alert("Item submitted successfully!"); document.getElementById('listingModal').style.display = 'none'; document.querySelector('form').reset();
             } catch (error) { console.error(error); alert("Error: " + error.message); } finally { submitBtn.disabled = false; submitBtn.innerText = "Submit Item"; }
         }
+
         function loadUserListings(uid) {
             const invRef = ref(db, 'inventory');
             onValue(invRef, (snapshot) => {
                 const tbody = document.getElementById('myListingsBody'); tbody.innerHTML = ""; const data = snapshot.val(); if(!data) { tbody.innerHTML = "<tr><td colspan='5'>No items listed.</td></tr>"; return; }
                 const items = Object.entries(data).map(([key, val]) => ({ ...val, key })).filter(item => item.owner_uid === uid);
-                items.forEach(item => { let statusBadge = '<span class="status-badge st-review">Under Review</span>'; let resultText = "-"; if (item.approval_status === 'inactive') { statusBadge = '<span class="status-badge st-inactive">Inactive</span>'; } else if (item.status_label && item.status_label.includes("SOLD")) { statusBadge = '<span class="status-badge st-sold">Sold</span>'; resultText = item.status_label; } else if (item.is_featured) { statusBadge = '<span class="status-badge st-scheduled">Scheduled</span>'; } else if (item.lot > 0) { statusBadge = '<span class="status-badge st-approved">Approved</span>'; } const tr = document.createElement('tr'); tr.innerHTML = `<td>${statusBadge}</td><td>${item.title}</td><td>$${item.start_price}</td><td>${resultText}</td><td>${item.approval_status !== 'inactive' && !item.status_label?.includes("SOLD") ? `<button class="btn btn-cancel" onclick="makeInactive('${item.key}')">Deactivate</button>` : ''}</td>`; tbody.appendChild(tr); });
+                items.forEach(item => {
+                    let statusBadge = '<span class="status-badge st-review">Under Review</span>'; let resultText = "-";
+                    if (item.approval_status === 'inactive') { statusBadge = '<span class="status-badge st-inactive">Inactive</span>'; } else if (item.status_label && item.status_label.includes("SOLD")) { statusBadge = '<span class="status-badge st-sold">Sold</span>'; resultText = item.status_label; } else if (item.is_featured) { statusBadge = '<span class="status-badge st-scheduled">Scheduled</span>'; } else if (item.lot > 0) { statusBadge = '<span class="status-badge st-approved">Approved</span>'; }
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `<td>${statusBadge}</td><td>${item.title}</td><td>$${item.start_price}</td><td>${resultText}</td><td>${item.approval_status !== 'inactive' && !item.status_label?.includes("SOLD") ? `<button class="btn btn-cancel" onclick="makeInactive('${item.key}')">Deactivate</button>` : ''}</td>`;
+                    tbody.appendChild(tr);
+                });
             });
         }
         window.makeInactive = function(key) { if(confirm("Remove this item?")) update(ref(db, `inventory/${key}`), { approval_status: 'inactive' }); }
