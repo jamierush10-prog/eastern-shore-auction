@@ -19,12 +19,13 @@
         .nav-link { color: #d1d5db; text-decoration: none; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; gap: 5px; }
         .nav-link:hover { color: white; text-decoration: underline; }
         
-        .header-right { position: absolute; right: 20px; display: flex; gap: 10px; align-items: center; } 
+        .header-right { position: absolute; right: 20px; display: flex; gap: 15px; align-items: center; } 
 
         /* ADMIN BUTTON */
         #adminPanelBtn { display: none; background-color: var(--urgent-color); color: white; border: 1px solid white; padding: 8px 15px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; font-weight: bold; }
 
-        /* AUDIO CONTROLS */
+        /* AUDIO & VIEWER CONTROLS */
+        .viewer-count { font-size: 0.9rem; color: #9ca3af; display: flex; align-items: center; gap: 5px; font-weight: bold; }
         .audio-status { font-size: 0.8rem; color: #10b981; display: none; align-items: center; gap: 5px; border: 1px solid #10b981; padding: 5px 10px; border-radius: 20px; }
         .mic-btn { background-color: #374151; color: white; border: 1px solid #6b7280; padding: 8px 15px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; display: none; }
         .mic-btn.active { background-color: var(--urgent-color); border-color: var(--urgent-color); animation: pulse-red 2s infinite; }
@@ -76,12 +77,9 @@
         .inc-btn { flex: 1; padding: 10px; background: white; border: 1px solid var(--primary-color); color: var(--primary-color); border-radius: 4px; font-weight: bold; cursor: pointer; transition: all 0.2s; }
         .inc-btn:hover { background: var(--primary-color); color: white; }
         .inc-btn:disabled { border-color: #ccc; color: #ccc; cursor: not-allowed; }
-        
-        /* INPUT WITH $ SIGN */
         .bid-input-row { position: relative; width: 100%; }
         .currency-symbol { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); font-size: 1.2rem; font-weight: bold; color: #374151; pointer-events: none; }
         input#bidInput { padding: 12px; padding-left: 30px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 1.2rem; font-weight: bold; width: 100%; box-sizing: border-box; text-align: center; }
-        
         button.bid-btn { background-color: var(--primary-color); color: white; border: none; padding: 12px 24px; border-radius: 6px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s; width: 100%; }
         button.bid-btn:hover { background-color: #1d4ed8; }
         button.bid-btn:disabled { background-color: #9ca3af; cursor: not-allowed; }
@@ -96,8 +94,6 @@
         .chat-window { height: 200px; overflow-y: auto; background: white; border: 1px solid #e5e7eb; border-radius: 6px; padding: 10px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px; }
         .chat-msg { font-size: 0.9rem; line-height: 1.4; }
         .chat-msg strong { color: var(--primary-color); margin-right: 5px; }
-        .clickable-user { cursor: pointer; text-decoration: underline; text-decoration-style: dotted; }
-        .clickable-user:hover { color: var(--primary-color); }
         .chat-input-row { display: flex; gap: 10px; }
         #chatInput { padding: 10px; border: 1px solid #ccc; border-radius: 6px; flex: 1; font-size: 0.9rem; }
         .chat-btn { background-color: #374151; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; }
@@ -107,7 +103,7 @@
         .description-block h3 { border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px; }
         .description-text { line-height: 1.6; color: #4b5563; }
 
-        /* TIP JAR */
+        /* TIP JAR STYLES */
         .tip-jar-box { margin-top: 30px; padding: 20px; background: #fffbeb; border: 1px solid #fcd34d; border-radius: 8px; text-align: center; }
         .tip-title { font-weight: bold; color: #92400e; margin-bottom: 10px; font-size: 0.95rem; }
         .tip-buttons { display: flex; gap: 10px; justify-content: center; }
@@ -137,6 +133,8 @@
         .public-tab.active { border-bottom: 2px solid var(--primary-color); color: var(--primary-color); }
         .public-list { max-height: 200px; overflow-y: auto; list-style: none; padding: 0; margin: 0; }
         .public-item { padding: 8px; border-bottom: 1px solid #f3f4f6; font-size: 0.9rem; display: flex; justify-content: space-between; }
+        .clickable-user { cursor: pointer; text-decoration: underline; text-decoration-style: dotted; }
+        .clickable-user:hover { color: var(--primary-color); }
 
         #winnerIcon { font-size: 4rem; margin-bottom: 10px; }
         #winnerText { font-size: 1.8rem; font-weight: bold; margin: 10px 0; color: var(--text-color); }
@@ -166,10 +164,9 @@
             <span style="color:#4b5563">|</span>
             <div onclick="logout()" class="nav-link">Sign Out</div>
         </div>
-
         <div class="brand-name">The Auction House</div>
-        
         <div class="header-right">
+            <div id="liveViewers" class="viewer-count">👁️ 1 Viewing</div>
             <div id="audioStatus" class="audio-status">🔊 Live Audio</div>
             <button id="micBtn" class="mic-btn" onclick="toggleMic()">🎙️ Start Broadcast</button>
             <button id="adminPanelBtn" onclick="openAdminPanel()">ADMIN DASHBOARD</button>
@@ -291,7 +288,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getDatabase, ref, onValue, set, get, push, update, child, query, limitToLast, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, onValue, set, get, push, update, child, query, limitToLast, remove, onDisconnect } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
         // --- PASTE KEYS HERE ---
         const firebaseConfig = {
@@ -318,17 +315,36 @@
         let userCache = {}; 
         let timerInterval = null;
         let currentPPUser = null;
-
+        
         // AGORA
         let agoraClient = null;
         let localAudioTrack = null;
         let isMicOn = false;
         const AGORA_APP_ID = "0177f2708e8e4fdd9f97b71065c3cab6"; 
 
+        // --- SAFETY TIMER ---
         setTimeout(() => {
             const loader = document.getElementById('pageLoading');
             if(loader && loader.style.display !== 'none') loader.style.display = 'none';
         }, 3000);
+
+        // --- PRESENCE SYSTEM (LIVE VIEWERS) ---
+        const connectedRef = ref(db, ".info/connected");
+        const conListRef = ref(db, "connections");
+
+        onValue(connectedRef, (snap) => {
+            if (snap.val() === true) {
+                const con = push(conListRef);
+                onDisconnect(con).remove();
+                set(con, true);
+            }
+        });
+
+        onValue(conListRef, (snap) => {
+            const count = snap.exists() ? Object.keys(snap.val()).length : 0;
+            document.getElementById('liveViewers').innerText = `👁️ ${count} Viewing`;
+        });
+
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
@@ -443,7 +459,6 @@
             });
         }
 
-        // --- CHAT ---
         const chatRef = query(ref(db, 'auction_chat'), limitToLast(50));
         window.sendChat = function() {
             const input = document.getElementById('chatInput');
@@ -522,6 +537,8 @@
                 document.getElementById('userMaxBidDisplay').innerHTML = `🎉 <strong>You are the highest bidder!</strong> <br>(Your max bid: $${data.high_bidder_max.toLocaleString()})`;
             } else {
                 document.getElementById('userMaxBidDisplay').style.display = 'none';
+                document.getElementById('userMaxBidDisplay').classList.remove('winning-bid-status');
+                document.getElementById('userMaxBidDisplay').innerHTML = '';
             }
         }
 
@@ -676,4 +693,4 @@
         };
     </script>
 </body>
-</html>
+</html
