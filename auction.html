@@ -5,26 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Live Auction | Eastern Shore Auction House</title>
     <style>
-        /* ... (Keep all your existing styles, they are good) ... */
-        /* Just ensure you have these: */
+        /* ... (Keep your existing styles - no major CSS changes needed for this specific update, but including full block for completeness) ... */
         :root { --primary-color: #2563eb; --urgent-color: #dc2626; --bg-color: #f3f4f6; --text-color: #1f2937; --border-color: #e5e7eb; --header-bg: #111827; --header-text: #f9fafb; --success-color: #16a34a; --gold-color: #f59e0b; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-        /* ... Rest of CSS ... */
-        /* Add new CSS for Public Profile Modal */
-        .public-profile-header { text-align: center; margin-bottom: 20px; }
-        .public-avatar { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 10px; }
-        .public-name { font-size: 1.5rem; font-weight: bold; }
-        .public-rating { color: var(--gold-color); font-size: 1.2rem; margin: 5px 0; }
-        .public-email { color: var(--primary-color); font-weight: bold; margin-bottom: 10px; font-size: 0.9rem; }
-        .public-tabs { display: flex; border-bottom: 1px solid #e5e7eb; margin-bottom: 15px; }
-        .public-tab { flex: 1; text-align: center; padding: 10px; cursor: pointer; font-weight: bold; color: #6b7280; }
-        .public-tab.active { border-bottom: 2px solid var(--primary-color); color: var(--primary-color); }
-        .public-list { max-height: 200px; overflow-y: auto; list-style: none; padding: 0; margin: 0; }
-        .public-item { padding: 8px; border-bottom: 1px solid #f3f4f6; font-size: 0.9rem; display: flex; justify-content: space-between; }
-        .clickable-user { cursor: pointer; text-decoration: underline; text-decoration-style: dotted; }
-        .clickable-user:hover { color: var(--primary-color); }
-
-        /* --- REST OF YOUR CSS from previous version --- */
+        
         /* HEADER */
         .site-header { width: 100%; background-color: var(--header-bg); color: var(--header-text); padding: 20px 0; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 40px; position: relative; display: flex; justify-content: center; align-items: center; }
         .brand-name { font-family: "Georgia", "Times New Roman", serif; font-size: 1.8rem; letter-spacing: 1.5px; font-weight: bold; text-transform: uppercase; }
@@ -33,6 +17,8 @@
         .nav-link:hover { color: white; text-decoration: underline; }
         .header-right { position: absolute; right: 20px; } 
         #adminPanelBtn { display: none; background-color: var(--urgent-color); color: white; border: 1px solid white; padding: 8px 15px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; font-weight: bold; }
+
+        /* LAYOUT */
         .auction-container { background: white; max-width: 1000px; width: 90%; display: grid; grid-template-columns: 1.2fr 1fr; gap: 40px; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin-bottom: 40px; }
         .gallery-section { display: flex; flex-direction: column; gap: 15px; }
         .main-image-wrapper { width: 100%; height: 400px; background-color: #eee; border-radius: 8px; overflow: hidden; border: 1px solid var(--border-color); position: relative; }
@@ -41,6 +27,7 @@
         .thumbnail { aspect-ratio: 1/1; background-color: #f9fafb; border: 2px solid transparent; border-radius: 6px; overflow: hidden; cursor: pointer; transition: all 0.2s; }
         .thumbnail:hover { border-color: var(--primary-color); }
         .thumbnail img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
         .history-section { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color); }
         .history-title { font-size: 0.9rem; font-weight: bold; text-transform: uppercase; color: #6b7280; margin-bottom: 10px; }
         #bidHistoryList { max-height: 300px; overflow-y: auto; border: 1px solid #f3f4f6; border-radius: 6px; padding: 0 10px; }
@@ -48,20 +35,25 @@
         .bidder-flex { display: flex; align-items: center; gap: 8px; font-weight: 500; }
         .mini-avatar { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd; }
         .bid-amount { font-weight: bold; color: var(--primary-color); }
+
+        /* DETAILS */
         .details-section { display: flex; flex-direction: column; }
         h1 { margin: 0 0 10px 0; font-size: 2rem; line-height: 1.1; }
         .subtitle { color: #6b7280; font-size: 0.9rem; margin-bottom: 10px; }
         .seller-info { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; font-weight: 500; color: #4b5563; }
         .seller-avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 2px solid #e5e7eb; }
         .seller-info strong { color: #1f2937; }
+
         .logistics-box { background-color: #f9fafb; border: 1px solid #e5e7eb; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 0.9rem; color: #4b5563; }
         .logistics-item { margin-bottom: 8px; display: flex; align-items: flex-start; gap: 10px; }
         .logistics-item:last-child { margin-bottom: 0; }
         .log-icon { font-size: 1.1rem; min-width: 25px; }
         .log-text strong { color: #1f2937; display: block; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; }
+
         .timer-block { background-color: #fee2e2; color: var(--urgent-color); padding: 15px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px; font-weight: bold; border: 1px solid #fca5a5; }
         .timer-ended { background-color: #e5e7eb; color: #374151; border-color: #d1d5db; }
         .countdown { font-size: 1.5rem; font-variant-numeric: tabular-nums; }
+        
         .pricing-card { background-color: #f9fafb; padding: 25px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 20px; }
         .current-bid-label { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; color: #6b7280; }
         .current-price { font-size: 3rem; font-weight: 800; color: var(--text-color); margin: 5px 0 20px 0; }
@@ -76,21 +68,27 @@
         button.bid-btn { background-color: var(--primary-color); color: white; border: none; padding: 12px 24px; border-radius: 6px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s; width: 100%; }
         button.bid-btn:hover { background-color: #1d4ed8; }
         button.bid-btn:disabled { background-color: #9ca3af; cursor: not-allowed; }
+        
         #userMaxBidDisplay { margin-top: 10px; font-size: 0.9rem; color: var(--primary-color); text-align: center; display: none; background: #dbeafe; padding: 8px; border-radius: 4px; }
         .winning-bid-status { background-color: #dcfce7 !important; color: #166534 !important; border-color: #86efac !important; }
         .user-badge { background: #e0f2fe; color: #0369a1; padding: 10px; border-radius: 6px; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border: 1px solid #bae6fd; }
+
         .chat-section { margin-top: 20px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 15px; }
         .chat-header { font-weight: bold; color: #374151; margin-bottom: 10px; display:flex; justify-content: space-between; align-items:center; }
         .chat-window { height: 200px; overflow-y: auto; background: white; border: 1px solid #e5e7eb; border-radius: 6px; padding: 10px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px; }
         .chat-msg { font-size: 0.9rem; line-height: 1.4; }
         .chat-msg strong { color: var(--primary-color); margin-right: 5px; }
+        .clickable-user { cursor: pointer; text-decoration: underline; text-decoration-style: dotted; }
+        .clickable-user:hover { color: var(--primary-color); }
         .chat-input-row { display: flex; gap: 10px; }
         #chatInput { padding: 10px; border: 1px solid #ccc; border-radius: 6px; flex: 1; font-size: 0.9rem; }
         .chat-btn { background-color: #374151; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; }
         .chat-btn:hover { background-color: #111827; }
         #clearChatBtn { display: none; background-color: #dc2626; color: white; border: none; font-size: 0.7rem; padding: 4px 8px; border-radius: 4px; cursor: pointer; text-transform: uppercase; }
+
         .description-block h3 { border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px; }
         .description-text { line-height: 1.6; color: #4b5563; }
+
         .tip-jar-box { margin-top: 30px; padding: 20px; background: #fffbeb; border: 1px solid #fcd34d; border-radius: 8px; text-align: center; }
         .tip-title { font-weight: bold; color: #92400e; margin-bottom: 10px; font-size: 0.95rem; }
         .tip-buttons { display: flex; gap: 10px; justify-content: center; }
@@ -98,6 +96,8 @@
         .tip-link:hover { transform: scale(1.05); }
         .tip-venmo { background: #008CFF; }
         .tip-cashapp { background: #00D632; }
+
+        /* MODALS */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 30px; border-radius: 8px; text-align: center; width: 90%; max-width: 400px; box-shadow: 0 20px 25px rgba(0,0,0,0.2); position: relative; }
         .confirm-amount { font-size: 2rem; font-weight: 800; color: var(--primary-color); margin: 10px 0; }
@@ -105,6 +105,20 @@
         .confirm-btn { flex: 1; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
         .btn-yes { background: var(--primary-color); color: white; }
         .btn-no { background: #e5e7eb; color: #374151; }
+
+        /* PUBLIC PROFILE MODAL CSS */
+        .public-profile-header { text-align: center; margin-bottom: 20px; }
+        .public-avatar { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 10px; }
+        .public-name { font-size: 1.5rem; font-weight: bold; }
+        .public-rating { color: var(--gold-color); font-size: 1.2rem; margin: 5px 0; }
+        .public-email { color: var(--primary-color); font-weight: bold; margin-bottom: 10px; font-size: 0.9rem; }
+        .public-bio { font-style: italic; color: #555; margin: 10px 0; background: #f9fafb; padding: 10px; border-radius: 6px; font-size: 0.9rem; }
+        .public-tabs { display: flex; border-bottom: 1px solid #e5e7eb; margin-bottom: 15px; }
+        .public-tab { flex: 1; text-align: center; padding: 10px; cursor: pointer; font-weight: bold; color: #6b7280; }
+        .public-tab.active { border-bottom: 2px solid var(--primary-color); color: var(--primary-color); }
+        .public-list { max-height: 200px; overflow-y: auto; list-style: none; padding: 0; margin: 0; }
+        .public-item { padding: 8px; border-bottom: 1px solid #f3f4f6; font-size: 0.9rem; display: flex; justify-content: space-between; }
+
         #winnerIcon { font-size: 4rem; margin-bottom: 10px; }
         #winnerText { font-size: 1.8rem; font-weight: bold; margin: 10px 0; color: var(--text-color); }
         #winnerDetail { font-size: 1.1rem; color: #6b7280; margin-bottom: 20px; }
@@ -216,13 +230,13 @@
                 <div id="ppName" class="public-name">Loading...</div>
                 <div id="ppRating" class="public-rating">☆☆☆☆☆</div>
                 <div id="ppEmail" class="public-email"></div>
+                <div id="ppBio" class="public-bio"></div>
             </div>
             <div class="public-tabs">
                 <div class="public-tab active" onclick="switchPPTab('sold')">Items Sold</div>
                 <div class="public-tab" onclick="switchPPTab('bought')">Items Bought</div>
             </div>
-            <div id="ppList" class="public-list">
-                </div>
+            <div id="ppList" class="public-list"></div>
             <button class="btn-yes confirm-btn" style="margin-top:20px; width:100%" onclick="document.getElementById('publicProfileModal').style.display='none'">Close</button>
         </div>
     </div>
@@ -254,8 +268,8 @@
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getDatabase, ref, onValue, set, get, push, update, child, query, limitToLast, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // --- PASTE KEYS HERE ---
-        const firebaseConfig = {
+        // --- PASTE YOUR KEYS HERE ---
+     const firebaseConfig = {
   apiKey: "AIzaSyCt0i8a7ZVRlNmSts9yM4uGwV7ghPU59rk",
   authDomain: "eastern-shore-auction.firebaseapp.com",
   databaseURL: "https://eastern-shore-auction-default-rtdb.firebaseio.com",
@@ -278,9 +292,8 @@
         let auctionEndedProcessed = false;
         let userCache = {}; 
         let timerInterval = null;
-        let currentPPUser = null; // Holds data for profile popup
+        let currentPPUser = null;
 
-        // --- SAFETY TIMER ---
         setTimeout(() => {
             const loader = document.getElementById('pageLoading');
             if(loader && loader.style.display !== 'none') loader.style.display = 'none';
@@ -312,18 +325,16 @@
 
         // --- PUBLIC PROFILE LOGIC ---
         window.openPublicProfile = function(name) {
-            // Clean name (remove "Seller: " prefix if clicked from there)
             name = name.replace("Seller: ", "").trim();
-            
             const userData = userCache[name];
             if(!userData) { alert("User profile not found."); return; }
-
-            currentPPUser = userData; // Store for tab switching
-            
+            currentPPUser = userData; 
             document.getElementById('ppName').innerText = userData.name;
             document.getElementById('ppAvatar').src = userData.profile_image_url || "https://www.gravatar.com/avatar/?d=mp";
             
-            // Rating
+            // Set Bio
+            document.getElementById('ppBio').innerText = userData.bio || "No bio provided.";
+
             const avg = userData.rating_count > 0 ? (userData.rating_total / userData.rating_count).toFixed(1) : "New";
             let starStr = "☆☆☆☆☆";
             if(userData.rating_count > 0) {
@@ -331,19 +342,11 @@
                 starStr = "★".repeat(roundScore) + "☆".repeat(5 - roundScore);
             }
             document.getElementById('ppRating').innerHTML = `${starStr} (${avg})`;
-
-            // Email (Only if allowed)
             document.getElementById('ppEmail').innerText = (userData.show_email_publicly && userData.email) ? userData.email : "";
-
-            // Load Sales History
             loadPPHistory(userData.email, 'sold');
-
             document.getElementById('publicProfileModal').style.display = 'flex';
         }
-
-        window.closePublicProfile = function(e) {
-            if(e.target === document.getElementById('publicProfileModal')) document.getElementById('publicProfileModal').style.display='none';
-        }
+        window.closePublicProfile = function(e) { if(e.target === document.getElementById('publicProfileModal')) document.getElementById('publicProfileModal').style.display='none'; }
 
         window.switchPPTab = function(mode) {
             document.querySelectorAll('.public-tab').forEach(t => t.classList.remove('active'));
@@ -355,33 +358,23 @@
         function loadPPHistory(email, mode) {
             const list = document.getElementById('ppList');
             list.innerHTML = "Loading...";
-            
-            // Note: Ideally we filter by UID, but sales history currently relies on email/name matching
             get(ref(db, 'sales_history')).then((snapshot) => {
                 list.innerHTML = "";
                 if(!snapshot.exists()) { list.innerHTML = "<div style='text-align:center; padding:10px;'>No history.</div>"; return; }
-                
                 const history = Object.values(snapshot.val());
                 let count = 0;
-
                 history.forEach(sale => {
                     let match = false;
-                    if (mode === 'sold') {
-                        match = (sale.seller_email && sale.seller_email.toLowerCase() === email.toLowerCase()) || (sale.seller_name === currentPPUser.name);
-                    } else {
-                        match = (sale.winner_email && sale.winner_email.toLowerCase() === email.toLowerCase()) || (sale.winner_name === currentPPUser.name);
-                    }
-
+                    if (mode === 'sold') { match = (sale.seller_email && sale.seller_email.toLowerCase() === email.toLowerCase()) || (sale.seller_name === currentPPUser.name); } 
+                    else { match = (sale.winner_email && sale.winner_email.toLowerCase() === email.toLowerCase()) || (sale.winner_name === currentPPUser.name); }
                     if(match) {
                         count++;
-                        const div = document.createElement('div');
-                        div.className = 'public-item';
+                        const div = document.createElement('div'); div.className = 'public-item';
                         const dateStr = new Date(sale.date).toLocaleDateString();
                         div.innerHTML = `<span>${sale.item_title}</span> <span style="color:#6b7280; font-size:0.8rem;">${dateStr}</span>`;
                         list.appendChild(div);
                     }
                 });
-
                 if(count === 0) list.innerHTML = "<div style='text-align:center; padding:10px; color:#999;'>No items found.</div>";
             });
         }
@@ -395,14 +388,13 @@
             push(ref(db, 'auction_chat'), { user: currentUser.displayName, text: msg, timestamp: Date.now() });
             input.value = "";
         }
-        window.clearChat = function() { if(confirm("Clear all chat?")) set(ref(db, 'auction_chat'), null); }
+        window.clearChat = function() { if(confirm("Clear chat?")) set(ref(db, 'auction_chat'), null); }
         onValue(chatRef, (snapshot) => {
             const chatWindow = document.getElementById('chatWindow'); chatWindow.innerHTML = "";
             const data = snapshot.val();
             if(data) {
                 Object.values(data).forEach(msg => {
                     const div = document.createElement('div'); div.className = 'chat-msg'; 
-                    // Make chat names clickable too!
                     div.innerHTML = `<strong class="clickable-user" onclick="openPublicProfile(this.innerText)">${msg.user}</strong>: ${msg.text}`; 
                     chatWindow.appendChild(div);
                 });
@@ -410,74 +402,71 @@
             }
         });
 
-        // --- AUCTION DATA ---
+        // --- AUCTION LOGIC ---
         onValue(dbRef, (snapshot) => {
             const data = snapshot.val();
             if (data) {
                 globalAuctionData = data;
                 if (data.end_time > Date.now()) { auctionEndedProcessed = false; }
-
-                const isClosed = (data.title === "Auction Closed");
-                const displayStyle = isClosed ? 'none' : 'block';
-                const gridStyle = isClosed ? 'none' : 'grid';
-                const flexStyle = isClosed ? 'none' : 'flex';
-
-                document.querySelector('.thumbnails').style.display = gridStyle;
-                document.querySelector('.history-section').style.display = displayStyle;
-                document.getElementById('logisticsBox').style.display = displayStyle;
-                document.querySelector('.timer-block').style.display = flexStyle;
-                document.querySelector('.pricing-card').style.display = displayStyle;
-                document.querySelector('.description-block').style.display = displayStyle;
-                document.getElementById('sellerInfo').style.display = isClosed ? 'none' : (data.seller_name ? 'flex' : 'none');
-                document.querySelector('.tip-jar-box').style.display = displayStyle;
-
-                document.getElementById('itemTitle').innerText = data.title;
-                document.getElementById('itemSubtitle').innerText = data.subtitle;
-                document.getElementById('itemDescription').innerText = data.description;
-                document.getElementById('priceDisplay').innerText = "$" + data.current_bid.toLocaleString();
-                globalCurrentBid = data.current_bid;
-
-                if (!isClosed && data.seller_name) {
-                    document.getElementById('sellerName').innerText = data.seller_name;
-                    document.getElementById('sellerAvatar').src = getAvatarUrlByName(data.seller_name);
-                }
-
-                document.getElementById('dispLoc').innerText = data.location || "Not Specified";
-                document.getElementById('dispPay').innerText = data.payment_methods || "Cash";
-                document.getElementById('dispDel').innerText = data.delivery_method || "Local Pickup";
-
-                const input = document.getElementById('bidInput');
-                if(document.activeElement !== input) input.value = globalCurrentBid + 1;
-
-                const mainImg = document.getElementById('mainImage');
-                if(!mainImg.getAttribute('data-locked')) mainImg.src = data.image_url;
-                if (!isClosed) updateThumbs(data.images);
-                
-                updateTimer();
-                renderBidHistory(data.bid_history);
-
-                if (currentUser && data.high_bidder_uid === currentUser.uid && !isClosed) {
-                    document.getElementById('userMaxBidDisplay').style.display = 'block';
-                    document.getElementById('userMaxBidDisplay').classList.add('winning-bid-status');
-                    document.getElementById('userMaxBidDisplay').innerHTML = `🎉 <strong>You are the highest bidder!</strong> <br>(Your max bid: $${data.high_bidder_max.toLocaleString()})`;
-                } else {
-                    document.getElementById('userMaxBidDisplay').style.display = 'none';
-                    document.getElementById('userMaxBidDisplay').classList.remove('winning-bid-status');
-                    document.getElementById('userMaxBidDisplay').innerHTML = '';
-                }
-
-            } else {
-                set(dbRef, { title: "Waiting...", current_bid: 0, image_url: "https://placehold.co/600x400?text=Waiting", end_time: Date.now() });
+                updateUI(data);
             }
         });
+
+        function updateUI(data) {
+            const isClosed = (data.title === "Auction Closed");
+            const displayStyle = isClosed ? 'none' : 'block';
+            const gridStyle = isClosed ? 'none' : 'grid';
+            const flexStyle = isClosed ? 'none' : 'flex';
+
+            document.querySelector('.thumbnails').style.display = gridStyle;
+            document.querySelector('.history-section').style.display = displayStyle;
+            document.getElementById('logisticsBox').style.display = displayStyle;
+            document.querySelector('.timer-block').style.display = flexStyle;
+            document.querySelector('.pricing-card').style.display = displayStyle;
+            document.querySelector('.description-block').style.display = displayStyle;
+            document.getElementById('sellerInfo').style.display = isClosed ? 'none' : (data.seller_name ? 'flex' : 'none');
+            document.querySelector('.tip-jar-box').style.display = displayStyle;
+
+            document.getElementById('itemTitle').innerText = data.title;
+            document.getElementById('itemSubtitle').innerText = data.subtitle;
+            document.getElementById('itemDescription').innerText = data.description;
+            document.getElementById('priceDisplay').innerText = "$" + data.current_bid.toLocaleString();
+            globalCurrentBid = data.current_bid;
+
+            if (!isClosed && data.seller_name) {
+                document.getElementById('sellerName').innerText = data.seller_name;
+                document.getElementById('sellerAvatar').src = getAvatarUrlByName(data.seller_name);
+            }
+
+            document.getElementById('dispLoc').innerText = data.location || "Not Specified";
+            document.getElementById('dispPay').innerText = data.payment_methods || "Cash";
+            document.getElementById('dispDel').innerText = data.delivery_method || "Local Pickup";
+
+            const input = document.getElementById('bidInput');
+            if(document.activeElement !== input) input.value = globalCurrentBid + 1;
+
+            const mainImg = document.getElementById('mainImage');
+            if(!mainImg.getAttribute('data-locked')) mainImg.src = data.image_url;
+            if (!isClosed) updateThumbs(data.images);
+            
+            updateTimer();
+            renderBidHistory(data.bid_history);
+
+            if (currentUser && data.high_bidder_uid === currentUser.uid && !isClosed) {
+                document.getElementById('userMaxBidDisplay').style.display = 'block';
+                document.getElementById('userMaxBidDisplay').classList.add('winning-bid-status');
+                document.getElementById('userMaxBidDisplay').innerHTML = `🎉 <strong>You are the highest bidder!</strong> <br>(Your max bid: $${data.high_bidder_max.toLocaleString()})`;
+            } else {
+                document.getElementById('userMaxBidDisplay').style.display = 'none';
+            }
+        }
 
         function updateThumbs(images) {
             const imgIds = ['thumb1', 'thumb2', 'thumb3', 'thumb4'];
             imgIds.forEach(id => {
                 const el = document.getElementById(id);
-                const parent = el.parentElement;
-                if (images && images[id]) { el.src = images[id]; parent.style.display = 'block'; } 
-                else { parent.style.display = 'none'; }
+                if (images && images[id]) { el.src = images[id]; el.parentElement.style.display = 'block'; } 
+                else { el.parentElement.style.display = 'none'; }
             });
         }
         
@@ -569,14 +558,12 @@
         }
 
         window.addToBid = function(amount) { document.getElementById('bidInput').value = (parseInt(document.getElementById('bidInput').value) || globalCurrentBid) + amount; }
-
         window.openConfirm = function() {
             const amount = parseInt(document.getElementById('bidInput').value);
             if(!amount || amount <= globalCurrentBid) { alert("Bid must be higher than current price."); return; }
             document.getElementById('confirmAmountDisplay').innerText = "$" + amount.toLocaleString();
             document.getElementById('confirmModal').style.display = 'flex';
         }
-
         window.closeConfirm = function() { document.getElementById('confirmModal').style.display = 'none'; }
 
         window.submitFinalBid = function() {
@@ -584,32 +571,23 @@
             if(!isUserApproved) { alert("Account pending approval."); closeConfirm(); return; }
             const myMaxBid = parseInt(document.getElementById('bidInput').value);
             closeConfirm();
-
             get(dbRef).then((snapshot) => {
                 const data = snapshot.val();
                 if (Date.now() > data.end_time) { alert("Auction has ended!"); return; }
-
                 const currentLeaderMax = data.high_bidder_max || 0;
                 const currentLeaderUID = data.high_bidder_uid || "";
-                
                 const now = Date.now();
                 let newEndTime = data.end_time;
                 if ((data.end_time - now) < 30000) { newEndTime = now + 30000; }
-
                 if (currentUser.uid === currentLeaderUID) {
-                    if (myMaxBid > currentLeaderMax) {
-                        update(dbRef, { high_bidder_max: myMaxBid, end_time: newEndTime });
-                        alert("Max bid increased.");
-                    } else { alert("You are already highest bidder."); }
+                    if (myMaxBid > currentLeaderMax) { update(dbRef, { high_bidder_max: myMaxBid, end_time: newEndTime }); alert("Max bid increased."); } 
+                    else { alert("You are already highest bidder."); }
                     return;
                 }
-
                 if (myMaxBid > currentLeaderMax) {
                     let newPrice = (currentLeaderMax > 0) ? (currentLeaderMax + 1) : (data.current_bid + 1);
                     if(newPrice < data.current_bid + 1) newPrice = data.current_bid + 1;
-                    update(dbRef, { 
-                        current_bid: newPrice, high_bidder_max: myMaxBid, high_bidder_uid: currentUser.uid, high_bidder_name: currentUser.displayName, end_time: newEndTime 
-                    });
+                    update(dbRef, { current_bid: newPrice, high_bidder_max: myMaxBid, high_bidder_uid: currentUser.uid, high_bidder_name: currentUser.displayName, end_time: newEndTime });
                     const historyRef = ref(db, auctionId + '/bid_history');
                     push(historyRef, { bidder_name: currentUser.displayName, amount: newPrice, timestamp: Date.now() });
                     alert("You are high bidder!");
