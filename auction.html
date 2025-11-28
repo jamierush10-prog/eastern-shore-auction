@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Live Auction | Eastern Shore Auction House</title>
     <style>
-        /* ... (Keep your existing styles - no major CSS changes needed for this specific update, but including full block for completeness) ... */
+        /* --- CSS STYLES --- */
         :root { --primary-color: #2563eb; --urgent-color: #dc2626; --bg-color: #f3f4f6; --text-color: #1f2937; --border-color: #e5e7eb; --header-bg: #111827; --header-text: #f9fafb; --success-color: #16a34a; --gold-color: #f59e0b; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
         
@@ -36,7 +36,6 @@
         .mini-avatar { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd; }
         .bid-amount { font-weight: bold; color: var(--primary-color); }
 
-        /* DETAILS */
         .details-section { display: flex; flex-direction: column; }
         h1 { margin: 0 0 10px 0; font-size: 2rem; line-height: 1.1; }
         .subtitle { color: #6b7280; font-size: 0.9rem; margin-bottom: 10px; }
@@ -46,7 +45,6 @@
 
         .logistics-box { background-color: #f9fafb; border: 1px solid #e5e7eb; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 0.9rem; color: #4b5563; }
         .logistics-item { margin-bottom: 8px; display: flex; align-items: flex-start; gap: 10px; }
-        .logistics-item:last-child { margin-bottom: 0; }
         .log-icon { font-size: 1.1rem; min-width: 25px; }
         .log-text strong { color: #1f2937; display: block; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; }
 
@@ -57,14 +55,17 @@
         .pricing-card { background-color: #f9fafb; padding: 25px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 20px; }
         .current-bid-label { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; color: #6b7280; }
         .current-price { font-size: 3rem; font-weight: 800; color: var(--text-color); margin: 5px 0 20px 0; }
+        
         .bid-controls { display: flex; flex-direction: column; gap: 15px; }
         .increment-buttons { display: flex; gap: 10px; }
         .inc-btn { flex: 1; padding: 10px; background: white; border: 1px solid var(--primary-color); color: var(--primary-color); border-radius: 4px; font-weight: bold; cursor: pointer; transition: all 0.2s; }
         .inc-btn:hover { background: var(--primary-color); color: white; }
         .inc-btn:disabled { border-color: #ccc; color: #ccc; cursor: not-allowed; }
+        
         .bid-input-row { position: relative; width: 100%; }
         .currency-symbol { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); font-size: 1.2rem; font-weight: bold; color: #374151; pointer-events: none; }
         input#bidInput { padding: 12px; padding-left: 30px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 1.2rem; font-weight: bold; width: 100%; box-sizing: border-box; text-align: center; }
+        
         button.bid-btn { background-color: var(--primary-color); color: white; border: none; padding: 12px 24px; border-radius: 6px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s; width: 100%; }
         button.bid-btn:hover { background-color: #1d4ed8; }
         button.bid-btn:disabled { background-color: #9ca3af; cursor: not-allowed; }
@@ -73,13 +74,12 @@
         .winning-bid-status { background-color: #dcfce7 !important; color: #166534 !important; border-color: #86efac !important; }
         .user-badge { background: #e0f2fe; color: #0369a1; padding: 10px; border-radius: 6px; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border: 1px solid #bae6fd; }
 
+        /* CHAT */
         .chat-section { margin-top: 20px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 15px; }
         .chat-header { font-weight: bold; color: #374151; margin-bottom: 10px; display:flex; justify-content: space-between; align-items:center; }
         .chat-window { height: 200px; overflow-y: auto; background: white; border: 1px solid #e5e7eb; border-radius: 6px; padding: 10px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px; }
         .chat-msg { font-size: 0.9rem; line-height: 1.4; }
         .chat-msg strong { color: var(--primary-color); margin-right: 5px; }
-        .clickable-user { cursor: pointer; text-decoration: underline; text-decoration-style: dotted; }
-        .clickable-user:hover { color: var(--primary-color); }
         .chat-input-row { display: flex; gap: 10px; }
         #chatInput { padding: 10px; border: 1px solid #ccc; border-radius: 6px; flex: 1; font-size: 0.9rem; }
         .chat-btn { background-color: #374151; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; }
@@ -88,14 +88,6 @@
 
         .description-block h3 { border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px; }
         .description-text { line-height: 1.6; color: #4b5563; }
-
-        .tip-jar-box { margin-top: 30px; padding: 20px; background: #fffbeb; border: 1px solid #fcd34d; border-radius: 8px; text-align: center; }
-        .tip-title { font-weight: bold; color: #92400e; margin-bottom: 10px; font-size: 0.95rem; }
-        .tip-buttons { display: flex; gap: 10px; justify-content: center; }
-        .tip-link { display: flex; align-items: center; gap: 5px; padding: 8px 16px; border-radius: 20px; text-decoration: none; font-weight: bold; font-size: 0.9rem; color: white; transition: transform 0.2s; }
-        .tip-link:hover { transform: scale(1.05); }
-        .tip-venmo { background: #008CFF; }
-        .tip-cashapp { background: #00D632; }
 
         /* MODALS */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; }
@@ -106,7 +98,7 @@
         .btn-yes { background: var(--primary-color); color: white; }
         .btn-no { background: #e5e7eb; color: #374151; }
 
-        /* PUBLIC PROFILE MODAL CSS */
+        /* PUBLIC PROFILE MODAL */
         .public-profile-header { text-align: center; margin-bottom: 20px; }
         .public-avatar { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 10px; }
         .public-name { font-size: 1.5rem; font-weight: bold; }
@@ -118,6 +110,8 @@
         .public-tab.active { border-bottom: 2px solid var(--primary-color); color: var(--primary-color); }
         .public-list { max-height: 200px; overflow-y: auto; list-style: none; padding: 0; margin: 0; }
         .public-item { padding: 8px; border-bottom: 1px solid #f3f4f6; font-size: 0.9rem; display: flex; justify-content: space-between; }
+        .clickable-user { cursor: pointer; text-decoration: underline; text-decoration-style: dotted; }
+        .clickable-user:hover { color: var(--primary-color); }
 
         #winnerIcon { font-size: 4rem; margin-bottom: 10px; }
         #winnerText { font-size: 1.8rem; font-weight: bold; margin: 10px 0; color: var(--text-color); }
@@ -147,7 +141,7 @@
             <span style="color:#4b5563">|</span>
             <div onclick="logout()" class="nav-link">Sign Out</div>
         </div>
-        <div class="brand-name">Eastern Shore Auction House</div>
+        <div class="brand-name">The Auction House</div>
         <div class="header-right"><button id="adminPanelBtn" onclick="openAdminPanel()">ADMIN DASHBOARD</button></div>
     </header>
 
@@ -212,14 +206,6 @@
                 <h3>Description</h3>
                 <div class="description-text" id="itemDescription">Loading...</div>
             </div>
-
-            <div class="tip-jar-box">
-                <div class="tip-title">☕ Enjoying the Auction? Leave a Tip!</div>
-                <div class="tip-buttons">
-                    <a href="https://venmo.com/u/James-Rush-127" target="_blank" class="tip-link tip-venmo">Venmo</a>
-                    <a href="https://cash.app/$pawpawrush" target="_blank" class="tip-link tip-cashapp">Cash App</a>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -268,8 +254,8 @@
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getDatabase, ref, onValue, set, get, push, update, child, query, limitToLast, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // --- PASTE YOUR KEYS HERE ---
-     const firebaseConfig = {
+        // --- PASTE KEYS HERE ---
+        const firebaseConfig = {
   apiKey: "AIzaSyCt0i8a7ZVRlNmSts9yM4uGwV7ghPU59rk",
   authDomain: "eastern-shore-auction.firebaseapp.com",
   databaseURL: "https://eastern-shore-auction-default-rtdb.firebaseio.com",
@@ -331,10 +317,7 @@
             currentPPUser = userData; 
             document.getElementById('ppName').innerText = userData.name;
             document.getElementById('ppAvatar').src = userData.profile_image_url || "https://www.gravatar.com/avatar/?d=mp";
-            
-            // Set Bio
             document.getElementById('ppBio').innerText = userData.bio || "No bio provided.";
-
             const avg = userData.rating_count > 0 ? (userData.rating_total / userData.rating_count).toFixed(1) : "New";
             let starStr = "☆☆☆☆☆";
             if(userData.rating_count > 0) {
@@ -347,17 +330,14 @@
             document.getElementById('publicProfileModal').style.display = 'flex';
         }
         window.closePublicProfile = function(e) { if(e.target === document.getElementById('publicProfileModal')) document.getElementById('publicProfileModal').style.display='none'; }
-
         window.switchPPTab = function(mode) {
             document.querySelectorAll('.public-tab').forEach(t => t.classList.remove('active'));
             const clickedTab = mode === 'sold' ? 0 : 1;
             document.querySelectorAll('.public-tab')[clickedTab].classList.add('active');
             loadPPHistory(currentPPUser.email, mode);
         }
-
         function loadPPHistory(email, mode) {
-            const list = document.getElementById('ppList');
-            list.innerHTML = "Loading...";
+            const list = document.getElementById('ppList'); list.innerHTML = "Loading...";
             get(ref(db, 'sales_history')).then((snapshot) => {
                 list.innerHTML = "";
                 if(!snapshot.exists()) { list.innerHTML = "<div style='text-align:center; padding:10px;'>No history.</div>"; return; }
@@ -379,7 +359,6 @@
             });
         }
 
-        // --- CHAT ---
         const chatRef = query(ref(db, 'auction_chat'), limitToLast(50));
         window.sendChat = function() {
             const input = document.getElementById('chatInput');
@@ -402,7 +381,6 @@
             }
         });
 
-        // --- AUCTION LOGIC ---
         onValue(dbRef, (snapshot) => {
             const data = snapshot.val();
             if (data) {
@@ -425,7 +403,6 @@
             document.querySelector('.pricing-card').style.display = displayStyle;
             document.querySelector('.description-block').style.display = displayStyle;
             document.getElementById('sellerInfo').style.display = isClosed ? 'none' : (data.seller_name ? 'flex' : 'none');
-            document.querySelector('.tip-jar-box').style.display = displayStyle;
 
             document.getElementById('itemTitle').innerText = data.title;
             document.getElementById('itemSubtitle').innerText = data.subtitle;
@@ -518,7 +495,13 @@
                     document.getElementById('timerBox').classList.add('timer-ended');
 
                     if (!auctionEndedProcessed) {
-                        showWinnerModal(globalAuctionData);
+                        // CHECK IF SOLD
+                        const reserve = globalAuctionData.reserve_price || 0;
+                        const currentBid = globalAuctionData.current_bid || 0;
+                        const hasBidder = !!globalAuctionData.high_bidder_uid;
+                        if (hasBidder && currentBid >= reserve) {
+                             showWinnerModal(globalAuctionData);
+                        }
                         auctionEndedProcessed = true;
                     }
                 } else {
@@ -533,28 +516,20 @@
         }
 
         function showWinnerModal(data) {
-            const reserve = data.reserve_price || 0;
-            const currentBid = data.current_bid || 0;
-            const hasBidder = !!data.high_bidder_uid;
-            const isSold = hasBidder && (currentBid >= reserve);
-
-            if (isSold) {
-                const modal = document.getElementById('winnerModal');
-                const text = document.getElementById('winnerText');
-                const detail = document.getElementById('winnerDetail');
-                const img = document.getElementById('winnerGif');
-
-                if (currentUser && data.high_bidder_uid === currentUser.uid) {
-                    text.innerText = "Congratulations!"; text.style.color = "#16a34a"; 
-                    detail.innerText = "You won this item for $" + currentBid.toLocaleString();
-                    img.src = "https://media.giphy.com/media/26u4cqiYI30juCOGY/giphy.gif";
-                } else {
-                    text.innerText = "SOLD!"; text.style.color = "#1f2937";
-                    detail.innerText = "Sold to " + (data.high_bidder_name || "Unknown") + " for $" + currentBid.toLocaleString();
-                    img.src = "https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExcGJrenUwMW84Mmpia3dpazF1b3JmZTdyNWI2d3Izd2tudGVlbzRuYyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l41YAbDsTJXKANjmE/giphy.gif";
-                }
-                modal.style.display = 'flex';
-            } 
+            const modal = document.getElementById('winnerModal');
+            const text = document.getElementById('winnerText');
+            const detail = document.getElementById('winnerDetail');
+            const img = document.getElementById('winnerGif');
+            if (currentUser && data.high_bidder_uid === currentUser.uid) {
+                text.innerText = "Congratulations!"; text.style.color = "#16a34a"; 
+                detail.innerText = "You won this item for $" + data.current_bid.toLocaleString();
+                img.src = "https://media.giphy.com/media/26u4cqiYI30juCOGY/giphy.gif";
+            } else {
+                text.innerText = "SOLD!"; text.style.color = "#1f2937";
+                detail.innerText = "Sold to " + (data.high_bidder_name || "Unknown") + " for $" + data.current_bid.toLocaleString();
+                img.src = "https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExcGJrenUwMW84Mmpia3dpazF1b3JmZTdyNWI2d3Izd2tudGVlbzRuYyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l41YAbDsTJXKANjmE/giphy.gif";
+            }
+            modal.style.display = 'flex';
         }
 
         window.addToBid = function(amount) { document.getElementById('bidInput').value = (parseInt(document.getElementById('bidInput').value) || globalCurrentBid) + amount; }

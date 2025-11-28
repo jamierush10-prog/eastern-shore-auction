@@ -18,38 +18,33 @@
         .card { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 30px; }
         .section-title { border-bottom: 2px solid #e5e7eb; padding-bottom: 10px; margin-bottom: 20px; font-size: 1.5rem; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
         
-        /* PROFILE STYLES */
-        .profile-header { display: flex; align-items: flex-start; gap: 30px; margin-bottom: 30px; }
-        .profile-img-container { position: relative; width: 120px; height: 120px; flex-shrink: 0; }
-        .profile-avatar-large { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); background: #e5e7eb; }
-        .profile-upload-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; background: rgba(0,0,0,0.5); color: white; display: flex; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.2s; cursor: pointer; font-size: 0.8rem; text-align: center; font-weight: bold; }
-        .profile-img-container:hover .profile-upload-overlay { opacity: 1; }
-        #profileFileInput { display: none; }
-
-        .profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; flex-grow: 1; }
+        .profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 20px; }
         .profile-item { display: flex; flex-direction: column; }
         .profile-label { font-size: 0.85rem; font-weight: bold; color: #6b7280; text-transform: uppercase; margin-bottom: 5px; }
         .profile-value { font-size: 1.1rem; font-weight: 500; color: #1f2937; display: flex; align-items: center; }
         .profile-rating { font-size: 1rem; color: var(--gold-color); margin-left: 10px; }
         .rating-text { font-size: 0.8rem; color: #6b7280; vertical-align: middle; }
-        
-        /* BIO STYLE */
         .bio-text { font-style: italic; color: #4b5563; line-height: 1.5; font-size: 1rem; background: #f9fafb; padding: 10px; border-radius: 6px; border-left: 4px solid var(--primary-color); }
 
-        /* BUTTONS */
-        .btn { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; color: white; display: inline-block; }
+        .btn { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; color: white; text-decoration: none; display: inline-block; }
         .btn-save { background: var(--primary-color); }
         .btn-reset { background: #4b5563; font-size: 0.9rem; }
         .btn-list { background: var(--primary-color); font-size: 1rem; }
         .btn-cancel { background: var(--danger-color); padding: 5px 10px; font-size: 0.8rem; }
+        .btn-edit { background: var(--primary-color); padding: 5px 10px; font-size: 0.8rem; margin-right: 5px; }
         .btn-edit-profile { background: #0f766e; font-size: 0.9rem; margin-right: 10px; }
+        
         .btn-rate { background: var(--gold-color); padding: 6px 12px; font-size: 0.8rem; color: #fff; text-shadow: 0 1px 1px rgba(0,0,0,0.2); margin-left: 5px; }
         .btn-contact { background: var(--info-color); padding: 6px 12px; font-size: 0.8rem; color: #fff; }
-
-        /* TABLES */
+        
+        /* FINANCIAL TEXT */
+        .fin-row { font-size: 0.85rem; color: #4b5563; margin-bottom: 2px; }
+        .fin-label { font-weight: bold; color: #6b7280; text-transform: uppercase; font-size: 0.7rem; }
+        .fin-val { font-weight: bold; color: #1f2937; font-size: 1.1rem; }
+        
         .lists-container { display: flex; flex-direction: column; gap: 30px; } 
         table { width: 100%; border-collapse: collapse; font-size: 0.9rem; margin-top: 10px; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e5e7eb; vertical-align: middle; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e5e7eb; vertical-align: top; }
         th { color: #6b7280; font-size: 0.8rem; text-transform: uppercase; background: #f9fafb; }
         
         .status-badge { padding: 4px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; }
@@ -62,23 +57,19 @@
         /* MODALS */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
+        
+        /* PROFILE IMAGE */
+        .profile-header { display: flex; align-items: flex-start; gap: 30px; margin-bottom: 30px; }
+        .profile-img-container { position: relative; width: 120px; height: 120px; flex-shrink: 0; }
+        .profile-avatar-large { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); background: #e5e7eb; }
+        .profile-upload-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; background: rgba(0,0,0,0.5); color: white; display: flex; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.2s; cursor: pointer; font-size: 0.8rem; text-align: center; font-weight: bold; }
+        .profile-img-container:hover .profile-upload-overlay { opacity: 1; }
+        #profileFileInput { display: none; }
+
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-size: 0.9rem; font-weight: bold; margin-bottom: 5px; color: #4b5563; }
         .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
         input[type="file"] { padding: 6px; background: #f9fafb; }
-
-        /* FINANCIAL TEXT */
-        .fin-block { display: flex; flex-direction: column; gap: 2px; }
-        .fin-row { font-size: 0.85rem; color: #4b5563; display: flex; justify-content: space-between; width: 140px; }
-        .fin-label { font-weight: bold; color: #6b7280; text-transform: uppercase; font-size: 0.7rem; }
-        .fin-val { font-weight: bold; color: #1f2937; }
-        .fin-fee { color: var(--danger-color); }
-        .fin-net { color: var(--success-color); font-size: 1rem; border-top: 1px solid #e5e7eb; padding-top: 2px; margin-top: 2px; }
-        .alert-good { color: var(--success-color); font-weight: bold; font-size: 0.85rem; }
-        .alert-bad { color: var(--danger-color); font-weight: bold; font-size: 0.85rem; }
-        .pay-link { display: block; width: 100%; padding: 12px; margin-bottom: 10px; text-align: center; text-decoration: none; font-weight: bold; color: white; border-radius: 6px; }
-        .pay-venmo { background: #008CFF; }
-        .pay-cashapp { background: #00D632; }
 
         .star-input { display: flex; flex-direction: row-reverse; justify-content: center; gap: 5px; font-size: 2rem; }
         .star-input input { display: none; }
@@ -106,42 +97,20 @@
                 Account Details
                 <button class="btn btn-list" onclick="openListingModal()">+ List an Item</button>
             </div>
-            
             <div class="profile-header">
                 <div class="profile-img-container" onclick="document.getElementById('profileFileInput').click()">
                     <img src="https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y" id="currentProfileImg" class="profile-avatar-large">
                     <div class="profile-upload-overlay">Click to Change</div>
                     <input type="file" id="profileFileInput" accept="image/*" onchange="handleProfileImageUpload(this)">
                 </div>
-
                 <div class="profile-grid">
-                    <div class="profile-item">
-                        <span class="profile-label">Username</span>
-                        <div class="profile-value">
-                            <span id="dispName">Loading...</span>
-                            <span id="userRatingDisplay" class="profile-rating"></span>
-                        </div>
-                    </div>
-                    <div class="profile-item">
-                        <span class="profile-label">Member Since</span>
-                        <div id="dispDate" class="profile-value">...</div>
-                    </div>
-                    <div class="profile-item">
-                        <span class="profile-label">Email</span>
-                        <div id="dispEmail" class="profile-value">...</div>
-                    </div>
-                    <div class="profile-item">
-                        <span class="profile-label">Phone Number</span>
-                        <div id="dispPhone" class="profile-value">...</div>
-                    </div>
-                    
-                    <div class="profile-item" style="grid-column: 1 / -1;">
-                        <span class="profile-label">About Me (Bio)</span>
-                        <div id="dispBio" class="bio-text">No bio information provided yet.</div>
-                    </div>
+                    <div class="profile-item"><span class="profile-label">Username</span><div class="profile-value"><span id="dispName">Loading...</span><span id="userRatingDisplay" class="profile-rating"></span></div></div>
+                    <div class="profile-item"><span class="profile-label">Member Since</span><div id="dispDate" class="profile-value">...</div></div>
+                    <div class="profile-item"><span class="profile-label">Email</span><div id="dispEmail" class="profile-value">...</div></div>
+                    <div class="profile-item"><span class="profile-label">Phone Number</span><div id="dispPhone" class="profile-value">...</div></div>
+                    <div class="profile-item" style="grid-column: 1 / -1;"><span class="profile-label">About Me (Bio)</span><div id="dispBio" class="bio-text">No bio information provided yet.</div></div>
                 </div>
             </div>
-
             <div style="border-top: 1px solid #eee; padding-top: 20px;">
                 <button class="btn btn-edit-profile" onclick="openEditProfileModal()">Edit Contact Info & Bio</button>
                 <button class="btn btn-reset" onclick="resetPassword()">Reset Password</button>
@@ -159,17 +128,11 @@
         <div class="lists-container">
             <div class="card">
                 <div class="section-title" style="color: var(--primary-color);">📦 Items Purchased (You Won)</div>
-                <table>
-                    <thead><tr><th>Date</th><th>Item</th><th>Seller</th><th>Financials</th><th>Action</th></tr></thead>
-                    <tbody id="purchaseList"><tr><td colspan="5">Loading...</td></tr></tbody>
-                </table>
+                <table><thead><tr><th>Date</th><th>Item</th><th>Seller</th><th>Price</th><th>Action</th></tr></thead><tbody id="purchaseList"><tr><td colspan="5">Loading...</td></tr></tbody></table>
             </div>
             <div class="card">
                 <div class="section-title" style="color: var(--success-color);">💰 Items Sold (You Sold)</div>
-                <table>
-                    <thead><tr><th>Date</th><th>Item</th><th>Buyer</th><th>Financial Breakdown</th><th>Action</th></tr></thead>
-                    <tbody id="salesList"><tr><td colspan="5">Loading...</td></tr></tbody>
-                </table>
+                <table><thead><tr><th>Date</th><th>Item</th><th>Buyer</th><th>Sold For</th><th>Action</th></tr></thead><tbody id="salesList"><tr><td colspan="5">Loading...</td></tr></tbody></table>
             </div>
         </div>
     </div>
@@ -180,17 +143,8 @@
             <form onsubmit="event.preventDefault(); saveProfileChanges();">
                 <div class="form-group"><label>Email Address (Contact):</label><input type="email" id="editEmailInput" required></div>
                 <div class="form-group"><label>Phone Number:</label><input type="tel" id="editPhoneInput" required></div>
-                
-                <div class="form-group">
-                    <label>About Me (Public Bio):</label>
-                    <textarea id="editBioInput" rows="4" placeholder="Tell others a little about yourself..."></textarea>
-                </div>
-
-                <div class="form-group" style="display:flex; align-items:center; gap:10px; background:#f9fafb; padding:10px; border-radius:6px;">
-                    <input type="checkbox" id="editShowEmail" style="width:20px; height:20px;">
-                    <label for="editShowEmail" style="margin:0; cursor:pointer; font-weight:normal;">Show my email on public profile?</label>
-                </div>
-
+                <div class="form-group"><label>About Me (Public Bio):</label><textarea id="editBioInput" rows="4"></textarea></div>
+                <div class="form-group" style="display:flex; align-items:center; gap:10px; background:#f9fafb; padding:10px; border-radius:6px;"><input type="checkbox" id="editShowEmail" style="width:20px; height:20px;"><label for="editShowEmail" style="margin:0; cursor:pointer; font-weight:normal;">Show my email on public profile?</label></div>
                 <button type="submit" class="btn btn-save" style="width:100%">Save Changes</button>
                 <button type="button" class="btn btn-reset" style="width:100%; margin:10px 0 0 0;" onclick="document.getElementById('editProfileModal').style.display='none'">Cancel</button>
             </form>
@@ -199,22 +153,19 @@
 
     <div id="listingModal" class="modal-overlay">
         <div class="modal-content">
-            <h2 style="margin-top:0;">List Item for Auction</h2>
+            <h2 id="listingModalTitle" style="margin-top:0;">List Item for Auction</h2>
             <form onsubmit="event.preventDefault(); submitListing();">
+                <input type="hidden" id="editKey"> 
+                <input type="hidden" id="existingMainUrl"><input type="hidden" id="existingThumb1"><input type="hidden" id="existingThumb2"><input type="hidden" id="existingThumb3">
+                
                 <div class="form-group"><label>Seller Name (You):</label><input type="text" id="listSeller" disabled></div>
                 <div class="form-group"><label>Item Title:</label><input type="text" id="listTitle" required></div>
                 <div class="form-group"><label>Subtitle:</label><input type="text" id="listSub" placeholder="Condition / Category"></div>
-                <div class="form-group" style="background:#f0f9ff; padding:10px; border-radius:6px; border:1px solid #bae6fd;">
-                    <label>📍 Item Location:</label><input type="text" id="listLoc" required>
-                </div>
-                <div class="form-group" style="background:#f0f9ff; padding:10px; border-radius:6px; border:1px solid #bae6fd;">
-                    <label>💵 Payment Accepted:</label><input type="text" id="listPay" required>
-                </div>
-                <div class="form-group" style="background:#f0f9ff; padding:10px; border-radius:6px; border:1px solid #bae6fd;">
-                    <label>🚚 Delivery Preference:</label><input type="text" id="listDel" required>
-                </div>
+                <div class="form-group" style="background:#f0f9ff; padding:10px; border-radius:6px; border:1px solid #bae6fd;"><label>📍 Item Location:</label><input type="text" id="listLoc" required></div>
+                <div class="form-group" style="background:#f0f9ff; padding:10px; border-radius:6px; border:1px solid #bae6fd;"><label>💵 Payment Accepted:</label><input type="text" id="listPay" required></div>
+                <div class="form-group" style="background:#f0f9ff; padding:10px; border-radius:6px; border:1px solid #bae6fd;"><label>🚚 Delivery Preference:</label><input type="text" id="listDel" required></div>
                 <div class="form-group"><label>Starting Price ($):</label><input type="number" id="listPrice" required></div>
-                <div class="form-group"><label>Main Photo (Required):</label><input type="file" id="fileMain" accept="image/*" required></div>
+                <div class="form-group"><label>Main Photo:</label><input type="file" id="fileMain" accept="image/*"><small style="color:#666;">(Required for new items. Leave blank to keep existing)</small></div>
                 <div class="form-group"><label>Extra Photo 1:</label><input type="file" id="fileThumb1" accept="image/*"></div>
                 <div class="form-group"><label>Extra Photo 2:</label><input type="file" id="fileThumb2" accept="image/*"></div>
                 <div class="form-group"><label>Extra Photo 3:</label><input type="file" id="fileThumb3" accept="image/*"></div>
@@ -300,7 +251,6 @@
             });
         }
 
-        // --- PROFILE LOGIC (UPDATED FOR BIO) ---
         function loadUserProfile(uid) {
             const userRef = ref(db, `users/${uid}`);
             onValue(userRef, (snapshot) => {
@@ -311,17 +261,13 @@
                             document.getElementById('adminPanelBtn').style.display = 'block';
                         }
                     });
-
                     document.getElementById('dispName').innerText = data.name || currentUser.displayName;
                     document.getElementById('dispEmail').innerText = data.email || currentUser.email;
                     document.getElementById('dispPhone').innerText = data.phone || "Not Set";
+                    document.getElementById('dispBio').innerText = data.bio || "No bio information provided yet.";
                     if(data.profile_image_url) document.getElementById('currentProfileImg').src = data.profile_image_url;
                     const joinDate = data.joined_at ? new Date(data.joined_at).toLocaleDateString() : new Date().toLocaleDateString();
                     document.getElementById('dispDate').innerText = joinDate;
-
-                    // Bio
-                    document.getElementById('dispBio').innerText = data.bio || "No bio information provided yet.";
-                    
                     const avg = data.rating_count > 0 ? (data.rating_total / data.rating_count).toFixed(1) : "New";
                     document.getElementById('userRatingDisplay').innerHTML = `<span style="color:#f59e0b">★</span> <span class="rating-text">(${avg} / 5)</span>`;
                     document.getElementById('editShowEmail').checked = data.show_email_publicly || false;
@@ -348,31 +294,20 @@
         window.openEditProfileModal = function() {
             document.getElementById('editEmailInput').value = document.getElementById('dispEmail').innerText;
             document.getElementById('editPhoneInput').value = document.getElementById('dispPhone').innerText !== "Not Set" ? document.getElementById('dispPhone').innerText : "";
-            
-            // PRE-FILL BIO
             const bioText = document.getElementById('dispBio').innerText;
             document.getElementById('editBioInput').value = bioText === "No bio information provided yet." ? "" : bioText;
-            
             document.getElementById('editProfileModal').style.display = 'flex';
         }
-
         window.saveProfileChanges = function() {
             const newEmail = document.getElementById('editEmailInput').value;
             const newPhone = document.getElementById('editPhoneInput').value;
-            const newBio = document.getElementById('editBioInput').value; // NEW
+            const newBio = document.getElementById('editBioInput').value;
             const showEmail = document.getElementById('editShowEmail').checked;
-            
-            update(ref(db, `users/${currentUser.uid}`), { 
-                email: newEmail, 
-                phone: newPhone, 
-                bio: newBio, 
-                show_email_publicly: showEmail 
-            }).then(() => {
+            update(ref(db, `users/${currentUser.uid}`), { email: newEmail, phone: newPhone, bio: newBio, show_email_publicly: showEmail }).then(() => {
                 alert("Profile Updated!"); document.getElementById('editProfileModal').style.display = 'none';
             });
         }
 
-        // --- HISTORY, CONTACT, RATING, LISTINGS ---
         function loadUserHistory(userEmail) {
             const historyRef = ref(db, 'sales_history');
             onValue(historyRef, (snapshot) => {
@@ -381,18 +316,21 @@
                 purchasesTbody.innerHTML = ""; salesTbody.innerHTML = "";
                 const data = snapshot.val();
                 if (!data) { purchasesTbody.innerHTML = "<tr><td colspan='5'>No records.</td></tr>"; salesTbody.innerHTML = "<tr><td colspan='5'>No records.</td></tr>"; return; }
-                const items = Object.values(data).sort((a, b) => b.date - a.date);
+                const items = Object.entries(data).map(([key, val]) => ({ key, ...val }));
+                items.sort((a, b) => b.date - a.date);
                 items.forEach(item => {
                     const dateStr = new Date(item.date).toLocaleDateString();
+                    // BOUGHT
                     if (item.winner_email && item.winner_email.toLowerCase() === userEmail.toLowerCase()) {
                         const seller = allUsersCache.find(u => u.email && u.email.toLowerCase() === (item.seller_email || "").toLowerCase());
                         const sellerName = seller ? seller.name : (item.seller_name || "Unknown");
                         const sellerEmail = item.seller_email || "";
                         const sellerPhone = seller ? seller.phone : "N/A";
                         const tr = document.createElement('tr');
-                        tr.innerHTML = `<td>${dateStr}</td><td>${item.item_title}</td><td>${sellerName}</td><td><div class="fin-block"><div class="fin-row"><span class="fin-label">Total:</span> <span class="fin-val">$${item.final_price}</span></div></div></td><td><button class="btn btn-contact" onclick="viewContact('${sellerName}', '${sellerEmail}', '${sellerPhone}')">Contact</button><button class="btn btn-rate" onclick="openRateModal('${sellerEmail}', '${sellerName}')">Rate</button></td>`;
+                        tr.innerHTML = `<td>${dateStr}</td><td>${item.item_title}</td><td>${sellerName}</td><td><span class="fin-val">$${item.final_price}</span></td><td><button class="btn btn-contact" onclick="viewContact('${sellerName}', '${sellerEmail}', '${sellerPhone}')">Contact</button><button class="btn btn-rate" onclick="openRateModal('${sellerEmail}', '${sellerName}')">Rate</button></td>`;
                         purchasesTbody.appendChild(tr);
                     }
+                    // SOLD
                     const isSeller = (item.seller_email && item.seller_email.toLowerCase() === userEmail.toLowerCase()) || (item.seller_name && item.seller_name === currentUser.displayName);
                     if (isSeller) {
                         const buyer = allUsersCache.find(u => u.email && u.email.toLowerCase() === (item.winner_email || "").toLowerCase());
@@ -400,7 +338,7 @@
                         const buyerEmail = item.winner_email || "";
                         const buyerPhone = buyer ? buyer.phone : "N/A";
                         const tr = document.createElement('tr');
-                        tr.innerHTML = `<td>${dateStr}</td><td>${item.item_title}</td><td>${buyerName}</td><td><div class="fin-block"><div class="fin-row"><span class="fin-label">Sale:</span> <span class="fin-val">$${item.final_price}</span></div></div></td><td><button class="btn btn-contact" onclick="viewContact('${buyerName}', '${buyerEmail}', '${buyerPhone}')">Contact</button><button class="btn btn-rate" onclick="openRateModal('${buyerEmail}', '${buyerName}')">Rate</button></td>`;
+                        tr.innerHTML = `<td>${dateStr}</td><td>${item.item_title}</td><td>${buyerName}</td><td><span class="fin-val">$${item.final_price}</span></td><td><button class="btn btn-contact" onclick="viewContact('${buyerName}', '${buyerEmail}', '${buyerPhone}')">Contact</button><button class="btn btn-rate" onclick="openRateModal('${buyerEmail}', '${buyerName}')">Rate</button></td>`;
                         salesTbody.appendChild(tr);
                     }
                 });
@@ -430,39 +368,150 @@
             }
         }
 
-        window.openListingModal = function() { document.getElementById('listSeller').value = document.getElementById('accName').value; document.getElementById('listingModal').style.display = 'flex'; }
-        async function uploadImage(file) { if (!file) return ""; const fileRef = sRef(storage, 'user_uploads/' + Date.now() + '_' + file.name); await uploadBytes(fileRef, file); return await getDownloadURL(fileRef); }
+        // --- LISTINGS LOGIC ---
+        window.openListingModal = function() {
+            resetListingForm();
+            document.getElementById('listingModalTitle').innerText = "List Item for Auction";
+            document.getElementById('listSeller').value = document.getElementById('dispName').innerText;
+            document.getElementById('listingModal').style.display = 'flex';
+        }
+
+        // EDIT LOGIC (NEW)
+        window.editListing = function(key) {
+            get(ref(db, `inventory/${key}`)).then((snapshot) => {
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    document.getElementById('listingModalTitle').innerText = "Edit Listing";
+                    document.getElementById('editKey').value = key;
+                    
+                    document.getElementById('listSeller').value = data.seller_name;
+                    document.getElementById('listTitle').value = data.title;
+                    document.getElementById('listSub').value = data.subtitle;
+                    document.getElementById('listLoc').value = data.location;
+                    document.getElementById('listPay').value = data.payment_methods;
+                    document.getElementById('listDel').value = data.delivery_method;
+                    document.getElementById('listPrice').value = data.start_price;
+                    document.getElementById('listDesc').value = data.description;
+                    
+                    document.getElementById('existingMainUrl').value = data.image_url || "";
+                    if(data.images) {
+                        document.getElementById('existingThumb1').value = data.images.thumb1 || "";
+                        document.getElementById('existingThumb2').value = data.images.thumb2 || "";
+                        document.getElementById('existingThumb3').value = data.images.thumb3 || "";
+                    }
+                    document.getElementById('listingModal').style.display = 'flex';
+                }
+            });
+        }
+        
+        function resetListingForm() {
+            document.querySelector('form').reset();
+            document.getElementById('editKey').value = "";
+            document.getElementById('existingMainUrl').value = "";
+            document.getElementById('existingThumb1').value = "";
+            document.getElementById('existingThumb2').value = "";
+            document.getElementById('existingThumb3').value = "";
+        }
+
+        async function uploadImage(file) {
+            if (!file) return "";
+            const fileRef = sRef(storage, 'user_uploads/' + Date.now() + '_' + file.name);
+            await uploadBytes(fileRef, file);
+            return await getDownloadURL(fileRef);
+        }
+
         window.submitListing = async function() {
-            const submitBtn = document.getElementById('submitListBtn'); submitBtn.disabled = true; submitBtn.innerText = "Processing Images...";
+            const submitBtn = document.getElementById('submitListBtn');
+            submitBtn.disabled = true; submitBtn.innerText = "Processing Images...";
             try {
-                const mainFile = document.getElementById('fileMain').files[0]; if(!mainFile) { alert("Main photo required."); submitBtn.disabled = false; return; }
-                const mainUrl = await uploadImage(mainFile);
-                const thumb1Url = await uploadImage(document.getElementById('fileThumb1').files[0]); const thumb2Url = await uploadImage(document.getElementById('fileThumb2').files[0]); const thumb3Url = await uploadImage(document.getElementById('fileThumb3').files[0]);
-                const newItem = {
-                    title: document.getElementById('listTitle').value, subtitle: document.getElementById('listSub').value, start_price: parseInt(document.getElementById('listPrice').value),
-                    image_url: mainUrl, description: document.getElementById('listDesc').value, location: document.getElementById('listLoc').value, payment_methods: document.getElementById('listPay').value, delivery_method: document.getElementById('listDel').value,
-                    owner_uid: currentUser.uid, seller_name: document.getElementById('listSeller').value, seller_email: currentUser.email, approval_status: "pending", lot: 0, times_run: 0, is_featured: false,
+                const key = document.getElementById('editKey').value;
+                const mainFile = document.getElementById('fileMain').files[0];
+                // If new file, upload. Else use existing. If neither, error (only for new items).
+                const mainUrl = mainFile ? await uploadImage(mainFile) : document.getElementById('existingMainUrl').value;
+                const thumb1Url = await uploadImage(document.getElementById('fileThumb1').files[0]) || document.getElementById('existingThumb1').value;
+                const thumb2Url = await uploadImage(document.getElementById('fileThumb2').files[0]) || document.getElementById('existingThumb2').value;
+                const thumb3Url = await uploadImage(document.getElementById('fileThumb3').files[0]) || document.getElementById('existingThumb3').value;
+
+                if(!mainUrl) { alert("Main photo required."); submitBtn.disabled = false; submitBtn.innerText = "Submit Item"; return; }
+
+                const itemData = {
+                    title: document.getElementById('listTitle').value,
+                    subtitle: document.getElementById('listSub').value,
+                    start_price: parseInt(document.getElementById('listPrice').value),
+                    image_url: mainUrl,
+                    description: document.getElementById('listDesc').value,
+                    location: document.getElementById('listLoc').value,
+                    payment_methods: document.getElementById('listPay').value,
+                    delivery_method: document.getElementById('listDel').value,
+                    owner_uid: currentUser.uid,
+                    seller_name: document.getElementById('listSeller').value,
+                    seller_email: currentUser.email,
+                    approval_status: "pending", // Always reset to pending on edit
+                    lot: 0, times_run: 0, is_featured: false,
                     images: { thumb1: thumb1Url, thumb2: thumb2Url, thumb3: thumb3Url }
                 };
-                await push(ref(db, 'inventory'), newItem); alert("Item submitted successfully!"); document.getElementById('listingModal').style.display = 'none'; document.querySelector('form').reset();
-            } catch (error) { console.error(error); alert("Error: " + error.message); } finally { submitBtn.disabled = false; submitBtn.innerText = "Submit Item"; }
+
+                if(key) {
+                    await update(ref(db, `inventory/${key}`), itemData);
+                    alert("Listing updated! It is now under review.");
+                } else {
+                    await push(ref(db, 'inventory'), itemData);
+                    alert("Item submitted successfully!");
+                }
+
+                document.getElementById('listingModal').style.display = 'none';
+                resetListingForm();
+            } catch (error) { console.error(error); alert("Error: " + error.message); } 
+            finally { submitBtn.disabled = false; submitBtn.innerText = "Submit Item"; }
         }
+
         function loadUserListings(uid) {
             const invRef = ref(db, 'inventory');
             onValue(invRef, (snapshot) => {
-                const tbody = document.getElementById('myListingsBody'); tbody.innerHTML = ""; const data = snapshot.val(); if(!data) { tbody.innerHTML = "<tr><td colspan='5'>No items listed.</td></tr>"; return; }
+                const tbody = document.getElementById('myListingsBody');
+                tbody.innerHTML = "";
+                const data = snapshot.val();
+                if(!data) { tbody.innerHTML = "<tr><td colspan='5'>No items listed.</td></tr>"; return; }
                 const items = Object.entries(data).map(([key, val]) => ({ ...val, key })).filter(item => item.owner_uid === uid);
                 items.forEach(item => {
-                    let statusBadge = '<span class="status-badge st-review">Under Review</span>'; let resultText = "-";
-                    if (item.approval_status === 'inactive') { statusBadge = '<span class="status-badge st-inactive">Inactive</span>'; } else if (item.status_label && item.status_label.includes("SOLD")) { statusBadge = '<span class="status-badge st-sold">Sold</span>'; resultText = item.status_label; } else if (item.is_featured) { statusBadge = '<span class="status-badge st-scheduled">Scheduled</span>'; } else if (item.lot > 0) { statusBadge = '<span class="status-badge st-approved">Approved</span>'; }
+                    let statusBadge = '<span class="status-badge st-review">Under Review</span>';
+                    let resultText = "-";
+                    if (item.approval_status === 'inactive') { statusBadge = '<span class="status-badge st-inactive">Inactive</span>'; } 
+                    else if (item.status_label && item.status_label.includes("SOLD")) { statusBadge = '<span class="status-badge st-sold">Sold</span>'; resultText = item.status_label; } 
+                    else if (item.is_featured) { statusBadge = '<span class="status-badge st-scheduled">Scheduled</span>'; } 
+                    else if (item.lot > 0) { statusBadge = '<span class="status-badge st-approved">Approved</span>'; }
+                    
+                    let actionButtons = "";
+                    if (item.approval_status !== 'inactive' && !item.status_label?.includes("SOLD")) {
+                        actionButtons = `
+                            <button class="btn btn-edit" onclick="editListing('${item.key}')">Edit</button>
+                            <button class="btn btn-cancel" onclick="makeInactive('${item.key}')">Deactivate</button>
+                        `;
+                    }
+
                     const tr = document.createElement('tr');
-                    tr.innerHTML = `<td>${statusBadge}</td><td>${item.title}</td><td>$${item.start_price}</td><td>${resultText}</td><td>${item.approval_status !== 'inactive' && !item.status_label?.includes("SOLD") ? `<button class="btn btn-cancel" onclick="makeInactive('${item.key}')">Deactivate</button>` : ''}</td>`;
+                    tr.innerHTML = `<td>${statusBadge}</td><td>${item.title}</td><td>$${item.start_price}</td><td>${resultText}</td><td>${actionButtons}</td>`;
                     tbody.appendChild(tr);
                 });
             });
         }
         window.makeInactive = function(key) { if(confirm("Remove this item?")) update(ref(db, `inventory/${key}`), { approval_status: 'inactive' }); }
-        window.resetPassword = function() { if(confirm(`Send a password reset email?`)) { sendPasswordResetEmail(auth, currentUser.email).then(() => alert("Email sent!")).catch((error) => alert("Error: " + error.message)); } }
+        
+        window.saveProfile = function() {
+            const newPhone = document.getElementById('accPhone').value;
+            const userRef = ref(db, `users/${currentUser.uid}`);
+            get(userRef).then((snapshot) => {
+                if(snapshot.exists()) { update(userRef, { phone: newPhone }).then(() => alert("Profile Updated!")); } 
+                else {
+                    set(userRef, { name: currentUser.displayName, email: currentUser.email, phone: newPhone, is_local: true, is_approved: true, joined_at: Date.now() }).then(() => { alert("Profile Created & Saved!"); location.reload(); });
+                }
+            });
+        }
+        window.resetPassword = function() {
+            if(confirm(`Send a password reset email?`)) {
+                sendPasswordResetEmail(auth, currentUser.email).then(() => alert("Email sent!")).catch((error) => alert("Error: " + error.message));
+            }
+        }
     </script>
 </body>
 </html>
