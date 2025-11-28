@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Live Auction | Eastern Shore Auction House</title>
+    <script src="https://download.agora.io/sdk/release/AgoraRTC_N-4.18.2.js"></script>
+    
     <style>
         /* --- CSS STYLES --- */
         :root { --primary-color: #2563eb; --urgent-color: #dc2626; --bg-color: #f3f4f6; --text-color: #1f2937; --border-color: #e5e7eb; --header-bg: #111827; --header-text: #f9fafb; --success-color: #16a34a; --gold-color: #f59e0b; }
@@ -12,11 +14,21 @@
         /* HEADER */
         .site-header { width: 100%; background-color: var(--header-bg); color: var(--header-text); padding: 20px 0; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 40px; position: relative; display: flex; justify-content: center; align-items: center; }
         .brand-name { font-family: "Georgia", "Times New Roman", serif; font-size: 1.8rem; letter-spacing: 1.5px; font-weight: bold; text-transform: uppercase; }
+        
         .header-left { position: absolute; left: 20px; display: flex; gap: 15px; align-items: center; }
         .nav-link { color: #d1d5db; text-decoration: none; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; gap: 5px; }
         .nav-link:hover { color: white; text-decoration: underline; }
-        .header-right { position: absolute; right: 20px; } 
+        
+        .header-right { position: absolute; right: 20px; display: flex; gap: 10px; align-items: center; } 
+
+        /* ADMIN BUTTON */
         #adminPanelBtn { display: none; background-color: var(--urgent-color); color: white; border: 1px solid white; padding: 8px 15px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; font-weight: bold; }
+
+        /* AUDIO CONTROLS */
+        .audio-status { font-size: 0.8rem; color: #10b981; display: none; align-items: center; gap: 5px; border: 1px solid #10b981; padding: 5px 10px; border-radius: 20px; }
+        .mic-btn { background-color: #374151; color: white; border: 1px solid #6b7280; padding: 8px 15px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; display: none; }
+        .mic-btn.active { background-color: var(--urgent-color); border-color: var(--urgent-color); animation: pulse-red 2s infinite; }
+        @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); } 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); } }
 
         /* LAYOUT */
         .auction-container { background: white; max-width: 1000px; width: 90%; display: grid; grid-template-columns: 1.2fr 1fr; gap: 40px; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin-bottom: 40px; }
@@ -36,6 +48,7 @@
         .mini-avatar { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd; }
         .bid-amount { font-weight: bold; color: var(--primary-color); }
 
+        /* DETAILS */
         .details-section { display: flex; flex-direction: column; }
         h1 { margin: 0 0 10px 0; font-size: 2rem; line-height: 1.1; }
         .subtitle { color: #6b7280; font-size: 0.9rem; margin-bottom: 10px; }
@@ -45,6 +58,7 @@
 
         .logistics-box { background-color: #f9fafb; border: 1px solid #e5e7eb; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 0.9rem; color: #4b5563; }
         .logistics-item { margin-bottom: 8px; display: flex; align-items: flex-start; gap: 10px; }
+        .logistics-item:last-child { margin-bottom: 0; }
         .log-icon { font-size: 1.1rem; min-width: 25px; }
         .log-text strong { color: #1f2937; display: block; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; }
 
@@ -56,12 +70,14 @@
         .current-bid-label { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; color: #6b7280; }
         .current-price { font-size: 3rem; font-weight: 800; color: var(--text-color); margin: 5px 0 20px 0; }
         
+        /* BID CONTROLS */
         .bid-controls { display: flex; flex-direction: column; gap: 15px; }
         .increment-buttons { display: flex; gap: 10px; }
         .inc-btn { flex: 1; padding: 10px; background: white; border: 1px solid var(--primary-color); color: var(--primary-color); border-radius: 4px; font-weight: bold; cursor: pointer; transition: all 0.2s; }
         .inc-btn:hover { background: var(--primary-color); color: white; }
         .inc-btn:disabled { border-color: #ccc; color: #ccc; cursor: not-allowed; }
         
+        /* INPUT WITH $ SIGN */
         .bid-input-row { position: relative; width: 100%; }
         .currency-symbol { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); font-size: 1.2rem; font-weight: bold; color: #374151; pointer-events: none; }
         input#bidInput { padding: 12px; padding-left: 30px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 1.2rem; font-weight: bold; width: 100%; box-sizing: border-box; text-align: center; }
@@ -74,12 +90,14 @@
         .winning-bid-status { background-color: #dcfce7 !important; color: #166534 !important; border-color: #86efac !important; }
         .user-badge { background: #e0f2fe; color: #0369a1; padding: 10px; border-radius: 6px; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border: 1px solid #bae6fd; }
 
-        /* CHAT */
+        /* CHAT SECTION */
         .chat-section { margin-top: 20px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 15px; }
         .chat-header { font-weight: bold; color: #374151; margin-bottom: 10px; display:flex; justify-content: space-between; align-items:center; }
         .chat-window { height: 200px; overflow-y: auto; background: white; border: 1px solid #e5e7eb; border-radius: 6px; padding: 10px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px; }
         .chat-msg { font-size: 0.9rem; line-height: 1.4; }
         .chat-msg strong { color: var(--primary-color); margin-right: 5px; }
+        .clickable-user { cursor: pointer; text-decoration: underline; text-decoration-style: dotted; }
+        .clickable-user:hover { color: var(--primary-color); }
         .chat-input-row { display: flex; gap: 10px; }
         #chatInput { padding: 10px; border: 1px solid #ccc; border-radius: 6px; flex: 1; font-size: 0.9rem; }
         .chat-btn { background-color: #374151; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; }
@@ -88,6 +106,15 @@
 
         .description-block h3 { border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px; }
         .description-text { line-height: 1.6; color: #4b5563; }
+
+        /* TIP JAR */
+        .tip-jar-box { margin-top: 30px; padding: 20px; background: #fffbeb; border: 1px solid #fcd34d; border-radius: 8px; text-align: center; }
+        .tip-title { font-weight: bold; color: #92400e; margin-bottom: 10px; font-size: 0.95rem; }
+        .tip-buttons { display: flex; gap: 10px; justify-content: center; }
+        .tip-link { display: flex; align-items: center; gap: 5px; padding: 8px 16px; border-radius: 20px; text-decoration: none; font-weight: bold; font-size: 0.9rem; color: white; transition: transform 0.2s; }
+        .tip-link:hover { transform: scale(1.05); }
+        .tip-venmo { background: #008CFF; }
+        .tip-cashapp { background: #00D632; }
 
         /* MODALS */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; }
@@ -98,7 +125,7 @@
         .btn-yes { background: var(--primary-color); color: white; }
         .btn-no { background: #e5e7eb; color: #374151; }
 
-        /* PUBLIC PROFILE MODAL */
+        /* PUBLIC PROFILE */
         .public-profile-header { text-align: center; margin-bottom: 20px; }
         .public-avatar { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 10px; }
         .public-name { font-size: 1.5rem; font-weight: bold; }
@@ -110,8 +137,6 @@
         .public-tab.active { border-bottom: 2px solid var(--primary-color); color: var(--primary-color); }
         .public-list { max-height: 200px; overflow-y: auto; list-style: none; padding: 0; margin: 0; }
         .public-item { padding: 8px; border-bottom: 1px solid #f3f4f6; font-size: 0.9rem; display: flex; justify-content: space-between; }
-        .clickable-user { cursor: pointer; text-decoration: underline; text-decoration-style: dotted; }
-        .clickable-user:hover { color: var(--primary-color); }
 
         #winnerIcon { font-size: 4rem; margin-bottom: 10px; }
         #winnerText { font-size: 1.8rem; font-weight: bold; margin: 10px 0; color: var(--text-color); }
@@ -141,8 +166,14 @@
             <span style="color:#4b5563">|</span>
             <div onclick="logout()" class="nav-link">Sign Out</div>
         </div>
+
         <div class="brand-name">The Auction House</div>
-        <div class="header-right"><button id="adminPanelBtn" onclick="openAdminPanel()">ADMIN DASHBOARD</button></div>
+        
+        <div class="header-right">
+            <div id="audioStatus" class="audio-status">🔊 Live Audio</div>
+            <button id="micBtn" class="mic-btn" onclick="toggleMic()">🎙️ Start Broadcast</button>
+            <button id="adminPanelBtn" onclick="openAdminPanel()">ADMIN DASHBOARD</button>
+        </div>
     </header>
 
     <div class="auction-container">
@@ -205,6 +236,14 @@
             <div class="description-block" style="margin-top:30px;">
                 <h3>Description</h3>
                 <div class="description-text" id="itemDescription">Loading...</div>
+            </div>
+
+            <div class="tip-jar-box">
+                <div class="tip-title">☕ Enjoying the Auction? Leave a Tip!</div>
+                <div class="tip-buttons">
+                    <a href="https://venmo.com/u/James-Rush-127" target="_blank" class="tip-link tip-venmo">Venmo</a>
+                    <a href="https://cash.app/$pawpawrush" target="_blank" class="tip-link tip-cashapp">Cash App</a>
+                </div>
             </div>
         </div>
     </div>
@@ -280,6 +319,12 @@
         let timerInterval = null;
         let currentPPUser = null;
 
+        // AGORA
+        let agoraClient = null;
+        let localAudioTrack = null;
+        let isMicOn = false;
+        const AGORA_APP_ID = "0177f2708e8e4fdd9f97b71065c3cab6"; 
+
         setTimeout(() => {
             const loader = document.getElementById('pageLoading');
             if(loader && loader.style.display !== 'none') loader.style.display = 'none';
@@ -290,14 +335,53 @@
                 currentUser = user;
                 document.getElementById('displayUsername').innerText = user.displayName || "Bidder";
                 preloadUserCache();
-                get(child(ref(db), `admins/${user.uid}`)).then((snapshot) => { if (snapshot.exists() && snapshot.val() === true) document.getElementById('adminPanelBtn').style.display = 'block'; });
+                get(child(ref(db), `admins/${user.uid}`)).then((snapshot) => { 
+                    if (snapshot.exists() && snapshot.val() === true) {
+                        document.getElementById('adminPanelBtn').style.display = 'block';
+                        document.getElementById('clearChatBtn').style.display = 'block';
+                        document.getElementById('micBtn').style.display = 'block';
+                    }
+                });
                 get(child(ref(db), `users/${user.uid}`)).then((snapshot) => { if(snapshot.exists()) { isUserApproved = snapshot.val().is_approved === true; } });
                 document.getElementById('pageLoading').style.display = 'none';
+                initAgora(user.uid);
             } else { window.location.href = "index.html"; }
         });
 
         window.logout = function() { signOut(auth).then(() => { window.location.href = "index.html"; }); }
         window.openAdminPanel = function() { window.location.href = 'admin.html'; }
+
+        // --- AGORA LOGIC ---
+        async function initAgora(uid) {
+            try {
+                agoraClient = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
+                agoraClient.on("user-published", async (user, mediaType) => {
+                    await agoraClient.subscribe(user, mediaType);
+                    if (mediaType === "audio") {
+                        user.audioTrack.play();
+                        document.getElementById('audioStatus').style.display = 'flex';
+                    }
+                });
+                agoraClient.on("user-unpublished", () => { document.getElementById('audioStatus').style.display = 'none'; });
+                await agoraClient.join(AGORA_APP_ID, "auction_room", null, uid);
+            } catch(e) { console.error("Agora Error:", e); }
+        }
+
+        window.toggleMic = async function() {
+            if (!isMicOn) {
+                localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack();
+                await agoraClient.publish([localAudioTrack]);
+                document.getElementById('micBtn').innerText = "🛑 Stop Broadcast";
+                document.getElementById('micBtn').classList.add('active');
+                isMicOn = true;
+            } else {
+                localAudioTrack.close();
+                await agoraClient.unpublish();
+                document.getElementById('micBtn').innerText = "🎙️ Start Broadcast";
+                document.getElementById('micBtn').classList.remove('active');
+                isMicOn = false;
+            }
+        }
 
         function preloadUserCache() {
             get(ref(db, 'users')).then((snapshot) => {
@@ -359,6 +443,7 @@
             });
         }
 
+        // --- CHAT ---
         const chatRef = query(ref(db, 'auction_chat'), limitToLast(50));
         window.sendChat = function() {
             const input = document.getElementById('chatInput');
@@ -381,6 +466,7 @@
             }
         });
 
+        // --- AUCTION LOGIC ---
         onValue(dbRef, (snapshot) => {
             const data = snapshot.val();
             if (data) {
@@ -403,6 +489,7 @@
             document.querySelector('.pricing-card').style.display = displayStyle;
             document.querySelector('.description-block').style.display = displayStyle;
             document.getElementById('sellerInfo').style.display = isClosed ? 'none' : (data.seller_name ? 'flex' : 'none');
+            document.querySelector('.tip-jar-box').style.display = displayStyle;
 
             document.getElementById('itemTitle').innerText = data.title;
             document.getElementById('itemSubtitle').innerText = data.subtitle;
@@ -516,20 +603,28 @@
         }
 
         function showWinnerModal(data) {
-            const modal = document.getElementById('winnerModal');
-            const text = document.getElementById('winnerText');
-            const detail = document.getElementById('winnerDetail');
-            const img = document.getElementById('winnerGif');
-            if (currentUser && data.high_bidder_uid === currentUser.uid) {
-                text.innerText = "Congratulations!"; text.style.color = "#16a34a"; 
-                detail.innerText = "You won this item for $" + data.current_bid.toLocaleString();
-                img.src = "https://media.giphy.com/media/26u4cqiYI30juCOGY/giphy.gif";
-            } else {
-                text.innerText = "SOLD!"; text.style.color = "#1f2937";
-                detail.innerText = "Sold to " + (data.high_bidder_name || "Unknown") + " for $" + data.current_bid.toLocaleString();
-                img.src = "https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExcGJrenUwMW84Mmpia3dpazF1b3JmZTdyNWI2d3Izd2tudGVlbzRuYyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l41YAbDsTJXKANjmE/giphy.gif";
-            }
-            modal.style.display = 'flex';
+            const reserve = data.reserve_price || 0;
+            const currentBid = data.current_bid || 0;
+            const hasBidder = !!data.high_bidder_uid;
+            const isSold = hasBidder && (currentBid >= reserve);
+
+            if (isSold) {
+                const modal = document.getElementById('winnerModal');
+                const text = document.getElementById('winnerText');
+                const detail = document.getElementById('winnerDetail');
+                const img = document.getElementById('winnerGif');
+
+                if (currentUser && data.high_bidder_uid === currentUser.uid) {
+                    text.innerText = "Congratulations!"; text.style.color = "#16a34a"; 
+                    detail.innerText = "You won this item for $" + currentBid.toLocaleString();
+                    img.src = "https://media.giphy.com/media/26u4cqiYI30juCOGY/giphy.gif";
+                } else {
+                    text.innerText = "SOLD!"; text.style.color = "#1f2937";
+                    detail.innerText = "Sold to " + (data.high_bidder_name || "Unknown") + " for $" + currentBid.toLocaleString();
+                    img.src = "https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExcGJrenUwMW84Mmpia3dpazF1b3JmZTdyNWI2d3Izd2tudGVlbzRuYyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l41YAbDsTJXKANjmE/giphy.gif";
+                }
+                modal.style.display = 'flex';
+            } 
         }
 
         window.addToBid = function(amount) { document.getElementById('bidInput').value = (parseInt(document.getElementById('bidInput').value) || globalCurrentBid) + amount; }
@@ -562,7 +657,9 @@
                 if (myMaxBid > currentLeaderMax) {
                     let newPrice = (currentLeaderMax > 0) ? (currentLeaderMax + 1) : (data.current_bid + 1);
                     if(newPrice < data.current_bid + 1) newPrice = data.current_bid + 1;
-                    update(dbRef, { current_bid: newPrice, high_bidder_max: myMaxBid, high_bidder_uid: currentUser.uid, high_bidder_name: currentUser.displayName, end_time: newEndTime });
+                    update(dbRef, { 
+                        current_bid: newPrice, high_bidder_max: myMaxBid, high_bidder_uid: currentUser.uid, high_bidder_name: currentUser.displayName, end_time: newEndTime 
+                    });
                     const historyRef = ref(db, auctionId + '/bid_history');
                     push(historyRef, { bidder_name: currentUser.displayName, amount: newPrice, timestamp: Date.now() });
                     alert("You are high bidder!");
