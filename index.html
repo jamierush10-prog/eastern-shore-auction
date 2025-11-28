@@ -9,80 +9,104 @@
         :root { --primary-color: #2563eb; --header-bg: #111827; --header-text: #f9fafb; --bg-color: #f3f4f6; --text-color: #1f2937; --live-color: #dc2626; --sold-color: #b91c1c; --info-color: #0891b2; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
         
-        header { width: 100%; background-color: var(--header-bg); color: var(--header-text); padding: 40px 20px; text-align: center; }
-        .brand-name { font-family: "Georgia", "Times New Roman", serif; font-size: 2.5rem; letter-spacing: 2px; font-weight: bold; text-transform: uppercase; margin-bottom: 10px; }
-        .tagline { font-size: 1.1rem; color: #9ca3af; font-style: italic; }
+        /* HERO HEADER */
+        .hero-section { width: 100%; background-color: var(--header-bg); color: var(--header-text); padding: 60px 20px 100px; text-align: center; }
+        .brand-name { font-family: "Georgia", "Times New Roman", serif; font-size: 2.5rem; letter-spacing: 2px; font-weight: bold; text-transform: uppercase; margin: 0 0 10px 0; }
+        .tagline { font-size: 1.1rem; color: #9ca3af; font-style: italic; margin: 0; }
 
-        .info-card { background: white; padding: 30px; margin-top: -30px; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; max-width: 600px; width: 90%; border-bottom: 4px solid var(--primary-color); }
-        .schedule-title { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; color: #6b7280; font-weight: bold; }
-        .schedule-time { font-size: 1.8rem; font-weight: 800; margin: 10px 0; }
+        /* MAIN CARD OVERLAP */
+        .info-card { background: white; padding: 40px; margin-top: -60px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; max-width: 700px; width: 90%; border-bottom: 4px solid var(--primary-color); position: relative; z-index: 10; }
         
-        .announcement-text { font-size: 1rem; color: #dc2626; margin-bottom: 15px; white-space: pre-wrap; line-height: 1.5; }
+        .schedule-title { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; color: #6b7280; font-weight: bold; margin-bottom: 10px; }
+        .schedule-time { font-size: 2.2rem; font-weight: 800; margin: 0 0 20px 0; color: #1f2937; }
+        
+        .announcement-text { font-size: 1.1rem; color: #dc2626; margin-bottom: 20px; white-space: pre-wrap; line-height: 1.5; font-weight: 500; }
         .announcement-text strong { font-weight: 900; text-decoration: underline; }
 
-        .enter-btn { cursor: pointer; display: inline-block; background-color: var(--primary-color); color: white; border: none; padding: 15px 40px; border-radius: 50px; font-weight: bold; font-size: 1.1rem; margin-top: 20px; transition: transform 0.2s, background 0.2s; box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3); text-decoration: none; }
+        .enter-btn { cursor: pointer; display: inline-block; background-color: var(--primary-color); color: white; border: none; padding: 15px 50px; border-radius: 50px; font-weight: bold; font-size: 1.2rem; margin-top: 10px; transition: transform 0.2s, background 0.2s; box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3); text-decoration: none; }
         .enter-btn:hover { background-color: #1d4ed8; transform: translateY(-2px); }
 
-        .how-btn { display: block; margin: 15px auto 0; background: transparent; border: none; color: var(--info-color); font-weight: bold; cursor: pointer; text-decoration: underline; }
-        .how-btn:hover { color: #0e7490; }
+        /* INFO LINK */
+        .how-btn { display: block; margin: 20px auto 0; background: transparent; border: 2px solid #e5e7eb; color: #4b5563; font-weight: bold; cursor: pointer; padding: 8px 16px; border-radius: 6px; transition: all 0.2s; }
+        .how-btn:hover { border-color: var(--primary-color); color: var(--primary-color); }
 
+        /* CATALOG GRID */
         .catalog-section { max-width: 1000px; width: 90%; margin: 50px 0; }
         .section-header { display: flex; justify-content: center; align-items: center; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px; margin-bottom: 30px; }
-        .section-title { font-family: "Georgia", serif; font-size: 1.8rem; margin: 0; }
+        .section-title { font-family: "Georgia", serif; font-size: 2rem; margin: 0; color: #1f2937; }
         
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
-        .card { background: white; border-radius: 8px; overflow: hidden; border: 1px solid #e5e7eb; transition: transform 0.2s; display: flex; flex-direction: column; position: relative; }
-        .card:hover { transform: translateY(-3px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        .card img { width: 100%; height: 200px; object-fit: cover; }
-        .card-body { padding: 15px; flex: 1; display: flex; flex-direction: column; }
-        .card-title { font-weight: bold; margin-bottom: 5px; font-size: 1.1rem; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
+        .card { background: white; border-radius: 8px; overflow: hidden; border: 1px solid #e5e7eb; transition: transform 0.2s; display: flex; flex-direction: column; position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px rgba(0,0,0,0.1); }
+        .card img { width: 100%; height: 220px; object-fit: cover; }
+        .card-body { padding: 20px; flex: 1; display: flex; flex-direction: column; }
+        .card-title { font-weight: bold; margin-bottom: 5px; font-size: 1.2rem; color: #1f2937; }
         .card-lot { font-size: 0.9rem; color: #6b7280; margin-top: auto; }
         .card-lot strong { color: #374151; }
 
+        /* WATERMARKS */
         .stamp { position: absolute; top: 10px; right: 10px; padding: 5px 12px; font-weight: 900; text-transform: uppercase; border-radius: 4px; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         .stamp-live { background-color: var(--live-color); color: white; animation: pulse 1.5s infinite; border: 2px solid white; }
-        .stamp-sold { background-color: rgba(255, 255, 255, 0.9); color: var(--sold-color); border: 3px solid var(--sold-color); transform: rotate(-15deg); top: 40px; right: 20px; font-size: 1.2rem; padding: 5px 20px; border-radius: 8px; letter-spacing: 2px; }
+        .stamp-sold { background-color: rgba(255, 255, 255, 0.95); color: var(--sold-color); border: 3px solid var(--sold-color); transform: rotate(-15deg); top: 40px; right: 20px; font-size: 1.2rem; padding: 5px 20px; border-radius: 8px; letter-spacing: 2px; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
-        #authModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-content { background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px rgba(0,0,0,0.2); position: relative; }
-        
-        .info-list { text-align: left; line-height: 1.6; color: #4b5563; margin-bottom: 20px; }
-        .info-list li { margin-bottom: 10px; list-style: none; position: relative; padding-left: 20px; }
-        .info-list li::before { content: "•"; color: var(--primary-color); font-weight: bold; position: absolute; left: 0; }
-        .info-list strong { color: #1f2937; }
+        /* MODALS */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 40px; border-radius: 12px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); position: relative; }
+        .close-modal-btn { position: absolute; top: 15px; right: 20px; font-size: 1.8rem; line-height: 1; cursor: pointer; color: #9ca3af; }
+        .close-modal-btn:hover { color: #374151; }
 
+        /* INFO LIST */
+        .info-list { text-align: left; line-height: 1.6; color: #4b5563; margin-bottom: 20px; padding: 0; }
+        .info-list li { margin-bottom: 15px; list-style: none; position: relative; padding-left: 25px; }
+        .info-list li::before { content: "•"; color: var(--primary-color); font-weight: bold; font-size: 1.5rem; position: absolute; left: 0; top: -5px; }
+        .info-list strong { color: #1f2937; display: block; margin-bottom: 2px; }
+
+        /* AUTH STYLES */
         .tabs { display: flex; margin-bottom: 20px; border-bottom: 2px solid #e5e7eb; }
         .tab { flex: 1; padding: 10px; text-align: center; cursor: pointer; font-weight: bold; color: #6b7280; transition: color 0.2s; }
         .tab.active { color: var(--primary-color); border-bottom: 2px solid var(--primary-color); }
-        .form-group { margin-bottom: 15px; }
-        .form-group input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
-        .action-btn { width: 100%; padding: 12px; background: var(--header-bg); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1rem; }
+        .form-group { margin-bottom: 15px; text-align: left; }
+        .form-group input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 1rem; }
+        .action-btn { width: 100%; padding: 12px; background: var(--header-bg); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1rem; margin-top: 10px; }
         .error-msg { color: #dc2626; font-size: 0.9rem; margin-bottom: 10px; display: none; text-align: center; background: #fee2e2; padding: 8px; border-radius: 4px; }
-        .close-reg { text-align: center; margin-top: 15px; cursor: pointer; color: #6b7280; font-size: 0.9rem; text-decoration: underline; }
+        .close-reg { text-align: center; margin-top: 15px; cursor: pointer; color: #6b7280; font-size: 0.9rem; text-decoration: underline; display: block; }
+        
         .radio-group { display: flex; gap: 15px; margin-bottom: 15px; }
         .radio-label { font-weight: normal; cursor: pointer; display: flex; align-items: center; gap: 5px; }
         #nonLocalWarning { display: none; background: #fff7ed; border: 1px solid #fed7aa; padding: 10px; border-radius: 6px; margin-bottom: 15px; font-size: 0.85rem; color: #9a3412; }
-        .close-modal-btn { position: absolute; top: 15px; right: 20px; font-size: 1.8rem; line-height: 1; cursor: pointer; color: #9ca3af; }
 
-        @media (max-width: 600px) { .section-header { flex-direction: column; gap: 15px; text-align: center; } }
+        /* LOT DETAILS MODAL */
+        .logistics-box { background-color: #f9fafb; border: 1px solid #e5e7eb; padding: 15px; border-radius: 8px; margin-top: 20px; font-size: 0.9rem; color: #4b5563; text-align: left; }
+        .logistics-item { margin-bottom: 8px; display: flex; align-items: flex-start; gap: 10px; }
+        .logistics-item:last-child { margin-bottom: 0; }
+        .log-icon { font-size: 1.1rem; min-width: 25px; }
+        .log-text strong { color: #1f2937; display: block; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        @media (max-width: 600px) { 
+            .section-header { flex-direction: column; gap: 15px; text-align: center; }
+            .hero-section { padding: 40px 20px 80px; }
+            .brand-name { font-size: 1.8rem; }
+            .schedule-time { font-size: 1.5rem; }
+        }
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="brand-name">Eastern Shore Auction House</div>
-        <div class="tagline">Daphne, Spanish Fort, Fairhope area local Auction</div>
-    </header>
+    <div class="hero-section">
+        <h1 class="brand-name">Eastern Shore Auction House</h1>
+        <p class="tagline">Daphne, Spanish Fort, Fairhope area local Auction</p>
+    </div>
 
     <div class="info-card">
         <div class="schedule-title">Next Live Auction Begins</div>
-        <div class="schedule-time" id="scheduleDisplay">Loading schedule...</div>
+        <div class="schedule-time" id="scheduleDisplay">Loading...</div>
         
         <div id="announcementDisplay" class="announcement-text"></div>
 
-        <p>Log in or Create an Account to bid.</p>
+        <p style="color:#6b7280; margin-bottom:20px;">Log in or Create an Account to bid.</p>
         <button onclick="openAuthModal()" class="enter-btn">Enter Auction Room</button>
+        
         <button onclick="openInfoModal()" class="how-btn">ℹ️ How This Auction Works</button>
     </div>
 
@@ -99,44 +123,75 @@
         <div class="modal-content">
             <h2 style="color: var(--primary-color); margin-top:0;">How It Works & Rules</h2>
             <ul class="info-list">
-                <li><strong>One Item at a Time:</strong> Unlike silent auctions, we sell one item live on the "block". You must be in the Auction Room to bid.</li>
-                <li><strong>Soft Close Timer:</strong> If a bid is placed in the last 30 seconds, the timer resets to 30 seconds to prevent sniping.</li>
-                <li><strong>Local Pickup:</strong> We are a local community. Buyers must arrange pickup with the seller in the Daphne/Fairhope area.</li>
-                </ul>
+                <li><strong>One Item at a Time</strong><br>Unlike silent auctions, we sell one item live on the "block". You must be in the Auction Room to bid.</li>
+                <li><strong>Soft Close Timer</strong><br>If a bid is placed in the last 30 seconds, the timer resets to 30 seconds to prevent sniping.</li>
+                <li><strong>Winning is Binding</strong><br>Winning a bid is a contract to purchase.</li>
+                <li><strong>Local Pickup</strong><br>We are a local community. Buyers must arrange pickup with the seller in the Daphne/Fairhope area.</li>
+            </ul>
             <button class="action-btn" onclick="document.getElementById('infoModal').style.display='none'">Got it!</button>
         </div>
     </div>
 
-    <div id="authModal" class="modal-overlay">
+    <div id="lotDetailModal" class="modal-overlay" onclick="closeLotModal(event)">
         <div class="modal-content">
+            <span class="close-modal-btn" onclick="document.getElementById('lotDetailModal').style.display='none'">&times;</span>
+            <h2 id="detailTitle" style="margin-top: 0; color: var(--primary-color);">Item Title</h2>
+            <div style="margin-bottom: 15px; font-weight: bold; color: #6b7280;" id="detailLot">Lot #</div>
+            
+            <div style="text-align: left;">
+                <strong>Description:</strong>
+                <p id="detailDescription" style="white-space: pre-wrap; color: #4b5563; margin-top:5px;">...</p>
+            </div>
+
+            <div class="logistics-box">
+                <div class="logistics-item">
+                    <div class="log-icon">📍</div>
+                    <div class="log-text"><strong>Location:</strong> <span id="detailLoc">...</span></div>
+                </div>
+                <div class="logistics-item">
+                    <div class="log-icon">💵</div>
+                    <div class="log-text"><strong>Payment:</strong> <span id="detailPay">...</span></div>
+                </div>
+                <div class="logistics-item">
+                    <div class="log-icon">🚚</div>
+                    <div class="log-text"><strong>Delivery:</strong> <span id="detailDel">...</span></div>
+                </div>
+            </div>
+            <button class="action-btn" style="margin-top: 20px;" onclick="document.getElementById('lotDetailModal').style.display='none'">Close</button>
+        </div>
+    </div>
+
+    <div id="authModal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 380px;">
             <div class="tabs"><div class="tab active" onclick="switchTab('login')">Log In</div><div class="tab" onclick="switchTab('register')">Sign Up</div></div>
             <div id="errorMsg" class="error-msg"></div>
+            
             <form id="loginForm" onsubmit="event.preventDefault(); handleLogin();">
                 <div class="form-group"><input type="email" id="loginEmail" placeholder="Email Address" required></div>
                 <div class="form-group"><input type="password" id="loginPass" placeholder="Password" required></div>
                 <button type="submit" class="action-btn">Log In</button>
             </form>
+            
             <form id="registerForm" style="display:none;" onsubmit="event.preventDefault(); handleRegister();">
                 <div class="form-group"><input type="text" id="regName" placeholder="Create Username (Visible to others)" required></div>
                 <div class="form-group"><input type="email" id="regEmail" placeholder="Email Address" required></div>
-                <div class="form-group"><input type="password" id="regPass" placeholder="Create Password (6+ chars)" required></div>
+                <div class="form-group"><input type="password" id="regPass" placeholder="Password (6+ chars)" required></div>
                 <div class="form-group">
-                    <label>Are you local to Daphne/Fairhope/Spanish Fort?</label>
+                    <label style="display:block; font-size:0.85rem; font-weight:bold; margin-bottom:5px;">Are you local to Daphne/Fairhope?</label>
                     <div class="radio-group">
                         <label class="radio-label"><input type="radio" name="isLocal" value="yes" checked onchange="toggleLocalFields(true)"> Yes</label>
                         <label class="radio-label"><input type="radio" name="isLocal" value="no" onchange="toggleLocalFields(false)"> No</label>
                     </div>
                 </div>
                 <div id="nonLocalWarning">
-                    <strong>Note:</strong> This site is geared for local buy/sell. <br>
-                    Account will require Admin approval before bidding.
+                    <strong>Note:</strong> Account will require Admin approval before bidding.
                     <div class="form-group" style="margin-top:10px;">
-                        <input type="text" id="pickupPlan" placeholder="Can you pick up or deliver locally?">
+                        <input type="text" id="pickupPlan" placeholder="Can you pick up locally?">
                     </div>
                 </div>
                 <button type="submit" class="action-btn">Create Account</button>
             </form>
-            <div class="close-reg" onclick="document.getElementById('authModal').style.display='none'">Cancel</div>
+            <span class="close-reg" onclick="document.getElementById('authModal').style.display='none'">Cancel</span>
         </div>
     </div>
 
@@ -145,7 +200,7 @@
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // --- PASTE KEYS HERE ---
+        // --- PASTE YOUR KEYS HERE ---
         const firebaseConfig = {
   apiKey: "AIzaSyCt0i8a7ZVRlNmSts9yM4uGwV7ghPU59rk",
   authDomain: "eastern-shore-auction.firebaseapp.com",
@@ -159,9 +214,11 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getDatabase(app);
+        let inventoryData = null;
 
         // --- UI LOGIC ---
         window.openInfoModal = function() { document.getElementById('infoModal').style.display = 'flex'; }
+        window.closeLotModal = function(e) { if(e.target === document.getElementById('lotDetailModal')) document.getElementById('lotDetailModal').style.display='none'; }
 
         // --- 1. LOAD SCHEDULE ---
         onValue(ref(db, 'settings'), (snapshot) => {
@@ -176,12 +233,21 @@
         });
 
         // --- 2. LOAD FEATURED ITEMS ---
-        let activeAuctionData = null;
-        let inventoryData = null;
+        let activeAuctionKey = null;
+        onValue(ref(db, 'active_auction'), (snapshot) => {
+            const data = snapshot.val();
+            activeAuctionKey = data ? data.inventory_key : null;
+            // Store end time to check live status
+            if(data) window.activeEndTime = data.end_time;
+            renderGrid(); 
+        });
 
-        onValue(ref(db, 'active_auction'), (snapshot) => { activeAuctionData = snapshot.val(); renderGrid(); });
-        onValue(ref(db, 'inventory'), (snapshot) => { inventoryData = snapshot.val(); renderGrid(); });
-        setInterval(renderGrid, 1000);
+        onValue(ref(db, 'inventory'), (snapshot) => {
+            inventoryData = snapshot.val();
+            renderGrid();
+        });
+
+        setInterval(renderGrid, 1000); // Refresh badges
 
         function renderGrid() {
             const grid = document.getElementById('upcomingGrid');
@@ -189,21 +255,49 @@
             const items = Object.entries(inventoryData).map(([key, val]) => ({ ...val, key }));
             const featuredItems = items.filter(item => item.is_featured === true);
             featuredItems.sort((a, b) => a.lot - b.lot);
+
             if (featuredItems.length === 0) { grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; color:#999;">Stay tuned! New lots coming soon.</div>'; return; }
+            
             grid.innerHTML = ""; 
+            const now = Date.now();
+
             featuredItems.forEach(item => {
                 const subtitleText = item.subtitle ? item.subtitle : "No details";
                 let stampHTML = "";
-                if (activeAuctionData && item.key === activeAuctionData.inventory_key) {
-                    if (Date.now() < activeAuctionData.end_time) { stampHTML = '<div class="stamp stamp-live">LIVE NOW</div>'; }
+
+                if (item.key === activeAuctionKey && window.activeEndTime > now) {
+                    stampHTML = '<div class="stamp stamp-live">LIVE NOW</div>';
                 } else if (item.status_label && item.status_label.includes("SOLD")) {
                     stampHTML = '<div class="stamp stamp-sold">SOLD</div>';
                 }
+
                 const card = document.createElement('div');
                 card.className = 'card';
-                card.innerHTML = `${stampHTML}<img src="${item.image_url}" alt="${item.title}"><div class="card-body"><div class="card-title">${item.title}</div><div class="card-lot"><strong>Lot #${item.lot}</strong> <br> ${subtitleText}</div></div>`;
+                card.setAttribute('onclick', `showLotDetails('${item.key}')`);
+                card.innerHTML = `
+                    ${stampHTML}
+                    <img src="${item.image_url}" alt="${item.title}">
+                    <div class="card-body">
+                        <div class="card-title">${item.title}</div>
+                        <div class="card-lot">
+                            <strong>Lot #${item.lot}</strong>
+                        </div>
+                    </div>
+                `;
                 grid.appendChild(card);
             });
+        }
+
+        window.showLotDetails = function(key) {
+            const item = inventoryData[key];
+            if (!item) return;
+            document.getElementById('detailTitle').innerText = item.title;
+            document.getElementById('detailLot').innerText = `Lot #${item.lot}`;
+            document.getElementById('detailDescription').innerText = item.description || "No description provided.";
+            document.getElementById('detailLoc').innerText = item.location || "Not Specified";
+            document.getElementById('detailPay').innerText = item.payment_methods || "Not Specified";
+            document.getElementById('detailDel').innerText = item.delivery_method || "Not Specified";
+            document.getElementById('lotDetailModal').style.display = 'flex';
         }
 
         // --- AUTH ---
@@ -238,4 +332,36 @@
             btn.disabled = true; btn.innerText = "Verifying...";
             signInWithEmailAndPassword(auth, email, pass)
             .then(() => { window.location.href = "auction.html"; })
-            .catch((error) => { showError(error.message); btn.
+            .catch((error) => { showError(error.message); btn.disabled = false; btn.innerText = "Log In"; });
+        }
+        window.handleRegister = function() {
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+            const pass = document.getElementById('regPass').value;
+            const isLocal = document.querySelector('input[name="isLocal"]:checked').value === "yes";
+            const pickupPlan = document.getElementById('pickupPlan').value;
+            const btn = document.querySelector('#registerForm button');
+            if(pass.length < 6) { showError("Password must be at least 6 characters"); return; }
+            btn.disabled = true; btn.innerText = "Creating Account...";
+            createUserWithEmailAndPassword(auth, email, pass)
+            .then((userCredential) => {
+                const user = userCredential.user;
+                updateProfile(user, { displayName: name }).then(() => {
+                    set(ref(db, 'users/' + user.uid), {
+                        name: name, email: email, is_local: isLocal, pickup_plan: isLocal ? "Local" : pickupPlan,
+                        is_approved: isLocal ? true : false, joined_at: Date.now()
+                    }).then(() => { window.location.href = "auction.html"; });
+                });
+            })
+            .catch((error) => { showError(error.message); btn.disabled = false; btn.innerText = "Create Account"; });
+        }
+        function showError(msg) {
+            const errDiv = document.getElementById('errorMsg');
+            errDiv.style.display = 'block';
+            let cleanMsg = msg.replace("Firebase: ", "").replace("auth/", "").replace(/-/g, " ");
+            cleanMsg = cleanMsg.charAt(0).toUpperCase() + cleanMsg.slice(1);
+            errDiv.innerText = cleanMsg;
+        }
+    </script>
+</body>
+</html>
