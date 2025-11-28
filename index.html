@@ -23,11 +23,7 @@
         .enter-btn { cursor: pointer; display: inline-block; background-color: var(--primary-color); color: white; border: none; padding: 15px 40px; border-radius: 50px; font-weight: bold; font-size: 1.1rem; margin-top: 20px; transition: transform 0.2s, background 0.2s; box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3); text-decoration: none; }
         .enter-btn:hover { background-color: #1d4ed8; transform: translateY(-2px); }
 
-        /* NEW INFO BUTTON */
-        .how-btn {
-            display: block; margin: 15px auto 0; background: transparent; border: none;
-            color: var(--info-color); font-weight: bold; cursor: pointer; text-decoration: underline;
-        }
+        .how-btn { display: block; margin: 15px auto 0; background: transparent; border: none; color: var(--info-color); font-weight: bold; cursor: pointer; text-decoration: underline; }
         .how-btn:hover { color: #0e7490; }
 
         .catalog-section { max-width: 1000px; width: 90%; margin: 50px 0; }
@@ -48,17 +44,14 @@
         .stamp-sold { background-color: rgba(255, 255, 255, 0.9); color: var(--sold-color); border: 3px solid var(--sold-color); transform: rotate(-15deg); top: 40px; right: 20px; font-size: 1.2rem; padding: 5px 20px; border-radius: 8px; letter-spacing: 2px; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
-        /* MODALS */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
+        #authModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px rgba(0,0,0,0.2); position: relative; }
         
-        /* INFO MODAL SPECIFIC */
         .info-list { text-align: left; line-height: 1.6; color: #4b5563; margin-bottom: 20px; }
         .info-list li { margin-bottom: 10px; list-style: none; position: relative; padding-left: 20px; }
         .info-list li::before { content: "•"; color: var(--primary-color); font-weight: bold; position: absolute; left: 0; }
         .info-list strong { color: #1f2937; }
 
-        /* AUTH STYLES */
         .tabs { display: flex; margin-bottom: 20px; border-bottom: 2px solid #e5e7eb; }
         .tab { flex: 1; padding: 10px; text-align: center; cursor: pointer; font-weight: bold; color: #6b7280; transition: color 0.2s; }
         .tab.active { color: var(--primary-color); border-bottom: 2px solid var(--primary-color); }
@@ -70,6 +63,7 @@
         .radio-group { display: flex; gap: 15px; margin-bottom: 15px; }
         .radio-label { font-weight: normal; cursor: pointer; display: flex; align-items: center; gap: 5px; }
         #nonLocalWarning { display: none; background: #fff7ed; border: 1px solid #fed7aa; padding: 10px; border-radius: 6px; margin-bottom: 15px; font-size: 0.85rem; color: #9a3412; }
+        .close-modal-btn { position: absolute; top: 15px; right: 20px; font-size: 1.8rem; line-height: 1; cursor: pointer; color: #9ca3af; }
 
         @media (max-width: 600px) { .section-header { flex-direction: column; gap: 15px; text-align: center; } }
     </style>
@@ -89,7 +83,6 @@
 
         <p>Log in or Create an Account to bid.</p>
         <button onclick="openAuthModal()" class="enter-btn">Enter Auction Room</button>
-        
         <button onclick="openInfoModal()" class="how-btn">ℹ️ How This Auction Works</button>
     </div>
 
@@ -108,9 +101,8 @@
             <ul class="info-list">
                 <li><strong>One Item at a Time:</strong> Unlike silent auctions, we sell one item live on the "block". You must be in the Auction Room to bid.</li>
                 <li><strong>Soft Close Timer:</strong> If a bid is placed in the last 30 seconds, the timer resets to 30 seconds to prevent sniping.</li>
-                <li><strong>Winning Bids:</strong> Winning is a binding contract. You must pay the 10% Auction Fee immediately upon winning.</li>
                 <li><strong>Local Pickup:</strong> We are a local community. Buyers must arrange pickup with the seller in the Daphne/Fairhope area.</li>
-            </ul>
+                </ul>
             <button class="action-btn" onclick="document.getElementById('infoModal').style.display='none'">Got it!</button>
         </div>
     </div>
@@ -153,7 +145,7 @@
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // --- PASTE YOUR FIREBASE KEYS HERE ---
+        // --- PASTE KEYS HERE ---
         const firebaseConfig = {
   apiKey: "AIzaSyCt0i8a7ZVRlNmSts9yM4uGwV7ghPU59rk",
   authDomain: "eastern-shore-auction.firebaseapp.com",
@@ -171,11 +163,10 @@
         // --- UI LOGIC ---
         window.openInfoModal = function() { document.getElementById('infoModal').style.display = 'flex'; }
 
-        // --- 1. LOAD SCHEDULE & ANNOUNCEMENT ---
+        // --- 1. LOAD SCHEDULE ---
         onValue(ref(db, 'settings'), (snapshot) => {
             const data = snapshot.val() || {};
             document.getElementById('scheduleDisplay').innerText = data.schedule || "Schedule TBA";
-            
             let text = data.announcement || "";
             if (text) {
                 text = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -195,58 +186,37 @@
         function renderGrid() {
             const grid = document.getElementById('upcomingGrid');
             if (!inventoryData) { grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; color:#999;">Loading...</div>'; return; }
-
             const items = Object.entries(inventoryData).map(([key, val]) => ({ ...val, key }));
             const featuredItems = items.filter(item => item.is_featured === true);
             featuredItems.sort((a, b) => a.lot - b.lot);
-
             if (featuredItems.length === 0) { grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; color:#999;">Stay tuned! New lots coming soon.</div>'; return; }
-
             grid.innerHTML = ""; 
-
             featuredItems.forEach(item => {
                 const subtitleText = item.subtitle ? item.subtitle : "No details";
                 let stampHTML = "";
-
                 if (activeAuctionData && item.key === activeAuctionData.inventory_key) {
-                    if (Date.now() < activeAuctionData.end_time) {
-                        stampHTML = '<div class="stamp stamp-live">LIVE NOW</div>';
-                    }
-                } 
-                else if (item.status_label && item.status_label.includes("SOLD")) {
+                    if (Date.now() < activeAuctionData.end_time) { stampHTML = '<div class="stamp stamp-live">LIVE NOW</div>'; }
+                } else if (item.status_label && item.status_label.includes("SOLD")) {
                     stampHTML = '<div class="stamp stamp-sold">SOLD</div>';
                 }
-
                 const card = document.createElement('div');
                 card.className = 'card';
-                card.innerHTML = `
-                    ${stampHTML}
-                    <img src="${item.image_url}" alt="${item.title}">
-                    <div class="card-body">
-                        <div class="card-title">${item.title}</div>
-                        <div class="card-lot">
-                            <strong>Lot #${item.lot}</strong> <br>
-                            ${subtitleText}
-                        </div>
-                    </div>
-                `;
+                card.innerHTML = `${stampHTML}<img src="${item.image_url}" alt="${item.title}"><div class="card-body"><div class="card-title">${item.title}</div><div class="card-lot"><strong>Lot #${item.lot}</strong> <br> ${subtitleText}</div></div>`;
                 grid.appendChild(card);
             });
         }
 
-        // --- AUTH LOGIC ---
+        // --- AUTH ---
         window.toggleLocalFields = function(isLocal) {
             const div = document.getElementById('nonLocalWarning');
             const input = document.getElementById('pickupPlan');
             if(isLocal) { div.style.display = 'none'; input.removeAttribute('required'); } 
             else { div.style.display = 'block'; input.setAttribute('required', 'true'); }
         }
-
         window.openAuthModal = function() {
             if(auth.currentUser) { window.location.href = "auction.html"; }
             else { document.getElementById('authModal').style.display = 'flex'; }
         }
-
         window.switchTab = function(mode) {
             document.getElementById('errorMsg').style.display = 'none';
             if(mode === 'login') {
@@ -261,7 +231,6 @@
                 document.querySelectorAll('.tab')[1].classList.add('active');
             }
         }
-
         window.handleLogin = function() {
             const email = document.getElementById('loginEmail').value;
             const pass = document.getElementById('loginPass').value;
@@ -269,45 +238,4 @@
             btn.disabled = true; btn.innerText = "Verifying...";
             signInWithEmailAndPassword(auth, email, pass)
             .then(() => { window.location.href = "auction.html"; })
-            .catch((error) => { showError(error.message); btn.disabled = false; btn.innerText = "Log In"; });
-        }
-
-        window.handleRegister = function() {
-            const name = document.getElementById('regName').value;
-            const email = document.getElementById('regEmail').value;
-            const pass = document.getElementById('regPass').value;
-            const isLocal = document.querySelector('input[name="isLocal"]:checked').value === "yes";
-            const pickupPlan = document.getElementById('pickupPlan').value;
-            const btn = document.querySelector('#registerForm button');
-
-            if(pass.length < 6) { showError("Password must be at least 6 characters"); return; }
-            btn.disabled = true; btn.innerText = "Creating Account...";
-
-            createUserWithEmailAndPassword(auth, email, pass)
-            .then((userCredential) => {
-                const user = userCredential.user;
-                updateProfile(user, { displayName: name })
-                .then(() => {
-                    set(ref(db, 'users/' + user.uid), {
-                        name: name,
-                        email: email,
-                        is_local: isLocal,
-                        pickup_plan: isLocal ? "Local" : pickupPlan,
-                        is_approved: isLocal ? true : false,
-                        joined_at: Date.now()
-                    }).then(() => { window.location.href = "auction.html"; });
-                });
-            })
-            .catch((error) => { showError(error.message); btn.disabled = false; btn.innerText = "Create Account"; });
-        }
-
-        function showError(msg) {
-            const errDiv = document.getElementById('errorMsg');
-            errDiv.style.display = 'block';
-            let cleanMsg = msg.replace("Firebase: ", "").replace("auth/", "").replace(/-/g, " ");
-            cleanMsg = cleanMsg.charAt(0).toUpperCase() + cleanMsg.slice(1);
-            errDiv.innerText = cleanMsg;
-        }
-    </script>
-</body>
-</html>
+            .catch((error) => { showError(error.message); btn.

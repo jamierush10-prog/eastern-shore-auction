@@ -17,7 +17,6 @@
 
         .container { max-width: 1200px; margin: 30px auto; padding: 20px; }
         
-        /* TABLES */
         table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         th, td { padding: 15px; text-align: left; border-bottom: 1px solid #e5e7eb; vertical-align: middle; }
         th { background: #f9fafb; font-weight: bold; color: #6b7280; font-size: 0.85rem; text-transform: uppercase; }
@@ -28,7 +27,6 @@
         tr.live-ended-sold { background-color: #fffbeb !important; border-left: 5px solid var(--ended-color); }
         tr.live-ended-unsold { background-color: #f3f4f6 !important; border-left: 5px solid var(--fail-color); opacity: 0.8; }
 
-        /* BADGES */
         .badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; margin-right: 8px; vertical-align: middle; text-transform: uppercase; }
         .badge-live { background: var(--live-color); color: white; animation: pulse 1.5s infinite; }
         .badge-sold { background: var(--ended-color); color: white; }
@@ -74,7 +72,6 @@
         .btn-save { background: #111827; width: 100%; padding: 12px; margin-top: 10px; }
         .btn-stop { background: #dc2626; padding: 10px 20px; width: 100%; }
         .btn-manual { background: #4b5563; margin-bottom: 15px; }
-        .btn-mark-paid { background: #0891b2; font-size: 0.7rem; padding: 5px 10px; margin-top: 5px; }
 
         .view-section { display: none; }
         .view-section.active { display: block; }
@@ -136,8 +133,8 @@
                 <button class="btn btn-manual" onclick="openManualLogModal()">+ Manually Record Sale</button>
             </div>
             <table>
-                <thead><tr><th>Lot #</th><th>Image / Item</th><th>Sold Price</th><th>Fee Status</th><th>Buyer Contact</th><th>Seller Contact</th><th>Date</th></tr></thead>
-                <tbody id="salesTableBody"><tr><td colspan="7" style="text-align:center;">Loading history...</td></tr></tbody>
+                <thead><tr><th>Lot #</th><th>Image / Item</th><th>Sold Price</th><th>Buyer Contact</th><th>Seller Contact</th><th>Date</th></tr></thead>
+                <tbody id="salesTableBody"><tr><td colspan="6" style="text-align:center;">Loading history...</td></tr></tbody>
             </table>
         </div>
 
@@ -146,7 +143,6 @@
             <div class="form-card">
                 <form onsubmit="event.preventDefault(); saveItem();">
                     <input type="hidden" id="editKey"> 
-                    
                     <input type="hidden" id="existingMainUrl">
                     <input type="hidden" id="existingThumb1">
                     <input type="hidden" id="existingThumb2">
@@ -179,7 +175,7 @@
 
                     <div class="form-group"><label>Description:</label><textarea id="inpDesc" rows="4"></textarea></div>
                     
-                    <h3>Extra Images</h3>
+                    <h3>Extra Images (Leave blank to keep)</h3>
                     <div class="form-group"><input type="file" id="inpThumb1" accept="image/*"></div>
                     <div class="form-group"><input type="file" id="inpThumb2" accept="image/*"></div>
                     <div class="form-group"><input type="file" id="inpThumb3" accept="image/*"></div>
@@ -287,7 +283,6 @@
                 winner_name: document.getElementById('manWinName').value,
                 winner_email: document.getElementById('manWinEmail').value,
                 seller_name: document.getElementById('manSeller').value,
-                fee_status: "paid", // Manual entries assumed paid or set to paid
                 date: Date.now()
             };
             push(ref(db, 'sales_history'), data).then(() => {
@@ -295,7 +290,7 @@
             });
         }
 
-        // --- SALES HISTORY (UPDATED WITH IMAGE & FEE STATUS) ---
+        // --- SALES HISTORY (REMOVED FEES) ---
         function loadHistory() {
             const refHist = ref(db, 'sales_history');
             const refUsers = ref(db, 'users');
@@ -310,11 +305,9 @@
                     const tbody = document.getElementById('salesTableBody');
                     tbody.innerHTML = "";
 
-                    if(!historyData) { tbody.innerHTML = "<tr><td colspan='7'>No sales yet.</td></tr>"; return; }
+                    if(!historyData) { tbody.innerHTML = "<tr><td colspan='6'>No sales yet.</td></tr>"; return; }
                     
-                    // Use entries to get Key
-                    const items = Object.entries(historyData).map(([key, val]) => ({ key, ...val }));
-                    items.sort((a, b) => b.date - a.date);
+                    const items = Object.values(historyData).sort((a, b) => b.date - a.date);
                     
                     items.forEach(item => {
                         const dateStr = new Date(item.date).toLocaleDateString();
@@ -330,17 +323,8 @@
                         const sellerEmail = sellerProfile ? sellerProfile.email : "N/A";
                         const sellerName = item.seller_name || "House Item";
 
-                        // Image Handling
                         const imgSrc = item.image_url || "https://placehold.co/50x50?text=?";
                         
-                        // Fee Status Badge
-                        let feeBadge = "";
-                        if (item.fee_status === 'paid') {
-                            feeBadge = '<span class="status-pill status-approved">Paid</span>';
-                        } else {
-                            feeBadge = `<span class="status-pill status-pending">Pending</span><br><button class="btn btn-mark-paid" onclick="adminMarkPaid('${item.key}')">Mark Paid</button>`;
-                        }
-
                         const tr = document.createElement('tr');
                         tr.innerHTML = `
                             <td><strong>#${lotDisplay}</strong></td>
@@ -349,7 +333,6 @@
                                 ${item.item_title}
                             </td>
                             <td style="color:#16a34a; font-weight:bold;">$${item.final_price}</td>
-                            <td>${feeBadge}</td>
                             <td class="contact-info"><div style="font-weight:bold;">${buyerName}</div><div>${buyerEmail}</div><div style="color:#2563eb;">📞 ${buyerPhone}</div></td>
                             <td class="contact-info"><div style="font-weight:bold;">${sellerName}</div><div>${sellerEmail}</div><div style="color:#2563eb;">📞 ${sellerPhone}</div></td>
                             <td>${dateStr}</td>
@@ -358,12 +341,6 @@
                     });
                 });
             });
-        }
-
-        window.adminMarkPaid = function(key) {
-            if(confirm("Mark this auction fee as PAID?")) {
-                update(ref(db, `sales_history/${key}`), { fee_status: 'paid' });
-            }
         }
 
         // --- INVENTORY ---
@@ -416,7 +393,6 @@
         window.approveUser = function(uid) { if(confirm("Approve this user?")) update(ref(db, `users/${uid}`), { is_approved: true }); }
         window.banUser = function(uid) { if(confirm("BAN this user?")) update(ref(db, `users/${uid}`), { is_approved: false }); }
 
-        // --- MONITOR ---
         let activeAuctionData = null;
         function monitorActiveAuction() {
             const activeRef = ref(db, 'active_auction');
@@ -461,7 +437,6 @@
             }
         }
 
-        // --- FILE UPLOAD ---
         async function uploadImage(file) {
             if (!file) return "";
             const fileRef = sRef(storage, 'admin_uploads/' + Date.now() + '_' + file.name);
@@ -469,7 +444,6 @@
             return await getDownloadURL(fileRef);
         }
 
-        // --- SAVE/EDIT ---
         window.saveItem = async function() {
             const btn = document.getElementById('adminSaveBtn');
             btn.disabled = true; btn.innerText = "Uploading...";
@@ -480,15 +454,12 @@
                 const thumb2File = document.getElementById('inpThumb2').files[0];
                 const thumb3File = document.getElementById('inpThumb3').files[0];
                 const thumb4File = document.getElementById('inpThumb4').files[0];
-
                 const mainUrl = mainFile ? await uploadImage(mainFile) : document.getElementById('existingMainUrl').value;
                 const t1Url = thumb1File ? await uploadImage(thumb1File) : document.getElementById('existingThumb1').value;
                 const t2Url = thumb2File ? await uploadImage(thumb2File) : document.getElementById('existingThumb2').value;
                 const t3Url = thumb3File ? await uploadImage(thumb3File) : document.getElementById('existingThumb3').value;
                 const t4Url = thumb4File ? await uploadImage(thumb4File) : document.getElementById('existingThumb4').value;
-
                 if(!mainUrl) { alert("Main image required."); btn.disabled = false; btn.innerText = "Save Item"; return; }
-
                 const data = {
                     lot: parseInt(document.getElementById('inpLot').value),
                     title: document.getElementById('inpTitle').value,
@@ -503,7 +474,6 @@
                     times_run: 0, is_featured: false,
                     images: { thumb1: t1Url, thumb2: t2Url, thumb3: t3Url, thumb4: t4Url }
                 };
-
                 if(key) {
                     get(ref(db, `inventory/${key}`)).then((snap) => {
                         const existing = snap.val();
@@ -516,7 +486,6 @@
         }
 
         window.deleteItem = function(key) { if(confirm("Delete item?")) remove(ref(db, `inventory/${key}`)); }
-        
         window.editItem = function(key) {
             resetForm(); document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
             document.getElementById('addView').classList.add('active'); document.getElementById('formTitle').innerText = "Edit Item";
@@ -615,7 +584,7 @@
                 winner_name: auction.high_bidder_name || "Unknown",
                 winner_email: email,
                 seller_name: auction.seller_name || "N/A",
-                image_url: auction.image_url || "",
+                image_url: auction.image_url || "", // Added image
                 date: Date.now()
             }).then(() => { callback(); });
         }
