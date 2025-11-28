@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Auction House | Baldwin County</title>
     <style>
+        /* --- LOBBY STYLES --- */
         :root { --primary-color: #2563eb; --header-bg: #111827; --header-text: #f9fafb; --bg-color: #f3f4f6; --text-color: #1f2937; --live-color: #dc2626; --sold-color: #b91c1c; --info-color: #0891b2; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
         
@@ -44,7 +45,7 @@
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
         #authModal, #infoModal, #lotDetailModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-content { background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 500px; box-shadow: 0 20px 25px rgba(0,0,0,0.2); position: relative; max-height: 90vh; overflow-y: auto; }
+        .modal-content { background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px rgba(0,0,0,0.2); position: relative; }
         
         .tabs { display: flex; margin-bottom: 20px; border-bottom: 2px solid #e5e7eb; }
         .tab { flex: 1; padding: 10px; text-align: center; cursor: pointer; font-weight: bold; color: #6b7280; transition: color 0.2s; }
@@ -60,7 +61,8 @@
         .close-modal-btn { position: absolute; top: 15px; right: 20px; font-size: 1.8rem; cursor: pointer; color: #9ca3af; }
 
         .info-list { text-align: left; line-height: 1.6; color: #4b5563; margin-bottom: 20px; padding-left: 20px; list-style: disc; }
-        .info-list li { margin-bottom: 10px; }
+        .info-list li { margin-bottom: 12px; }
+        .info-list strong { color: #1f2937; }
 
         .logistics-box { background-color: #f9fafb; border: 1px solid #e5e7eb; padding: 15px; border-radius: 8px; margin-top: 20px; font-size: 0.9rem; color: #4b5563; text-align: left; }
         .logistics-item { margin-bottom: 8px; display: flex; align-items: flex-start; gap: 10px; }
@@ -98,10 +100,10 @@
         <div class="modal-content">
             <h2 style="color: var(--primary-color); margin-top:0;">How It Works & Rules</h2>
             <ul class="info-list">
-                <li><strong>One Item at a Time:</strong> We sell one item live on the "block".</li>
-                <li><strong>Soft Close:</strong> Bids in the last 30s reset the timer.</li>
-                <li><strong>Binding Bids:</strong> Winning is a contract to purchase.</li>
-                <li><strong>Local Pickup:</strong> Buyers must arrange pickup in Baldwin County.</li>
+                <li><strong>Live Format:</strong> The auction opens at a set time. Only one auction lot is up for bid at a time.</li>
+                <li><strong>3-Minute Timer:</strong> Each item is on the block for 3 minutes. Bids placed with less than 30 seconds remaining will reset the timer to 30 seconds.</li>
+                <li><strong>Platform Service Only:</strong> Winning bids form a contract between the Seller and the Buyer. The Auction House is a platform service only and is not responsible for the quality of items or payment processing.</li>
+                <li><strong>Baldwin County Only:</strong> This site is for buyers and sellers located in Baldwin County, Alabama. All transactions are designed for local pickup or delivery without shipping costs.</li>
             </ul>
             <button class="action-btn" onclick="document.getElementById('infoModal').style.display='none'">Got it!</button>
         </div>
@@ -241,7 +243,6 @@
             if(isLocal) { div.style.display = 'none'; input.removeAttribute('required'); } 
             else { div.style.display = 'block'; input.setAttribute('required', 'true'); }
         }
-
         window.switchTab = function(mode) {
             document.getElementById('errorMsg').style.display = 'none';
             if(mode === 'login') {
@@ -256,7 +257,6 @@
                 document.querySelectorAll('.tab')[1].classList.add('active');
             }
         }
-
         window.handleLogin = function() {
             const email = document.getElementById('loginEmail').value;
             const pass = document.getElementById('loginPass').value;
@@ -266,7 +266,6 @@
             .then(() => { window.location.href = "auction.html"; })
             .catch((error) => { showError(error.message); btn.disabled = false; btn.innerText = "Log In"; });
         }
-
         window.handleRegister = function() {
             const name = document.getElementById('regName').value;
             const email = document.getElementById('regEmail').value;
