@@ -73,18 +73,9 @@
         .invoice-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; font-size: 1rem; }
         .invoice-total { font-weight: bold; border-top: 2px solid #333; border-bottom: none; margin-top: 10px; padding-top: 15px; font-size: 1.1rem; }
 
-        /* NEW NOTICE BOX */
-        .review-notice {
-            background-color: #fff7ed;
-            border: 1px solid #fed7aa;
-            color: #9a3412;
-            padding: 12px;
-            border-radius: 6px;
-            margin-bottom: 20px;
-            font-size: 0.9rem;
-            text-align: center;
-            line-height: 1.4;
-        }
+        /* NEW NOTICE BOXES */
+        .review-notice { background-color: #fff7ed; border: 1px solid #fed7aa; color: #9a3412; padding: 12px; border-radius: 6px; margin-bottom: 20px; font-size: 0.9rem; text-align: center; line-height: 1.4; }
+        .price-note { font-size: 0.85rem; color: #4b5563; background: #f3f4f6; padding: 10px; border-radius: 4px; margin-top: 5px; line-height: 1.4; }
 
         /* PROFILE IMAGE */
         .profile-header { display: flex; align-items: flex-start; gap: 30px; margin-bottom: 30px; }
@@ -174,14 +165,14 @@
             <div class="card">
                 <div class="section-title" style="color: var(--primary-color);">📦 Items Purchased (You Won)</div>
                 <table>
-                    <thead><tr><th>Date</th><th>Item</th><th>Seller</th><th>Financials</th><th>Action</th></tr></thead>
+                    <thead><tr><th>Date</th><th>Item</th><th>Seller</th><th>Price</th><th>Action</th></tr></thead>
                     <tbody id="purchaseList"><tr><td colspan="5">Loading...</td></tr></tbody>
                 </table>
             </div>
             <div class="card">
                 <div class="section-title" style="color: var(--success-color);">💰 Items Sold (You Sold)</div>
                 <table>
-                    <thead><tr><th>Date</th><th>Item</th><th>Buyer</th><th>Financial Breakdown</th><th>Action</th></tr></thead>
+                    <thead><tr><th>Date</th><th>Item</th><th>Buyer</th><th>Sold For</th><th>Action</th></tr></thead>
                     <tbody id="salesList"><tr><td colspan="5">Loading...</td></tr></tbody>
                 </table>
             </div>
@@ -220,7 +211,15 @@
                 <div class="form-group" style="background:#f0f9ff; padding:10px; border-radius:6px; border:1px solid #bae6fd;"><label>📍 Item Location:</label><input type="text" id="listLoc" required></div>
                 <div class="form-group" style="background:#f0f9ff; padding:10px; border-radius:6px; border:1px solid #bae6fd;"><label>💵 Payment Accepted:</label><input type="text" id="listPay" required></div>
                 <div class="form-group" style="background:#f0f9ff; padding:10px; border-radius:6px; border:1px solid #bae6fd;"><label>🚚 Delivery Preference:</label><input type="text" id="listDel" required></div>
-                <div class="form-group"><label>Starting Price ($):</label><input type="number" id="listPrice" required></div>
+                
+                <div class="form-group">
+                    <label>Starting Price ($):</label>
+                    <input type="number" id="listPrice" required>
+                    <div class="price-note">
+                        <strong>Note:</strong> Bids must be in whole dollar amounts (no cents). This price acts as your <strong>Reserve Price</strong>. Once a bid meets or exceeds this amount by $1, the item is sold to the highest bidder when the timer ends.
+                    </div>
+                </div>
+
                 <div class="form-group"><label>Main Photo:</label><input type="file" id="fileMain" accept="image/*"><small style="color:#666;">(Required for new items)</small></div>
                 <div class="form-group"><label>Extra Photo 1:</label><input type="file" id="fileThumb1" accept="image/*"></div>
                 <div class="form-group"><label>Extra Photo 2:</label><input type="file" id="fileThumb2" accept="image/*"></div>
@@ -267,9 +266,10 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getDatabase, ref, onValue, update, child, get, push, runTransaction, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
         // --- PASTE KEYS HERE ---
-       const firebaseConfig = {
+        const firebaseConfig = {
   apiKey: "AIzaSyCt0i8a7ZVRlNmSts9yM4uGwV7ghPU59rk",
   authDomain: "eastern-shore-auction.firebaseapp.com",
   databaseURL: "https://eastern-shore-auction-default-rtdb.firebaseio.com",
@@ -282,6 +282,7 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getDatabase(app);
+        const storage = getStorage(app);
         let currentUser = null;
         let allUsersCache = []; 
 
@@ -307,6 +308,7 @@
             });
         }
 
+        // --- PROFILE LOGIC ---
         function loadUserProfile(uid) {
             const userRef = ref(db, `users/${uid}`);
             onValue(userRef, (snapshot) => {
@@ -337,14 +339,14 @@
             const file = input.files[0];
             if (!file) return;
             document.querySelector('.profile-upload-overlay').innerText = "Uploading...";
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                update(ref(db, `users/${currentUser.uid}`), { profile_image_url: e.target.result }).then(() => {
-                    alert("Profile image updated!");
-                    document.querySelector('.profile-upload-overlay').innerText = "Click to Change";
-                });
-            };
-            reader.readAsDataURL(file);
+            try {
+                const fileRef = sRef(storage, `profile_images/${currentUser.uid}_profile.jpg`);
+                await uploadBytes(fileRef, file);
+                const downloadURL = await getDownloadURL(fileRef);
+                await update(ref(db, `users/${currentUser.uid}`), { profile_image_url: downloadURL });
+                alert("Profile image updated!");
+            } catch (error) { console.error(error); alert("Failed to upload image."); } 
+            finally { document.querySelector('.profile-upload-overlay').innerText = "Click to Change"; input.value = ''; }
         }
 
         window.openEditProfileModal = function() {
@@ -470,13 +472,11 @@
             document.getElementById('existingThumb3').value = "";
         }
 
-        const convertBase64 = (file) => {
-            return new Promise((resolve, reject) => {
-                const fileReader = new FileReader();
-                fileReader.readAsDataURL(file);
-                fileReader.onload = () => { resolve(fileReader.result); };
-                fileReader.onerror = (error) => { reject(error); };
-            });
+        async function uploadImage(file) {
+            if (!file) return "";
+            const fileRef = sRef(storage, 'user_uploads/' + Date.now() + '_' + file.name);
+            await uploadBytes(fileRef, file);
+            return await getDownloadURL(fileRef);
         }
 
         window.submitListing = async function() {
@@ -484,14 +484,10 @@
             try {
                 const key = document.getElementById('editKey').value;
                 const mainFile = document.getElementById('fileMain').files[0];
-                const mainUrl = mainFile ? await convertBase64(mainFile) : document.getElementById('existingMainUrl').value;
-                let thumb1Url = document.getElementById('existingThumb1').value;
-                let thumb2Url = document.getElementById('existingThumb2').value;
-                let thumb3Url = document.getElementById('existingThumb3').value;
-
-                if(document.getElementById('fileThumb1').files[0]) thumb1Url = await convertBase64(document.getElementById('fileThumb1').files[0]);
-                if(document.getElementById('fileThumb2').files[0]) thumb2Url = await convertBase64(document.getElementById('fileThumb2').files[0]);
-                if(document.getElementById('fileThumb3').files[0]) thumb3Url = await convertBase64(document.getElementById('fileThumb3').files[0]);
+                const mainUrl = mainFile ? await uploadImage(mainFile) : document.getElementById('existingMainUrl').value;
+                const thumb1Url = await uploadImage(document.getElementById('fileThumb1').files[0]) || document.getElementById('existingThumb1').value;
+                const thumb2Url = await uploadImage(document.getElementById('fileThumb2').files[0]) || document.getElementById('existingThumb2').value;
+                const thumb3Url = await uploadImage(document.getElementById('fileThumb3').files[0]) || document.getElementById('existingThumb3').value;
 
                 if(!mainUrl) { alert("Main photo required."); submitBtn.disabled = false; submitBtn.innerText = "Submit Item"; return; }
 
