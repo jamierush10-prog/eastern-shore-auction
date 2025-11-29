@@ -43,8 +43,7 @@
         .stamp-sold { background-color: rgba(255, 255, 255, 0.9); color: var(--sold-color); border: 3px solid var(--sold-color); transform: rotate(-15deg); top: 40px; right: 20px; font-size: 1.2rem; padding: 5px 20px; border-radius: 8px; letter-spacing: 2px; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
-        /* AUTH MODAL */
-        #authModal, #infoModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
+        #authModal, #infoModal, #lotDetailModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 380px; box-shadow: 0 20px 25px rgba(0,0,0,0.2); position: relative; }
         
         .tabs { display: flex; margin-bottom: 20px; border-bottom: 2px solid #e5e7eb; }
@@ -60,9 +59,13 @@
         #nonLocalWarning { display: none; background: #fff7ed; border: 1px solid #fed7aa; padding: 10px; border-radius: 6px; margin-bottom: 15px; font-size: 0.85rem; color: #9a3412; }
         .close-modal-btn { position: absolute; top: 15px; right: 20px; font-size: 1.8rem; cursor: pointer; color: #9ca3af; }
 
-        /* INFO LIST */
         .info-list { text-align: left; line-height: 1.6; color: #4b5563; margin-bottom: 20px; padding-left: 20px; list-style: disc; }
         .info-list li { margin-bottom: 12px; }
+        .info-list strong { color: #1f2937; }
+
+        .logistics-box { background-color: #f9fafb; border: 1px solid #e5e7eb; padding: 15px; border-radius: 8px; margin-top: 20px; font-size: 0.9rem; color: #4b5563; text-align: left; }
+        .logistics-item { margin-bottom: 8px; display: flex; align-items: flex-start; gap: 10px; }
+        .log-icon { font-size: 1.1rem; min-width: 25px; }
 
         @media (max-width: 600px) { .section-header { flex-direction: column; gap: 15px; text-align: center; } }
     </style>
@@ -107,8 +110,23 @@
         </div>
     </div>
 
-    <div id="authModal">
+    <div id="lotDetailModal" class="modal-overlay" onclick="if(event.target===this) this.style.display='none'">
         <div class="modal-content">
+            <span class="close-modal-btn" onclick="document.getElementById('lotDetailModal').style.display='none'">&times;</span>
+            <h2 id="detailTitle" style="margin-top: 0; color: var(--primary-color);">Item Title</h2>
+            <div style="margin-bottom: 15px; font-weight: bold; color: #6b7280;" id="detailLot">Lot #</div>
+            <div style="text-align: left;"><strong>Description:</strong><p id="detailDescription" style="white-space: pre-wrap; color: #4b5563; margin-top:5px;">...</p></div>
+            <div class="logistics-box">
+                <div class="logistics-item"><div class="log-icon">📍</div><div><strong>Location:</strong> <span id="detailLoc">...</span></div></div>
+                <div class="logistics-item"><div class="log-icon">💵</div><div><strong>Payment:</strong> <span id="detailPay">...</span></div></div>
+                <div class="logistics-item"><div class="log-icon">🚚</div><div><strong>Delivery:</strong> <span id="detailDel">...</span></div></div>
+            </div>
+            <button class="action-btn" style="margin-top: 20px;" onclick="document.getElementById('lotDetailModal').style.display='none'">Close</button>
+        </div>
+    </div>
+
+    <div id="authModal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 380px;">
             <div class="tabs"><div class="tab active" onclick="switchTab('login')">Log In</div><div class="tab" onclick="switchTab('register')">Sign Up</div></div>
             <div id="errorMsg" class="error-msg" style="color:red; display:none; margin-bottom:10px;"></div>
             
@@ -138,19 +156,19 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getDatabase, ref, onValue, set, child, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getDatabase, ref, onValue, set, get, child } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // --- PASTE KEYS HERE ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyCt0i8a7ZVRlNmSts9yM4uGwV7ghPU59rk",
-            authDomain: "eastern-shore-auction.firebaseapp.com",
-            databaseURL: "https://eastern-shore-auction-default-rtdb.firebaseio.com",
-            projectId: "eastern-shore-auction",
-            storageBucket: "eastern-shore-auction.firebasestorage.app",
-            messagingSenderId: "771348898846",
-            appId: "1:771348898846:web:3b6371e8f826747fdcba0f"
-        };
+        // --- PASTE FIREBASE KEYS HERE ---
+  const firebaseConfig = {
+  apiKey: "AIzaSyCt0i8a7ZVRlNmSts9yM4uGwV7ghPU59rk",
+  authDomain: "eastern-shore-auction.firebaseapp.com",
+  databaseURL: "https://eastern-shore-auction-default-rtdb.firebaseio.com",
+  projectId: "eastern-shore-auction",
+  storageBucket: "eastern-shore-auction.firebasestorage.app",
+  messagingSenderId: "771348898846",
+  appId: "1:771348898846:web:3b6371e8f826747fdcba0f"
+};
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
@@ -175,7 +193,7 @@
                 if (snapshot.exists()) {
                     if (snapshot.val().is_approved === false) {
                         alert("ACCESS DENIED: Your account has been suspended.");
-                        signOut(auth).then(() => window.location.reload());
+                        // User can stay logged in but can't enter auction
                     } else {
                         window.location.href = "auction.html";
                     }
@@ -205,6 +223,8 @@
             renderGrid();
         });
 
+        setInterval(renderGrid, 1000);
+
         function renderGrid() {
             const grid = document.getElementById('upcomingGrid');
             if (!inventoryData) { grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#999;">Loading...</div>'; return; }
@@ -226,9 +246,22 @@
                 }
                 const card = document.createElement('div');
                 card.className = 'card';
+                card.setAttribute('onclick', `showLotDetails('${item.key}')`);
                 card.innerHTML = `${stampHTML}<img src="${item.image_url}" alt="${item.title}"><div class="card-body"><div class="card-title">${item.title}</div><div class="card-lot"><strong>Lot #${item.lot}</strong></div></div>`;
                 grid.appendChild(card);
             });
+        }
+
+        window.showLotDetails = function(key) {
+            const item = inventoryData[key];
+            if (!item) return;
+            document.getElementById('detailTitle').innerText = item.title;
+            document.getElementById('detailLot').innerText = `Lot #${item.lot}`;
+            document.getElementById('detailDescription').innerText = item.description || "No description provided.";
+            document.getElementById('detailLoc').innerText = item.location || "N/A";
+            document.getElementById('detailPay').innerText = item.payment_methods || "N/A";
+            document.getElementById('detailDel').innerText = item.delivery_method || "N/A";
+            document.getElementById('lotDetailModal').style.display = 'flex';
         }
 
         window.toggleLocalFields = function(isLocal) {
@@ -237,7 +270,6 @@
             if(isLocal) { div.style.display = 'none'; input.removeAttribute('required'); } 
             else { div.style.display = 'block'; input.setAttribute('required', 'true'); }
         }
-
         window.switchTab = function(mode) {
             document.getElementById('errorMsg').style.display = 'none';
             if(mode === 'login') {
