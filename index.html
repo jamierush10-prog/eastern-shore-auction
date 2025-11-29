@@ -80,13 +80,10 @@
     <div class="info-card">
         <div class="schedule-title">Next Live Auction Begins</div>
         <div class="schedule-time" id="scheduleDisplay">Loading schedule...</div>
-        
         <div id="announcementDisplay" class="announcement-text"></div>
 
         <p>Log in or Create an Account to bid.</p>
-        
         <button onclick="openAuthModal()" class="enter-btn">Enter Auction Room</button>
-        
         <button onclick="openInfoModal()" class="how-btn">ℹ️ How This Auction Works</button>
     </div>
 
@@ -105,8 +102,8 @@
             <ul class="info-list">
                 <li><strong>One Item at a Time:</strong> The auction is open at a set time, one auction lot is up for bid at a time.</li>
                 <li><strong>3-Minute Timer:</strong> The auction lasts for 3 minutes. Bids placed with less than 30 seconds will reset the timer to 30 seconds.</li>
-                <li><strong>Binding Bids:</strong> Winning bids is a contract between the seller and the buyer. The Auction House is only a platform service to connect buyers and sellers.</li>
-                <li><strong>Baldwin County Only:</strong> The Auction House is for buyers and sellers located in Baldwin County Alabama. The auctions are designed for local pickup or delivery without shipping costs.</li>
+                <li><strong>Binding Bids:</strong> Winning bids is a contract between the seller and the buyer.</li>
+                <li><strong>Baldwin County Only:</strong> The Auction House is for buyers and sellers located in Baldwin County Alabama. Local pickup/delivery only.</li>
                 <li><strong>No Fees:</strong> There are currently no buyer or seller fees. You keep 100% of the sale.</li>
             </ul>
             <button class="action-btn" onclick="document.getElementById('infoModal').style.display='none'">Got it!</button>
@@ -131,7 +128,7 @@
     <div id="authModal" class="modal-overlay">
         <div class="modal-content" style="max-width: 380px;">
             <div class="tabs"><div class="tab active" onclick="switchTab('login')">Log In</div><div class="tab" onclick="switchTab('register')">Sign Up</div></div>
-            <div id="errorMsg" class="error-msg"></div>
+            <div id="errorMsg" class="error-msg" style="color:red; display:none; margin-bottom:10px;"></div>
             
             <form id="loginForm" onsubmit="event.preventDefault(); handleLogin();">
                 <div class="form-group"><input type="email" id="loginEmail" placeholder="Email Address" required></div>
@@ -164,14 +161,14 @@
 
         // --- PASTE KEYS HERE ---
         const firebaseConfig = {
-  apiKey: "AIzaSyCt0i8a7ZVRlNmSts9yM4uGwV7ghPU59rk",
-  authDomain: "eastern-shore-auction.firebaseapp.com",
-  databaseURL: "https://eastern-shore-auction-default-rtdb.firebaseio.com",
-  projectId: "eastern-shore-auction",
-  storageBucket: "eastern-shore-auction.firebasestorage.app",
-  messagingSenderId: "771348898846",
-  appId: "1:771348898846:web:3b6371e8f826747fdcba0f"
-};
+            apiKey: "YOUR_API_KEY_HERE",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
