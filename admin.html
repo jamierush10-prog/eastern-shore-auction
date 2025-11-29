@@ -544,7 +544,7 @@
                         const auctionData = {
                             lot: newItem.lot, title: newItem.title, subtitle: newItem.subtitle, description: newItem.description,
                             current_bid: newItem.start_price, image_url: newItem.image_url, reserve_price: newItem.reserve_price || 0,
-                            end_time: Date.now() + (3 * 60 * 1000), images: newItem.images, // 3 MINUTES
+                            end_time: Date.now() + (1 * 60 * 60 * 1000), images: newItem.images, // 3 MINUTES
                             high_bidder_max: 0, high_bidder_name: "", high_bidder_uid: "", bid_history: null,
                             inventory_key: newKey, seller_name: newItem.seller_name,
                             location: newItem.location, payment_methods: newItem.payment_methods, delivery_method: newItem.delivery_method
