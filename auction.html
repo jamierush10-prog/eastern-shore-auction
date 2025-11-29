@@ -575,15 +575,25 @@
                         auctionEndedProcessed = true;
                     }
                 } else {
-                    bidBtn.disabled = false; bidBtn.textContent = "Place Max Bid"; bidBtn.style.backgroundColor = ""; 
-                    incBtns.forEach(b => b.disabled = false);
-                    document.getElementById('timerBox').classList.remove('timer-ended');
-                    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-                    timerElement.textContent = (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds < 10 ? "0" + seconds : seconds);
-                }
-            }, 1000);
-        }
+    bidBtn.disabled = false; 
+    bidBtn.textContent = "Place Max Bid"; 
+    bidBtn.style.backgroundColor = ""; 
+    incBtns.forEach(b => b.disabled = false);
+    document.getElementById('timerBox').classList.remove('timer-ended');
+
+    // --- NEW MATH FOR HH:MM:SS ---
+    const hours = Math.floor(distance / (1000 * 60 * 60));
+    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+    // Format with leading zeros (e.g., "01" instead of "1")
+    const h = hours < 10 ? "0" + hours : hours;
+    const m = minutes < 10 ? "0" + minutes : minutes;
+    const s = seconds < 10 ? "0" + seconds : seconds;
+
+    // Display Result
+    timerElement.textContent = h + ":" + m + ":" + s;
+}
 
         function showWinnerModal(data) {
             const reserve = data.reserve_price || 0;
