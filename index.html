@@ -116,25 +116,11 @@
             <span class="close-modal-btn" onclick="document.getElementById('lotDetailModal').style.display='none'">&times;</span>
             <h2 id="detailTitle" style="margin-top: 0; color: var(--primary-color);">Item Title</h2>
             <div style="margin-bottom: 15px; font-weight: bold; color: #6b7280;" id="detailLot">Lot #</div>
-            
-            <div style="text-align: left;">
-                <strong>Description:</strong>
-                <p id="detailDescription" style="white-space: pre-wrap; color: #4b5563; margin-top:5px;">...</p>
-            </div>
-
+            <div style="text-align: left;"><strong>Description:</strong><p id="detailDescription" style="white-space: pre-wrap; color: #4b5563; margin-top:5px;">...</p></div>
             <div class="logistics-box">
-                <div class="logistics-item">
-                    <div class="log-icon">📍</div>
-                    <div><strong>Location:</strong> <span id="detailLoc">...</span></div>
-                </div>
-                <div class="logistics-item">
-                    <div class="log-icon">💵</div>
-                    <div><strong>Payment:</strong> <span id="detailPay">...</span></div>
-                </div>
-                <div class="logistics-item">
-                    <div class="log-icon">🚚</div>
-                    <div><strong>Delivery:</strong> <span id="detailDel">...</span></div>
-                </div>
+                <div class="logistics-item"><div class="log-icon">📍</div><div><strong>Location:</strong> <span id="detailLoc">...</span></div></div>
+                <div class="logistics-item"><div class="log-icon">💵</div><div><strong>Payment:</strong> <span id="detailPay">...</span></div></div>
+                <div class="logistics-item"><div class="log-icon">🚚</div><div><strong>Delivery:</strong> <span id="detailDel">...</span></div></div>
             </div>
             <button class="action-btn" style="margin-top: 20px;" onclick="document.getElementById('lotDetailModal').style.display='none'">Close</button>
         </div>
@@ -150,25 +136,20 @@
                 <button type="submit" class="action-btn">Log In</button>
             </form>
             <form id="registerForm" style="display:none;" onsubmit="event.preventDefault(); handleRegister();">
-                <div class="form-group"><input type="text" id="regName" placeholder="Create Username (Visible to others)" required></div>
+                <div class="form-group"><input type="text" id="regName" placeholder="Username" required></div>
                 <div class="form-group"><input type="email" id="regEmail" placeholder="Email Address" required></div>
-                <div class="form-group"><input type="password" id="regPass" placeholder="Create Password (6+ chars)" required></div>
+                <div class="form-group"><input type="password" id="regPass" placeholder="Password (6+ chars)" required></div>
                 <div class="form-group">
                     <label>Located in Baldwin County, AL?</label>
                     <div class="radio-group">
-                        <label class="radio-label"><input type="radio" name="isLocal" value="yes" checked onchange="toggleLocalFields(true)"> Yes</label>
-                        <label class="radio-label"><input type="radio" name="isLocal" value="no" onchange="toggleLocalFields(false)"> No</label>
+                        <label><input type="radio" name="isLocal" value="yes" checked onchange="toggleLocalFields(true)"> Yes</label>
+                        <label><input type="radio" name="isLocal" value="no" onchange="toggleLocalFields(false)"> No</label>
                     </div>
                 </div>
-                <div id="nonLocalWarning">
-                    <strong>Note:</strong> Non-local accounts require Admin approval before bidding.
-                    <div class="form-group" style="margin-top:10px;">
-                        <input type="text" id="pickupPlan" placeholder="Can you arrange local pickup?">
-                    </div>
-                </div>
+                <div id="nonLocalWarning"><strong>Note:</strong> Non-local accounts require Admin approval.<div class="form-group" style="margin-top:10px;"><input type="text" id="pickupPlan" placeholder="Can you arrange local pickup?"></div></div>
                 <button type="submit" class="action-btn">Create Account</button>
             </form>
-            <div class="close-reg" onclick="document.getElementById('authModal').style.display='none'">Cancel</div>
+            <span class="close-reg" onclick="document.getElementById('authModal').style.display='none'">Cancel</span>
         </div>
     </div>
 
@@ -177,7 +158,7 @@
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // --- PASTE YOUR FIREBASE KEYS HERE ---
+        // --- PASTE KEYS HERE ---
        const firebaseConfig = {
   apiKey: "AIzaSyCt0i8a7ZVRlNmSts9yM4uGwV7ghPU59rk",
   authDomain: "eastern-shore-auction.firebaseapp.com",
@@ -194,23 +175,24 @@
         let inventoryData = null;
         let activeAuctionKey = null;
 
-        // --- UI LOGIC ---
         window.openInfoModal = function() { document.getElementById('infoModal').style.display = 'flex'; }
+        window.openAuthModal = function() { 
+            if(auth.currentUser) { 
+                // Redirect to WELCOME PAGE if already logged in
+                window.location.href = "welcome.html"; 
+            } else { 
+                document.getElementById('authModal').style.display = 'flex'; 
+            } 
+        }
 
-        // --- 1. LOAD SCHEDULE & ANNOUNCEMENT ---
         onValue(ref(db, 'settings'), (snapshot) => {
             const data = snapshot.val() || {};
             document.getElementById('scheduleDisplay').innerText = data.schedule || "Schedule TBA";
-            
             let text = data.announcement || "";
-            if (text) {
-                text = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-                text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-            }
+            if (text) text = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
             document.getElementById('announcementDisplay').innerHTML = text;
         });
 
-        // --- 2. LOAD FEATURED ITEMS ---
         onValue(ref(db, 'active_auction'), (snapshot) => {
             const data = snapshot.val();
             activeAuctionKey = data ? data.inventory_key : null;
@@ -227,46 +209,27 @@
 
         function renderGrid() {
             const grid = document.getElementById('upcomingGrid');
-            
-            if (!inventoryData) {
-                grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; color:#999;">Loading...</div>';
-                return;
-            }
-
+            if (!inventoryData) { grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#999;">Loading...</div>'; return; }
             const items = Object.entries(inventoryData).map(([key, val]) => ({ ...val, key }));
             const featuredItems = items.filter(item => item.is_featured === true);
             featuredItems.sort((a, b) => a.lot - b.lot);
 
-            if (featuredItems.length === 0) {
-                grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; color:#999;">Stay tuned! New lots coming soon.</div>';
-                return;
-            }
-
+            if (featuredItems.length === 0) { grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#999;">Stay tuned! New lots coming soon.</div>'; return; }
+            
             grid.innerHTML = ""; 
+            const now = Date.now();
 
             featuredItems.forEach(item => {
-                const subtitleText = item.subtitle ? item.subtitle : "No details";
                 let stampHTML = "";
-
-                if (item.key === activeAuctionKey && window.activeEndTime > Date.now()) {
+                if (item.key === activeAuctionKey && window.activeEndTime > now) {
                     stampHTML = '<div class="stamp stamp-live">LIVE NOW</div>';
                 } else if (item.status_label && item.status_label.includes("SOLD")) {
                     stampHTML = '<div class="stamp stamp-sold">SOLD</div>';
                 }
-
                 const card = document.createElement('div');
                 card.className = 'card';
                 card.setAttribute('onclick', `showLotDetails('${item.key}')`);
-                card.innerHTML = `
-                    ${stampHTML}
-                    <img src="${item.image_url}" alt="${item.title}">
-                    <div class="card-body">
-                        <div class="card-title">${item.title}</div>
-                        <div class="card-lot">
-                            <strong>Lot #${item.lot}</strong>
-                        </div>
-                    </div>
-                `;
+                card.innerHTML = `${stampHTML}<img src="${item.image_url}" alt="${item.title}"><div class="card-body"><div class="card-title">${item.title}</div><div class="card-lot"><strong>Lot #${item.lot}</strong></div></div>`;
                 grid.appendChild(card);
             });
         }
@@ -274,31 +237,21 @@
         window.showLotDetails = function(key) {
             const item = inventoryData[key];
             if (!item) return;
-
             document.getElementById('detailTitle').innerText = item.title;
             document.getElementById('detailLot').innerText = `Lot #${item.lot}`;
-            document.getElementById('detailDescription').innerText = item.description || "No description provided.";
-            
-            document.getElementById('detailLoc').innerText = item.location || "Not Specified";
-            document.getElementById('detailPay').innerText = item.payment_methods || "Not Specified";
-            document.getElementById('detailDel').innerText = item.delivery_method || "Not Specified";
-
+            document.getElementById('detailDescription').innerText = item.description || "No description.";
+            document.getElementById('detailLoc').innerText = item.location || "N/A";
+            document.getElementById('detailPay').innerText = item.payment_methods || "N/A";
+            document.getElementById('detailDel').innerText = item.delivery_method || "N/A";
             document.getElementById('lotDetailModal').style.display = 'flex';
         }
 
-        // --- AUTH & UI LOGIC ---
         window.toggleLocalFields = function(isLocal) {
             const div = document.getElementById('nonLocalWarning');
             const input = document.getElementById('pickupPlan');
             if(isLocal) { div.style.display = 'none'; input.removeAttribute('required'); } 
             else { div.style.display = 'block'; input.setAttribute('required', 'true'); }
         }
-
-        window.openAuthModal = function() {
-            if(auth.currentUser) { window.location.href = "auction.html"; }
-            else { document.getElementById('authModal').style.display = 'flex'; }
-        }
-
         window.switchTab = function(mode) {
             document.getElementById('errorMsg').style.display = 'none';
             if(mode === 'login') {
@@ -313,17 +266,18 @@
                 document.querySelectorAll('.tab')[1].classList.add('active');
             }
         }
-
         window.handleLogin = function() {
             const email = document.getElementById('loginEmail').value;
             const pass = document.getElementById('loginPass').value;
             const btn = document.querySelector('#loginForm button');
             btn.disabled = true; btn.innerText = "Verifying...";
             signInWithEmailAndPassword(auth, email, pass)
-            .then(() => { window.location.href = "auction.html"; })
+            .then(() => { 
+                // Redirect to WELCOME PAGE
+                window.location.href = "welcome.html"; 
+            })
             .catch((error) => { showError(error.message); btn.disabled = false; btn.innerText = "Log In"; });
         }
-
         window.handleRegister = function() {
             const name = document.getElementById('regName').value;
             const email = document.getElementById('regEmail').value;
@@ -331,28 +285,23 @@
             const isLocal = document.querySelector('input[name="isLocal"]:checked').value === "yes";
             const pickupPlan = document.getElementById('pickupPlan').value;
             const btn = document.querySelector('#registerForm button');
-
             if(pass.length < 6) { showError("Password must be at least 6 characters"); return; }
             btn.disabled = true; btn.innerText = "Creating Account...";
-
             createUserWithEmailAndPassword(auth, email, pass)
             .then((userCredential) => {
                 const user = userCredential.user;
-                updateProfile(user, { displayName: name })
-                .then(() => {
+                updateProfile(user, { displayName: name }).then(() => {
                     set(ref(db, 'users/' + user.uid), {
-                        name: name,
-                        email: email,
-                        is_local: isLocal,
-                        pickup_plan: isLocal ? "Local" : pickupPlan,
-                        is_approved: isLocal ? true : false,
-                        joined_at: Date.now()
-                    }).then(() => { window.location.href = "auction.html"; });
+                        name: name, email: email, is_local: isLocal, pickup_plan: isLocal ? "Local" : pickupPlan,
+                        is_approved: isLocal ? true : false, joined_at: Date.now()
+                    }).then(() => { 
+                        // Redirect to WELCOME PAGE
+                        window.location.href = "welcome.html"; 
+                    });
                 });
             })
             .catch((error) => { showError(error.message); btn.disabled = false; btn.innerText = "Create Account"; });
         }
-
         function showError(msg) {
             const errDiv = document.getElementById('errorMsg');
             errDiv.style.display = 'block';
