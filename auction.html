@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Auction | The Auction House</title>
+    <title>Live Auction | Eastern Shore Auction House</title>
     <script src="https://download.agora.io/sdk/release/AgoraRTC_N-4.18.2.js"></script>
-    
     <style>
         /* --- CSS STYLES --- */
         :root { --primary-color: #2563eb; --urgent-color: #dc2626; --bg-color: #f3f4f6; --text-color: #1f2937; --border-color: #e5e7eb; --header-bg: #111827; --header-text: #f9fafb; --success-color: #16a34a; --gold-color: #f59e0b; }
@@ -19,7 +18,7 @@
         .nav-link { color: #d1d5db; text-decoration: none; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; gap: 5px; }
         .nav-link:hover { color: white; text-decoration: underline; }
         
-        .header-right { position: absolute; right: 20px; display: flex; gap: 10px; align-items: center; } 
+        .header-right { position: absolute; right: 20px; display: flex; gap: 15px; align-items: center; } 
 
         /* ADMIN BUTTON */
         #adminPanelBtn { display: none; background-color: var(--urgent-color); color: white; border: 1px solid white; padding: 8px 15px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; font-weight: bold; }
@@ -27,13 +26,6 @@
         /* AUDIO & VIEWER CONTROLS */
         .viewer-count { font-size: 0.9rem; color: #9ca3af; display: flex; align-items: center; gap: 5px; font-weight: bold; }
         .audio-status { font-size: 0.8rem; color: #10b981; display: none; align-items: center; gap: 5px; border: 1px solid #10b981; padding: 5px 10px; border-radius: 20px; }
-        
-        /* AUDIO BUTTONS */
-        .audio-control-group { display: none; align-items: center; gap: 10px; }
-        .btn-mute { background-color: transparent; border: 1px solid #6b7280; color: #d1d5db; padding: 6px 12px; border-radius: 20px; cursor: pointer; font-size: 0.8rem; }
-        .btn-mute:hover { background-color: #374151; color: white; }
-        .btn-mute.muted { background-color: #dc2626; border-color: #dc2626; color: white; }
-
         .mic-btn { background-color: #374151; color: white; border: 1px solid #6b7280; padding: 8px 15px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; display: none; }
         .mic-btn.active { background-color: var(--urgent-color); border-color: var(--urgent-color); animation: pulse-red 2s infinite; }
         @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); } 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); } }
@@ -101,8 +93,6 @@
         .chat-window { height: 200px; overflow-y: auto; background: white; border: 1px solid #e5e7eb; border-radius: 6px; padding: 10px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px; }
         .chat-msg { font-size: 0.9rem; line-height: 1.4; }
         .chat-msg strong { color: var(--primary-color); margin-right: 5px; }
-        .clickable-user { cursor: pointer; text-decoration: underline; text-decoration-style: dotted; }
-        .clickable-user:hover { color: var(--primary-color); }
         .chat-input-row { display: flex; gap: 10px; }
         #chatInput { padding: 10px; border: 1px solid #ccc; border-radius: 6px; flex: 1; font-size: 0.9rem; }
         .chat-btn { background-color: #374151; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; }
@@ -135,7 +125,10 @@
         .public-avatar { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 10px; }
         .public-name { font-size: 1.5rem; font-weight: bold; }
         .public-rating { color: var(--gold-color); font-size: 1.2rem; margin: 5px 0; }
+        
+        /* Rating Text Size in Modal */
         .public-rating span { font-size: 0.9rem; color: #6b7280; vertical-align: middle; }
+
         .public-email { color: var(--primary-color); font-weight: bold; margin-bottom: 10px; font-size: 0.9rem; }
         .public-bio { font-style: italic; color: #555; margin: 10px 0; background: #f9fafb; padding: 10px; border-radius: 6px; font-size: 0.9rem; }
         .public-tabs { display: flex; border-bottom: 1px solid #e5e7eb; margin-bottom: 15px; }
@@ -143,6 +136,8 @@
         .public-tab.active { border-bottom: 2px solid var(--primary-color); color: var(--primary-color); }
         .public-list { max-height: 200px; overflow-y: auto; list-style: none; padding: 0; margin: 0; }
         .public-item { padding: 8px; border-bottom: 1px solid #f3f4f6; font-size: 0.9rem; display: flex; justify-content: space-between; }
+        .clickable-user { cursor: pointer; text-decoration: underline; text-decoration-style: dotted; }
+        .clickable-user:hover { color: var(--primary-color); }
 
         #winnerIcon { font-size: 4rem; margin-bottom: 10px; }
         #winnerText { font-size: 1.8rem; font-weight: bold; margin: 10px 0; color: var(--text-color); }
@@ -175,12 +170,7 @@
         <div class="brand-name">The Auction House</div>
         <div class="header-right">
             <div id="liveViewers" class="viewer-count">👁️ 1 Viewing</div>
-            
-            <div id="audioControls" class="audio-control-group" style="display:none; align-items:center; gap:10px;">
-                <div id="audioStatus" class="audio-status" style="display:none;">🔊 Live</div>
-                <button id="muteBtn" class="audio-btn btn-mute" onclick="toggleMute()">🔊 Audio On</button>
-            </div>
-
+            <div id="audioStatus" class="audio-status">🔊 Live Audio</div>
             <button id="micBtn" class="mic-btn" onclick="toggleMic()">🎙️ Start Broadcast</button>
             <button id="adminPanelBtn" onclick="openAdminPanel()">ADMIN DASHBOARD</button>
         </div>
@@ -263,7 +253,9 @@
             <div class="public-profile-header">
                 <img id="ppAvatar" src="" class="public-avatar">
                 <div id="ppName" class="public-name">Loading...</div>
+                
                 <div id="ppRating" class="public-rating">☆☆☆☆☆ <span>(New)</span></div>
+                
                 <div id="ppEmail" class="public-email"></div>
                 <div id="ppBio" class="public-bio"></div>
             </div>
@@ -329,13 +321,10 @@
         let timerInterval = null;
         let currentPPUser = null;
         
-        // AGORA
         let agoraClient = null;
         let localAudioTrack = null;
         let isMicOn = false;
-        let isMuted = false;
-        let remoteAudioTracks = [];
-        const AGORA_APP_ID = "YOUR_AGORA_APP_ID_HERE"; 
+        const AGORA_APP_ID = "YOUR_AGORA_APP_ID"; // <--- PASTE AGORA ID HERE
 
         // --- SAFETY TIMER ---
         setTimeout(() => {
@@ -346,6 +335,7 @@
         // --- PRESENCE SYSTEM ---
         const connectedRef = ref(db, ".info/connected");
         const conListRef = ref(db, "connections");
+
         onValue(connectedRef, (snap) => {
             if (snap.val() === true) {
                 const con = push(conListRef);
@@ -353,71 +343,59 @@
                 set(con, true);
             }
         });
+
         onValue(conListRef, (snap) => {
             const count = snap.exists() ? Object.keys(snap.val()).length : 0;
             document.getElementById('liveViewers').innerText = `👁️ ${count} Viewing`;
         });
 
         onAuthStateChanged(auth, (user) => {
-            if (user) {
-                currentUser = user;
-                document.getElementById('displayUsername').innerText = user.displayName || "Bidder";
-                preloadUserCache();
-                
-                get(child(ref(db), `admins/${user.uid}`)).then((snapshot) => { 
-                    if (snapshot.exists() && snapshot.val() === true) {
-                        // ADMIN
-                        document.getElementById('adminPanelBtn').style.display = 'block';
-                        document.getElementById('clearChatBtn').style.display = 'block';
-                        document.getElementById('micBtn').style.display = 'block';
-                        initAgora(user.uid, "host");
-                    } else {
-                        // USER
-                        document.getElementById('audioControls').style.display = 'flex';
-                        initAgora(user.uid, "audience");
-                    }
-                });
-
-                get(child(ref(db), `users/${user.uid}`)).then((snapshot) => { if(snapshot.exists()) { isUserApproved = snapshot.val().is_approved === true; } });
-                document.getElementById('pageLoading').style.display = 'none';
-
-            } else { window.location.href = "index.html"; }
-        });
+        if (user) {
+            // --- SECURITY CHECK ---
+            get(child(ref(db), `users/${user.uid}`)).then((snapshot) => {
+                if (snapshot.exists() && snapshot.val().is_approved === false) {
+                    alert("ACCESS DENIED: Your account has been suspended. You cannot bid.");
+                    signOut(auth).then(() => window.location.href = "index.html");
+                } else {
+                    // Allow Access
+                    currentUser = user;
+                    document.getElementById('displayUsername').innerText = user.displayName || "Bidder";
+                    preloadUserCache();
+                    
+                    // Admin Check
+                    get(child(ref(db), `admins/${user.uid}`)).then((adminSnap) => { 
+                        if (adminSnap.exists() && adminSnap.val() === true) {
+                            document.getElementById('adminPanelBtn').style.display = 'block';
+                            document.getElementById('clearChatBtn').style.display = 'block';
+                            document.getElementById('micBtn').style.display = 'block';
+                        }
+                    });
+                    
+                    document.getElementById('pageLoading').style.display = 'none';
+                    initAgora(user.uid);
+                }
+            });
+        } else { window.location.href = "index.html"; }
+    });
 
         window.logout = function() { signOut(auth).then(() => { window.location.href = "index.html"; }); }
         window.openAdminPanel = function() { window.location.href = 'admin.html'; }
 
-        // --- AGORA LOGIC ---
-        async function initAgora(uid, role) {
+        async function initAgora(uid) {
             try {
                 agoraClient = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
-                
-                if (role === "host") {
-                    await agoraClient.join(AGORA_APP_ID, "auction_room", null, uid);
-                } else {
-                    // AUTO-JOIN LOGIC
-                    agoraClient.on("user-published", async (user, mediaType) => {
-                        await agoraClient.subscribe(user, mediaType);
-                        if (mediaType === "audio") {
-                            user.audioTrack.play();
-                            remoteAudioTracks.push(user.audioTrack);
-                            document.getElementById('audioStatus').style.display = 'flex';
-                        }
-                    });
-                    
-                    agoraClient.on("user-unpublished", () => { 
-                        document.getElementById('audioStatus').style.display = 'none'; 
-                    });
-
-                    // Only join if NOT closed
-                    if (globalAuctionData && globalAuctionData.title !== "Auction Closed") {
-                        await agoraClient.join(AGORA_APP_ID, "auction_room", null, uid);
+                agoraClient.on("user-published", async (user, mediaType) => {
+                    await agoraClient.subscribe(user, mediaType);
+                    if (mediaType === "audio") {
+                        user.audioTrack.play();
+                        document.getElementById('audioStatus').style.display = 'flex';
                     }
-                }
+                });
+                agoraClient.on("user-unpublished", () => { document.getElementById('audioStatus').style.display = 'none'; });
+                await agoraClient.join(AGORA_APP_ID, "auction_room", null, uid);
             } catch(e) { console.error("Agora Error:", e); }
         }
 
-        // ADMIN MIC
         window.toggleMic = async function() {
             if (!isMicOn) {
                 localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack();
@@ -434,29 +412,6 @@
             }
         }
 
-        // USER MUTE
-        window.toggleMute = function() {
-            const btn = document.getElementById('muteBtn');
-            isMuted = !isMuted;
-            if (isMuted) {
-                remoteAudioTracks.forEach(track => track.setVolume(0));
-                btn.innerText = "🔇 Audio Off";
-                btn.classList.add('muted');
-            } else {
-                remoteAudioTracks.forEach(track => track.setVolume(100));
-                btn.innerText = "🔊 Audio On";
-                btn.classList.remove('muted');
-            }
-        }
-
-        function leaveAudio() {
-             if(agoraClient) {
-                 agoraClient.leave();
-                 document.getElementById('audioStatus').style.display = 'none';
-             }
-        }
-
-        // --- DATA LOGIC ---
         function preloadUserCache() {
             get(ref(db, 'users')).then((snapshot) => {
                 if (snapshot.exists()) {
@@ -467,6 +422,7 @@
         }
         function getAvatarUrlByName(name) { return (userCache[name] && userCache[name].profile_image_url) ? userCache[name].profile_image_url : "https://www.gravatar.com/avatar/?d=mp"; }
 
+        // --- PUBLIC PROFILE LOGIC (UPDATED RATING) ---
         window.openPublicProfile = function(name) {
             name = name.replace("Seller: ", "").trim();
             const userData = userCache[name];
@@ -475,6 +431,8 @@
             document.getElementById('ppName').innerText = userData.name;
             document.getElementById('ppAvatar').src = userData.profile_image_url || "https://www.gravatar.com/avatar/?d=mp";
             document.getElementById('ppBio').innerText = userData.bio || "No bio provided.";
+            
+            // RATING WITH REVIEW COUNT
             const avg = userData.rating_count > 0 ? (userData.rating_total / userData.rating_count).toFixed(1) : "New";
             let starStr = "☆☆☆☆☆";
             if(userData.rating_count > 0) {
@@ -482,10 +440,12 @@
                 starStr = "★".repeat(roundScore) + "☆".repeat(5 - roundScore);
             }
             document.getElementById('ppRating').innerHTML = `${starStr} <span>(${avg} / 5 from ${userData.rating_count || 0} reviews)</span>`;
+
             document.getElementById('ppEmail').innerText = (userData.show_email_publicly && userData.email) ? userData.email : "";
             loadPPHistory(userData.email, 'sold');
             document.getElementById('publicProfileModal').style.display = 'flex';
         }
+        
         window.closePublicProfile = function(e) { if(e.target === document.getElementById('publicProfileModal')) document.getElementById('publicProfileModal').style.display='none'; }
         window.switchPPTab = function(mode) {
             document.querySelectorAll('.public-tab').forEach(t => t.classList.remove('active'));
@@ -553,19 +513,6 @@
             const gridStyle = isClosed ? 'none' : 'grid';
             const flexStyle = isClosed ? 'none' : 'flex';
 
-            // AUDIO LOGIC
-            if (isClosed) {
-                leaveAudio(); // CUT CONNECTION
-            } else if (!agoraClient || agoraClient.connectionState === "DISCONNECTED") {
-                // Reconnect if open (unless admin)
-                 if(currentUser && document.getElementById('adminPanelBtn').style.display === 'none') {
-                     // Check again to avoid loop
-                     if(agoraClient && agoraClient.connectionState === 'DISCONNECTED') {
-                        agoraClient.join(AGORA_APP_ID, "auction_room", null, currentUser.uid);
-                     }
-                 }
-            }
-
             document.querySelector('.thumbnails').style.display = gridStyle;
             document.querySelector('.history-section').style.display = displayStyle;
             document.getElementById('logisticsBox').style.display = displayStyle;
@@ -606,8 +553,6 @@
                 document.getElementById('userMaxBidDisplay').innerHTML = `🎉 <strong>You are the highest bidder!</strong> <br>(Your max bid: $${data.high_bidder_max.toLocaleString()})`;
             } else {
                 document.getElementById('userMaxBidDisplay').style.display = 'none';
-                document.getElementById('userMaxBidDisplay').classList.remove('winning-bid-status');
-                document.getElementById('userMaxBidDisplay').innerHTML = '';
             }
         }
 
@@ -644,8 +589,7 @@
             });
         }
 
-        let timerInterval;
-        function updateTimer(endTime) {
+        function updateTimer() {
             if (timerInterval) clearInterval(timerInterval);
             timerInterval = setInterval(() => {
                 const now = Date.now();
@@ -658,8 +602,6 @@
                     clearInterval(timerInterval);
                     timerElement.innerText = "--:--";
                     document.getElementById('timerBox').classList.add('timer-ended');
-                    // Force disconnect here just in case
-                    leaveAudio();
                     return;
                 }
 
@@ -671,8 +613,11 @@
                     document.getElementById('timerBox').classList.add('timer-ended');
 
                     if (!auctionEndedProcessed) {
-                        if (globalAuctionData.title !== "Auction Closed") {
-                            showWinnerModal(globalAuctionData);
+                        const reserve = globalAuctionData.reserve_price || 0;
+                        const currentBid = globalAuctionData.current_bid || 0;
+                        const hasBidder = !!globalAuctionData.high_bidder_uid;
+                        if (hasBidder && currentBid >= reserve) {
+                             showWinnerModal(globalAuctionData);
                         }
                         auctionEndedProcessed = true;
                     }
