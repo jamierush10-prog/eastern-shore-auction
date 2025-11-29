@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Auction House | Baldwin County</title>
     <style>
-        /* --- LOBBY STYLES --- */
         :root { --primary-color: #2563eb; --header-bg: #111827; --header-text: #f9fafb; --bg-color: #f3f4f6; --text-color: #1f2937; --live-color: #dc2626; --sold-color: #b91c1c; --info-color: #0891b2; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
         
@@ -44,9 +43,20 @@
         .stamp-sold { background-color: rgba(255, 255, 255, 0.9); color: var(--sold-color); border: 3px solid var(--sold-color); transform: rotate(-15deg); top: 40px; right: 20px; font-size: 1.2rem; padding: 5px 20px; border-radius: 8px; letter-spacing: 2px; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
-        /* MODALS */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
+        #authModal, #infoModal, #lotDetailModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px rgba(0,0,0,0.2); position: relative; }
+        
+        .tabs { display: flex; margin-bottom: 20px; border-bottom: 2px solid #e5e7eb; }
+        .tab { flex: 1; padding: 10px; text-align: center; cursor: pointer; font-weight: bold; color: #6b7280; transition: color 0.2s; }
+        .tab.active { color: var(--primary-color); border-bottom: 2px solid var(--primary-color); }
+        .form-group { margin-bottom: 15px; }
+        .form-group input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+        .action-btn { width: 100%; padding: 12px; background: var(--header-bg); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1rem; }
+        .error-msg { color: #dc2626; font-size: 0.9rem; margin-bottom: 10px; display: none; text-align: center; background: #fee2e2; padding: 8px; border-radius: 4px; }
+        .close-reg { text-align: center; margin-top: 15px; cursor: pointer; color: #6b7280; font-size: 0.9rem; text-decoration: underline; display: block; }
+        .radio-group { display: flex; gap: 15px; margin-bottom: 15px; }
+        .radio-label { font-weight: normal; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+        #nonLocalWarning { display: none; background: #fff7ed; border: 1px solid #fed7aa; padding: 10px; border-radius: 6px; margin-bottom: 15px; font-size: 0.85rem; color: #9a3412; }
         .close-modal-btn { position: absolute; top: 15px; right: 20px; font-size: 1.8rem; cursor: pointer; color: #9ca3af; }
 
         .info-list { text-align: left; line-height: 1.6; color: #4b5563; margin-bottom: 20px; padding-left: 20px; list-style: disc; }
@@ -56,19 +66,6 @@
         .logistics-box { background-color: #f9fafb; border: 1px solid #e5e7eb; padding: 15px; border-radius: 8px; margin-top: 20px; font-size: 0.9rem; color: #4b5563; text-align: left; }
         .logistics-item { margin-bottom: 8px; display: flex; align-items: flex-start; gap: 10px; }
         .log-icon { font-size: 1.1rem; min-width: 25px; }
-
-        /* AUTH STYLES */
-        .tabs { display: flex; margin-bottom: 20px; border-bottom: 2px solid #e5e7eb; }
-        .tab { flex: 1; padding: 10px; text-align: center; cursor: pointer; font-weight: bold; color: #6b7280; transition: color 0.2s; }
-        .tab.active { color: var(--primary-color); border-bottom: 2px solid var(--primary-color); }
-        .form-group { margin-bottom: 15px; text-align: left; }
-        .form-group input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
-        .action-btn { width: 100%; padding: 12px; background: var(--header-bg); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1rem; }
-        .error-msg { color: #dc2626; font-size: 0.9rem; margin-bottom: 10px; display: none; text-align: center; background: #fee2e2; padding: 8px; border-radius: 4px; }
-        .close-reg { text-align: center; margin-top: 15px; cursor: pointer; color: #6b7280; font-size: 0.9rem; text-decoration: underline; display: block; }
-        .radio-group { display: flex; gap: 15px; margin-bottom: 15px; }
-        .radio-label { font-weight: normal; cursor: pointer; display: flex; align-items: center; gap: 5px; }
-        #nonLocalWarning { display: none; background: #fff7ed; border: 1px solid #fed7aa; padding: 10px; border-radius: 6px; margin-bottom: 15px; font-size: 0.85rem; color: #9a3412; text-align: left; }
 
         @media (max-width: 600px) { .section-header { flex-direction: column; gap: 15px; text-align: center; } }
     </style>
@@ -83,13 +80,10 @@
     <div class="info-card">
         <div class="schedule-title">Next Live Auction Begins</div>
         <div class="schedule-time" id="scheduleDisplay">Loading schedule...</div>
-        
         <div id="announcementDisplay" class="announcement-text"></div>
 
         <p>Log in or Create an Account to bid.</p>
-        
         <button onclick="openAuthModal()" class="enter-btn">Enter Auction Room</button>
-        
         <button onclick="openInfoModal()" class="how-btn">ℹ️ How This Auction Works</button>
     </div>
 
@@ -108,7 +102,7 @@
             <ul class="info-list">
                 <li><strong>One Item at a Time:</strong> The auction is open at a set time, one auction lot is up for bid at a time.</li>
                 <li><strong>3-Minute Timer:</strong> The auction lasts for 3 minutes. Bids placed with less than 30 seconds will reset the timer to 30 seconds.</li>
-                <li><strong>Binding Bids:</strong> Winning bids is a contract between the seller and the buyer. The Auction House is only a platform service to connect buyers and sellers. The Auction House is not responsible for the quality of the item(s) sold and has no responsibility in the payment made for the sell. These transactions are between the buyer and the seller.</li>
+                <li><strong>Binding Bids:</strong> Winning bids is a contract between the seller and the buyer. The Auction House is only a platform service to connect buyers and sellers.</li>
                 <li><strong>Baldwin County Only:</strong> The Auction House is for buyers and sellers located in Baldwin County Alabama. The auctions are designed for local pickup or delivery without shipping costs.</li>
             </ul>
             <button class="action-btn" onclick="document.getElementById('infoModal').style.display='none'">Got it!</button>
@@ -131,9 +125,9 @@
     </div>
 
     <div id="authModal" class="modal-overlay">
-        <div class="modal-content" style="max-width: 380px;">
+        <div class="modal-content">
             <div class="tabs"><div class="tab active" onclick="switchTab('login')">Log In</div><div class="tab" onclick="switchTab('register')">Sign Up</div></div>
-            <div id="errorMsg" class="error-msg"></div>
+            <div id="errorMsg" class="error-msg" style="color:red; display:none; margin-bottom:10px;"></div>
             
             <form id="loginForm" onsubmit="event.preventDefault(); handleLogin();">
                 <div class="form-group"><input type="email" id="loginEmail" placeholder="Email Address" required></div>
@@ -148,8 +142,8 @@
                 <div class="form-group">
                     <label>Located in Baldwin County, AL?</label>
                     <div class="radio-group">
-                        <label><input type="radio" name="isLocal" value="yes" checked onchange="toggleLocalFields(true)"> Yes</label>
-                        <label><input type="radio" name="isLocal" value="no" onchange="toggleLocalFields(false)"> No</label>
+                        <label class="radio-label"><input type="radio" name="isLocal" value="yes" checked onchange="toggleLocalFields(true)"> Yes</label>
+                        <label class="radio-label"><input type="radio" name="isLocal" value="no" onchange="toggleLocalFields(false)"> No</label>
                     </div>
                 </div>
                 <div id="nonLocalWarning"><strong>Note:</strong> Non-local accounts require Admin approval.<div class="form-group" style="margin-top:10px;"><input type="text" id="pickupPlan" placeholder="Can you arrange local pickup?"></div></div>
@@ -161,11 +155,11 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getDatabase, ref, onValue, set, get, child } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getDatabase, ref, onValue, set, child, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // --- PASTE KEYS HERE ---
-       const firebaseConfig = {
+        // --- PASTE FIREBASE KEYS HERE ---
+        const firebaseConfig = {
   apiKey: "AIzaSyCt0i8a7ZVRlNmSts9yM4uGwV7ghPU59rk",
   authDomain: "eastern-shore-auction.firebaseapp.com",
   databaseURL: "https://eastern-shore-auction-default-rtdb.firebaseio.com",
@@ -180,10 +174,10 @@
         const db = getDatabase(app);
         let inventoryData = null;
         let activeAuctionKey = null;
+        let activeEndTime = 0;
 
         window.openInfoModal = function() { document.getElementById('infoModal').style.display = 'flex'; }
-
-        // --- AUTH ENTRY LOGIC (DIRECT & SECURITY) ---
+        
         window.openAuthModal = function() { 
             if(auth.currentUser) { 
                 checkBanAndRedirect(auth.currentUser.uid);
@@ -195,15 +189,12 @@
         function checkBanAndRedirect(uid) {
             get(child(ref(db), `users/${uid}`)).then((snapshot) => {
                 if (snapshot.exists()) {
-                    const data = snapshot.val();
-                    if (data.is_approved === false) {
-                        alert("ACCESS DENIED: Your account has been suspended. Please contact the administrator.");
-                        signOut(auth).then(() => { window.location.reload(); });
+                    if (snapshot.val().is_approved === false) {
+                        alert("ACCESS DENIED: Your account has been suspended.");
                     } else {
                         window.location.href = "auction.html";
                     }
                 } else {
-                    // User exists in Auth but not DB (rare), allow entry to fix profile
                     window.location.href = "auction.html";
                 }
             });
@@ -220,7 +211,7 @@
         onValue(ref(db, 'active_auction'), (snapshot) => {
             const data = snapshot.val();
             activeAuctionKey = data ? data.inventory_key : null;
-            if(data) window.activeEndTime = data.end_time;
+            if(data) activeEndTime = data.end_time;
             renderGrid(); 
         });
 
@@ -245,7 +236,7 @@
 
             featuredItems.forEach(item => {
                 let stampHTML = "";
-                if (item.key === activeAuctionKey && window.activeEndTime > now) {
+                if (item.key === activeAuctionKey && activeEndTime > now) {
                     stampHTML = '<div class="stamp stamp-live">LIVE NOW</div>';
                 } else if (item.status_label && item.status_label.includes("SOLD")) {
                     stampHTML = '<div class="stamp stamp-sold">SOLD</div>';
@@ -263,7 +254,7 @@
             if (!item) return;
             document.getElementById('detailTitle').innerText = item.title;
             document.getElementById('detailLot').innerText = `Lot #${item.lot}`;
-            document.getElementById('detailDescription').innerText = item.description || "No description provided.";
+            document.getElementById('detailDescription').innerText = item.description || "No description.";
             document.getElementById('detailLoc').innerText = item.location || "N/A";
             document.getElementById('detailPay').innerText = item.payment_methods || "N/A";
             document.getElementById('detailDel').innerText = item.delivery_method || "N/A";
@@ -291,24 +282,16 @@
             }
         }
         
-        // --- LOGIN & CHECK BAN ---
         window.handleLogin = function() {
             const email = document.getElementById('loginEmail').value;
             const pass = document.getElementById('loginPass').value;
-            const btn = document.querySelector('#loginForm button');
-            btn.disabled = true; btn.innerText = "Verifying...";
-            
             signInWithEmailAndPassword(auth, email, pass)
-            .then((userCredential) => {
-                // Check if banned before redirecting
-                checkBanAndRedirect(userCredential.user.uid);
-            })
+            .then((userCredential) => { checkBanAndRedirect(userCredential.user.uid); })
             .catch((error) => { 
                 const errDiv = document.getElementById('errorMsg');
                 errDiv.style.display = 'block';
                 let cleanMsg = error.message.replace("Firebase: ", "").replace("auth/", "").replace(/-/g, " ");
                 errDiv.innerText = cleanMsg;
-                btn.disabled = false; btn.innerText = "Log In"; 
             });
         }
 
@@ -318,13 +301,11 @@
             const pass = document.getElementById('regPass').value;
             const isLocal = document.querySelector('input[name="isLocal"]:checked').value === "yes";
             const pickupPlan = document.getElementById('pickupPlan').value;
-            const btn = document.querySelector('#registerForm button');
             if(pass.length < 6) { 
                 document.getElementById('errorMsg').style.display = 'block';
                 document.getElementById('errorMsg').innerText = "Password must be at least 6 characters"; 
                 return; 
             }
-            btn.disabled = true; btn.innerText = "Creating Account...";
             createUserWithEmailAndPassword(auth, email, pass)
             .then((userCredential) => {
                 const user = userCredential.user;
@@ -332,10 +313,7 @@
                     set(ref(db, 'users/' + user.uid), {
                         name: name, email: email, is_local: isLocal, pickup_plan: isLocal ? "Local" : pickupPlan,
                         is_approved: isLocal ? true : false, joined_at: Date.now()
-                    }).then(() => { 
-                        // Auto-redirect to auction (New users aren't banned yet)
-                        window.location.href = "auction.html"; 
-                    });
+                    }).then(() => { window.location.href = "auction.html"; });
                 });
             })
             .catch((error) => { 
@@ -343,7 +321,6 @@
                 errDiv.style.display = 'block';
                 let cleanMsg = error.message.replace("Firebase: ", "").replace("auth/", "").replace(/-/g, " ");
                 errDiv.innerText = cleanMsg;
-                btn.disabled = false; btn.innerText = "Create Account"; 
             });
         }
     </script>
