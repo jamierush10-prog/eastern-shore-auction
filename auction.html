@@ -22,8 +22,15 @@
         /* ADMIN BUTTON */
         #adminPanelBtn { display: none; background-color: var(--urgent-color); color: white; border: 1px solid white; padding: 8px 15px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; font-weight: bold; }
 
-        /* VIEWER CONTROLS */
-        .viewer-count { font-size: 0.9rem; color: #9ca3af; display: flex; align-items: center; gap: 5px; font-weight: bold; }
+        /* VIEWER CONTROLS - HIDDEN BY DEFAULT */
+        .viewer-count { 
+            font-size: 0.9rem; 
+            color: #9ca3af; 
+            display: none; /* <--- HIDDEN BY DEFAULT */
+            align-items: center; 
+            gap: 5px; 
+            font-weight: bold; 
+        }
 
         /* LAYOUT */
         .auction-container { background: white; max-width: 1000px; width: 90%; display: grid; grid-template-columns: 1.2fr 1fr; gap: 40px; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin-bottom: 40px; }
@@ -162,6 +169,7 @@
         <div class="brand-name">The Auction House</div>
         <div class="header-right">
             <div id="liveViewers" class="viewer-count">👁️ 1 Viewing</div>
+            
             <button id="adminPanelBtn" onclick="openAdminPanel()">ADMIN DASHBOARD</button>
         </div>
     </header>
@@ -344,7 +352,7 @@
                 } else {
                     // Allow Access
                     currentUser = user;
-                    isUserApproved = true; // <--- THE BUG FIX FOR PENDING APPROVAL
+                    isUserApproved = true; 
                     document.getElementById('displayUsername').innerText = user.displayName || "Bidder";
                     preloadUserCache();
                     
@@ -353,6 +361,9 @@
                         if (adminSnap.exists() && adminSnap.val() === true) {
                             document.getElementById('adminPanelBtn').style.display = 'block';
                             document.getElementById('clearChatBtn').style.display = 'block';
+                            
+                            // SHOW VIEWERS FOR ADMINS ONLY
+                            document.getElementById('liveViewers').style.display = 'flex';
                         }
                     });
                     
