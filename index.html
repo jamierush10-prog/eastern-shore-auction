@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Auction House | Baldwin County</title>
     <style>
-        /* --- LOBBY STYLES --- */
         :root { --primary-color: #2563eb; --header-bg: #111827; --header-text: #f9fafb; --bg-color: #f3f4f6; --text-color: #1f2937; --live-color: #dc2626; --sold-color: #b91c1c; --info-color: #0891b2; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
         
@@ -81,10 +80,13 @@
     <div class="info-card">
         <div class="schedule-title">Next Live Auction Begins</div>
         <div class="schedule-time" id="scheduleDisplay">Loading schedule...</div>
+        
         <div id="announcementDisplay" class="announcement-text"></div>
 
         <p>Log in or Create an Account to bid.</p>
+        
         <button onclick="openAuthModal()" class="enter-btn">Enter Auction Room</button>
+        
         <button onclick="openInfoModal()" class="how-btn">ℹ️ How This Auction Works</button>
     </div>
 
@@ -103,8 +105,9 @@
             <ul class="info-list">
                 <li><strong>One Item at a Time:</strong> The auction is open at a set time, one auction lot is up for bid at a time.</li>
                 <li><strong>3-Minute Timer:</strong> The auction lasts for 3 minutes. Bids placed with less than 30 seconds will reset the timer to 30 seconds.</li>
-                <li><strong>Binding Bids:</strong> Winning bids is a contract between the seller and the buyer. The Auction House is only a platform service to connect buyers and sellers.</li>
-                <li><strong>Baldwin County Only:</strong> The Auction House is for buyers and sellers located in Baldwin County Alabama. The auctions are designed for local pickup or delivery without shipping costs.</li>
+                <li><strong>Binding Bids:</strong> Winning bids is a contract between the seller and the buyer.</li>
+                <li><strong>Baldwin County Only:</strong> The Auction House is for buyers and sellers located in Baldwin County Alabama. Local pickup/delivery only.</li>
+                <li><strong>No Fees:</strong> There are currently no buyer or seller fees. You keep 100% of the sale.</li>
             </ul>
             <button class="action-btn" onclick="document.getElementById('infoModal').style.display='none'">Got it!</button>
         </div>
@@ -156,10 +159,10 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getDatabase, ref, onValue, set, child, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getDatabase, ref, onValue, set, get, child } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // --- PASTE YOUR KEYS HERE ---
+        // --- PASTE KEYS HERE ---
         const firebaseConfig = {
   apiKey: "AIzaSyCt0i8a7ZVRlNmSts9yM4uGwV7ghPU59rk",
   authDomain: "eastern-shore-auction.firebaseapp.com",
@@ -187,18 +190,16 @@
             } 
         }
 
-        // --- BAN CHECK & REDIRECT ---
         function checkBanAndRedirect(uid) {
             get(child(ref(db), `users/${uid}`)).then((snapshot) => {
                 if (snapshot.exists()) {
                     if (snapshot.val().is_approved === false) {
                         alert("ACCESS DENIED: Your account has been suspended.");
-                        signOut(auth).then(() => { window.location.reload(); });
+                        signOut(auth).then(() => window.location.reload());
                     } else {
                         window.location.href = "auction.html";
                     }
                 } else {
-                    // Allow rare case where Auth exists but DB record missing
                     window.location.href = "auction.html";
                 }
             });
@@ -291,14 +292,12 @@
             const pass = document.getElementById('loginPass').value;
             const btn = document.querySelector('#loginForm button');
             btn.disabled = true; btn.innerText = "Verifying...";
-            
             signInWithEmailAndPassword(auth, email, pass)
             .then((userCredential) => { checkBanAndRedirect(userCredential.user.uid); })
             .catch((error) => { 
                 const errDiv = document.getElementById('errorMsg');
                 errDiv.style.display = 'block';
-                let cleanMsg = error.message.replace("Firebase: ", "").replace("auth/", "").replace(/-/g, " ");
-                errDiv.innerText = cleanMsg;
+                errDiv.innerText = error.message.replace("Firebase: ", "").replace("auth/", "").replace(/-/g, " ");
                 btn.disabled = false; btn.innerText = "Log In"; 
             });
         }
@@ -322,17 +321,13 @@
                     set(ref(db, 'users/' + user.uid), {
                         name: name, email: email, is_local: isLocal, pickup_plan: isLocal ? "Local" : pickupPlan,
                         is_approved: isLocal ? true : false, joined_at: Date.now()
-                    }).then(() => { 
-                        // Redirect to Auction Room
-                        window.location.href = "auction.html"; 
-                    });
+                    }).then(() => { window.location.href = "auction.html"; });
                 });
             })
             .catch((error) => { 
                 const errDiv = document.getElementById('errorMsg');
                 errDiv.style.display = 'block';
-                let cleanMsg = error.message.replace("Firebase: ", "").replace("auth/", "").replace(/-/g, " ");
-                errDiv.innerText = cleanMsg;
+                errDiv.innerText = error.message.replace("Firebase: ", "").replace("auth/", "").replace(/-/g, " ");
                 btn.disabled = false; btn.innerText = "Create Account"; 
             });
         }
