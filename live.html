@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Auction | The Auction House</title>
+    <script src="https://download.agora.io/sdk/release/AgoraRTC_N-4.18.2.js"></script>
+    
+    <style>
+        :root { --primary-color: #2563eb; --urgent-color: #dc2626; --bg-color: #f3f4f6; --text-color: #1f2937; --border-color: #e5e7eb; --header-bg: #111827; --header-text: #f9fafb; --success-color: #16a34a; --gold-color: #f59e0b; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        
+        .site-header { width: 100%; background-color: var(--header-bg); color: var(--header-text); padding: 15px 20px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 40px; position: relative; display: flex; justify-content: center; align-items: center; }
+        .brand-name { font-family: "Georgia", "Times New Roman", serif; font-size: 1.8rem; letter-spacing: 1.5px; font-weight: bold; text-transform: uppercase; }
+        
+        .header-left { position: absolute; left: 20px; display: flex; gap: 15px; align-items: center; }
+        .nav-link { color: #d1d5db; text-decoration: none; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+        .header-right { position: absolute; right: 20px; display: flex; gap: 10px; align-items: center; } 
+
+        #adminPanelBtn { display: none; background-color: var(--urgent-color); color: white; border: 1px solid white; padding: 8px 15px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; font-weight: bold; }
+
+        .viewer-count { font-size: 0.9rem; color: #9ca3af; display: flex; align-items: center; gap: 5px; font-weight: bold; }
+        .audio-status { font-size: 0.8rem; color: #10b981; display: none; align-items: center; gap: 5px; border: 1px solid #10b981; padding: 5px 10px; border-radius: 20px; }
+        
+        .audio-control-group { display: none; align-items: center; gap: 10px; }
+        .btn-mute { background-color: transparent; border: 1px solid #6b7280; color: #d1d5db; padding: 6px 12px; border-radius: 20px; cursor: pointer; font-size: 0.8rem; }
+        .btn-mute.muted { background-color: #dc2626; border-color: #dc2626; color: white; }
+
+        .mic-btn { background-color: #374151; color: white; border: 1px solid #6b7280; padding: 8px 15px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; display: none; }
+        .mic-btn.active { background-color: var(--urgent-color); border-color: var(--urgent-color); animation: pulse-red 2s infinite; }
+        @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); } 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); } }
+
+        .auction-container { background: white; max-width: 1000px; width: 90%; display: grid; grid-template-columns: 1.2fr 1fr; gap: 40px; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin-bottom: 40px; }
+        .gallery-section { display: flex; flex-direction: column; gap: 15px; }
+        .main-image-wrapper { width: 100%; height: 400px; background-color: #eee; border-radius: 8px; overflow: hidden; border: 1px solid var(--border-color); position: relative; }
+        .main-image-wrapper img { width: 100%; height: 100%; object-fit: contain; background: #fff; transition: opacity 0.2s ease; }
+        .thumbnails { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+        .thumbnail { aspect-ratio: 1/1; background-color: #f9fafb; border: 2px solid transparent; border-radius: 6px; overflow: hidden; cursor: pointer; transition: all 0.2s; }
+        .thumbnail:hover { border-color: var(--primary-color); }
+        .thumbnail img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+        .history-section { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color); }
+        .history-title { font-size: 0.9rem; font-weight: bold; text-transform: uppercase; color: #6b7280; margin-bottom: 10px; }
+        #bidHistoryList { max-height: 300px; overflow-y: auto; border: 1px solid #f3f4f6; border-radius: 6px; padding: 0 10px; }
+        .bid-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f3f4f6; font-size: 0.95rem; align-items: center; }
+        .bidder-flex { display: flex; align-items: center; gap: 8px; font-weight: 500; }
+        .mini-avatar { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd; }
+        .bid-amount { font-weight: bold; color: var(--primary-color); }
+
+        .details-section { display: flex; flex-direction: column; }
+        h1 { margin: 0 0 10px 0; font-size: 2rem; line-height: 1.1; }
+        .subtitle { color: #6b7280; font-size: 0.9rem; margin-bottom: 10px; }
+        .seller-info { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; font-weight: 500; color: #4b5563; }
+        .seller-avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 2px solid #e5e7eb; }
+
+        .logistics-box { background-color: #f9fafb; border: 1px solid #e5e7eb; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 0.9rem; color: #4b5563; }
+        .logistics-item { margin-bottom: 8px; display: flex; align-items: flex-start; gap: 10px; }
+        .log-icon { font-size: 1.1rem; min-width: 25px; }
+
+        .timer-block { background-color: #fee2e2; color: var(--urgent-color); padding: 15px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px; font-weight: bold; border: 1px solid #fca5a5; }
+        .timer-ended { background-color: #e5e7eb; color: #374151; border-color: #d1d5db; }
+        .countdown { font-size: 1.5rem; font-variant-numeric: tabular-nums; }
+        
+        .pricing-card { background-color: #f9fafb; padding: 25px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 20px; }
+        .current-price { font-size: 3rem; font-weight: 800; color: var(--text-color); margin: 5px 0 20px 0; }
+        
+        .bid-controls { display: flex; flex-direction: column; gap: 15px; }
+        .increment-buttons { display: flex; gap: 10px; }
+        .inc-btn { flex: 1; padding: 10px; background: white; border: 1px solid var(--primary-color); color: var(--primary-color); border-radius: 4px; font-weight: bold; cursor: pointer; transition: all 0.2s; }
+        .bid-input-row { position: relative; width: 100%; }
+        .currency-symbol { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); font-size: 1.2rem; font-weight: bold; color: #374151; pointer-events: none; }
+        input#bidInput { padding: 12px; padding-left: 30px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 1.2rem; font-weight: bold; width: 100%; box-sizing: border-box; text-align: center; }
+        button.bid-btn { background-color: var(--primary-color); color: white; border: none; padding: 12px 24px; border-radius: 6px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s; width: 100%; }
+        button.bid-btn:disabled { background-color: #9ca3af; cursor: not-allowed; }
+        
+        #userMaxBidDisplay { margin-top: 10px; font-size: 0.9rem; color: var(--primary-color); text-align: center; display: none; background: #dbeafe; padding: 8px; border-radius: 4px; }
+        .winning-bid-status { background-color: #dcfce7 !important; color: #166534 !important; border-color: #86efac !important; }
+        .user-badge { background: #e0f2fe; color: #0369a1; padding: 10px; border-radius: 6px; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border: 1px solid #bae6fd; }
+
+        /* CHAT SECTION */
+        .chat-section { margin-top: 20px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 15px; }
+        .chat-header { font-weight: bold; color: #374151; margin-bottom: 10px; display:flex; justify-content: space-between; align-items:center; }
+        .chat-window { height: 200px; overflow-y: auto; background: white; border: 1px solid #e5e7eb; border-radius: 6px; padding: 10px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px; }
+        .chat-msg { font-size: 0.9rem; line-height: 1.4; }
+        .chat-msg strong { color: var(--primary-color); margin-right: 5px; }
+        .clickable-user { cursor: pointer; text-decoration: underline; text-decoration-style: dotted; }
+        .chat-input-row { display: flex; gap: 10px; }
+        #chatInput { padding: 10px; border: 1px solid #ccc; border-radius: 6px; flex: 1; font-size: 0.9rem; }
+        .chat-btn { background-color: #374151; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        #clearChatBtn { display: none; background-color: #dc2626; color: white; border: none; font-size: 0.7rem; padding: 4px 8px; border-radius: 4px; cursor: pointer; text-transform: uppercase; }
+
+        .description-block h3 { border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px; }
+        .description-text { line-height: 1.6; color: #4b5563; }
+
+        .tip-jar-box { margin-top: 30px; padding: 20px; background: #fffbeb; border: 1px solid #fcd34d; border-radius: 8px; text-align: center; }
+        .tip-link { display: flex; align-items: center; gap: 5px; padding: 8px 16px; border-radius: 20px; text-decoration: none; font-weight: bold; font-size: 0.9rem; color: white; }
+        .tip-venmo { background: #008CFF; }
+        .tip-cashapp { background: #00D632; }
+
+        /* MODALS */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 30px; border-radius: 8px; text-align: center; width: 90%; max-width: 400px; box-shadow: 0 20px 25px rgba(0,0,0,0.2); position: relative; }
+        .confirm-btn { flex: 1; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .btn-yes { background: var(--primary-color); color: white; }
+        .btn-no { background: #e5e7eb; color: #374151; }
+
+        .public-profile-header { text-align: center; margin-bottom: 20px; }
+        .public-avatar { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 10px; }
+        .public-rating { color: var(--gold-color); font-size: 1.2rem; margin: 5px 0; }
+        .public-tabs { display: flex; border-bottom: 1px solid #e5e7eb; margin-bottom: 15px; }
+        .public-tab { flex: 1; text-align: center; padding: 10px; cursor: pointer; font-weight: bold; color: #6b7280; }
+        .public-tab.active { border-bottom: 2px solid var(--primary-color); color: var(--primary-color); }
+        .public-list { max-height: 200px; overflow-y: auto; list-style: none; padding: 0; margin: 0; }
+        .public-item { padding: 8px; border-bottom: 1px solid #f3f4f6; font-size: 0.9rem; display: flex; justify-content: space-between; }
+
+        @media (max-width: 768px) {
+            .site-header { flex-direction: column; gap: 10px; height: auto; padding: 15px 0; }
+            .header-left, .header-right { position: static; width: 100%; justify-content: center; margin-bottom: 5px; }
+            .auction-container { grid-template-columns: 1fr; width: 95%; padding: 15px; gap: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="pageLoading" style="position:fixed; top:0; left:0; width:100%; height:100%; background:white; display:flex; justify-content:center; align-items:center; z-index:9999;">Authenticating...</div>
+
+    <header class="site-header">
+        <div class="header-left">
+            <a href="account.html" class="nav-link">👤 My Account</a>
+            <span style="color:#4b5563">|</span>
+            <div onclick="logout()" class="nav-link">Sign Out</div>
+        </div>
+        <div class="brand-name">The Auction House</div>
+        <div class="header-right">
+            <div id="liveViewers" class="viewer-count">👁️ 1 Viewing</div>
+            <div id="audioControls" class="audio-control-group" style="display:none; align-items:center; gap:10px;">
+                <div id="audioStatus" class="audio-status" style="display:none;">🔊 Live</div>
+                <button id="muteBtn" class="audio-btn btn-mute" onclick="toggleMute()">🔊 Audio On</button>
+            </div>
+            <button id="micBtn" class="mic-btn" onclick="toggleMic()">🎙️ Start Broadcast</button>
+            <button id="adminPanelBtn" onclick="openAdminPanel()">ADMIN DASHBOARD</button>
+        </div>
+    </header>
+
+    <div class="auction-container">
+        <div class="gallery-section">
+            <div class="main-image-wrapper"><img id="mainImage" src="" alt="Auction Item" onerror="this.src='https://placehold.co/600x400?text=No+Image'"></div>
+            <div class="thumbnails">
+                <div class="thumbnail" onclick="changeImage(this)"><img id="thumb1" src="" onerror="this.style.display='none'"></div>
+                <div class="thumbnail" onclick="changeImage(this)"><img id="thumb2" src="" onerror="this.style.display='none'"></div>
+                <div class="thumbnail" onclick="changeImage(this)"><img id="thumb3" src="" onerror="this.style.display='none'"></div>
+                <div class="thumbnail" onclick="changeImage(this)"><img id="thumb4" src="" onerror="this.style.display='none'"></div>
+            </div>
+            <div class="history-section">
+                <div class="history-title">Full Bid History</div>
+                <div id="bidHistoryList"></div>
+            </div>
+        </div>
+
+        <div class="details-section">
+            <h1 id="itemTitle">Loading...</h1>
+            <div class="subtitle" id="itemSubtitle">...</div>
+            <div id="sellerInfo" class="seller-info">
+                <img id="sellerAvatar" src="https://www.gravatar.com/avatar/?d=mp" class="seller-avatar">
+                <div>Seller: <strong id="sellerName" class="clickable-user" onclick="openPublicProfile(this.innerText)">...</strong></div>
+            </div>
+            <div id="logisticsBox" class="logistics-box">
+                <div class="logistics-item"><div class="log-icon">📍</div><div class="log-text"><strong>Location:</strong> <span id="dispLoc">...</span></div></div>
+                <div class="logistics-item"><div class="log-icon">💵</div><div class="log-text"><strong>Payment:</strong> <span id="dispPay">...</span></div></div>
+                <div class="logistics-item"><div class="log-icon">🚚</div><div class="log-text"><strong>Delivery:</strong> <span id="dispDel">...</span></div></div>
+            </div>
+            <div class="timer-block" id="timerBox"><span>TIME REMAINING</span><span class="countdown" id="countdown">--:--</span></div>
+            <div class="pricing-card">
+                <div class="current-bid-label">Current Bid</div>
+                <div class="current-price" id="priceDisplay">Loading...</div>
+                <div class="bid-controls">
+                    <div class="user-badge"><span>Bidder: <strong id="displayUsername">...</strong></span></div>
+                    <div class="increment-buttons">
+                        <button class="inc-btn" onclick="addToBid(1)">+$1</button>
+                        <button class="inc-btn" onclick="addToBid(5)">+$5</button>
+                        <button class="inc-btn" onclick="addToBid(10)">+$10</button>
+                    </div>
+                    <div class="bid-input-row"><span class="currency-symbol">$</span><input type="number" id="bidInput" placeholder="Total Max Bid" onfocus="this.select()"></div>
+                    <button class="bid-btn" id="mainBidBtn" onclick="openConfirm()">Place Max Bid</button>
+                    <div id="userMaxBidDisplay">Your current max bid is set to: <strong id="userMaxVal">...</strong></div>
+                </div>
+            </div>
+            <div class="chat-section">
+                <div class="chat-header"><span>💬 Auction Floor Chat</span><button id="clearChatBtn" onclick="clearChat()">Clear Chat</button></div>
+                <div id="chatWindow" class="chat-window"></div>
+                <form class="chat-input-row" onsubmit="event.preventDefault(); sendChat();">
+                    <input type="text" id="chatInput" placeholder="Say something..." autocomplete="off">
+                    <button type="submit" class="chat-btn">Send</button>
+                </form>
+            </div>
+            <div class="description-block" style="margin-top:30px;">
+                <h3>Description</h3>
+                <div class="description-text" id="itemDescription">Loading...</div>
+            </div>
+            <div class="tip-jar-box">
+                <div class="tip-title">☕ Enjoying the Auction? Leave a Tip!</div>
+                <div class="tip-buttons">
+                    <a href="https://venmo.com/u/James-Rush-127" target="_blank" class="tip-link tip-venmo">Venmo</a>
+                    <a href="https://cash.app/$pawpawrush" target="_blank" class="tip-link tip-cashapp">Cash App</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="publicProfileModal" class="modal-overlay" onclick="closePublicProfile(event)">
+        <div class="modal-content">
+            <div class="public-profile-header">
+                <img id="ppAvatar" src="" class="public-avatar">
+                <div id="ppName" class="public-name">Loading...</div>
+                <div id="ppRating" class="public-rating">☆☆☆☆☆ <span>(New)</span></div>
+                <div id="ppEmail" class="public-email"></div>
+                <div id="ppBio" class="public-bio"></div>
+            </div>
+            <div class="public-tabs">
+                <div class="public-tab active" onclick="switchPPTab('sold')">Items Sold</div>
+                <div class="public-tab" onclick="switchPPTab('bought')">Items Bought</div>
+            </div>
+            <div id="ppList" class="public-list"></div>
+            <button class="btn-yes confirm-btn" style="margin-top:20px; width:100%" onclick="document.getElementById('publicProfileModal').style.display='none'">Close</button>
+        </div>
+    </div>
+
+    <div id="winnerModal" class="modal-overlay">
+        <div class="modal-content winner-card">
+            <img id="winnerGif" src="" alt="Auction Result">
+            <h2 id="winnerText">Auction Ended</h2>
+            <p id="winnerDetail">The item was sold.</p>
+            <button class="btn-yes confirm-btn" onclick="document.getElementById('winnerModal').style.display='none'">Close</button>
+        </div>
+    </div>
+
+    <div id="confirmModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3>Confirm Max Bid</h3>
+            <p>You are setting a maximum bid of:</p>
+            <div class="confirm-amount" id="confirmAmountDisplay">$0</div>
+            <p style="font-size:0.8rem; color:#666;">The system will bid for you up to this amount.</p>
+            <div class="confirm-actions">
+                <button class="confirm-btn btn-no" onclick="closeConfirm()">Cancel</button>
+                <button class="confirm-btn btn-yes" onclick="submitFinalBid()">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getDatabase, ref, onValue, set, get, push, update, child, query, limitToLast, remove, onDisconnect } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        // --- KEYS ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyCt0i8a7ZVRlNmSts9yM4uGwV7ghPU59rk",
+            authDomain: "eastern-shore-auction.firebaseapp.com",
+            databaseURL: "https://eastern-shore-auction-default-rtdb.firebaseio.com",
+            projectId: "eastern-shore-auction",
+            storageBucket: "eastern-shore-auction.firebasestorage.app",
+            messagingSenderId: "771348898846",
+            appId: "1:771348898846:web:3b6371e8f826747fdcba0f"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+        const auctionId = "active_auction"; 
+        const dbRef = ref(db, auctionId);
+
+        let currentUser = null;
+        let globalAuctionData = null;
+        let auctionEndedProcessed = false;
+        let userCache = {}; 
+        let timerInterval = null;
+        let currentPPUser = null;
+        
+        // AGORA
+        let agoraClient = null;
+        let localAudioTrack = null;
+        let isMicOn = false;
+        let isMuted = false;
+        let remoteAudioTracks = [];
+        const AGORA_APP_ID = "0177f2708e8e4fdd9f97b71065c3cab6"; 
+
+        // --- CRASH PROTECTION ---
+        window.onerror = function(message, source, lineno, colno, error) {
+            alert("Error detected: " + message + "\nLine: " + lineno);
+            document.getElementById('pageLoading').style.display = 'none'; 
+        };
+
+        // --- SAFETY TIMER ---
+        setTimeout(() => {
+            const loader = document.getElementById('pageLoading');
+            if(loader && loader.style.display !== 'none') loader.style.display = 'none';
+        }, 3000);
+
+        // --- PRESENCE SYSTEM ---
+        const connectedRef = ref(db, ".info/connected");
+        const conListRef = ref(db, "connections");
+        onValue(connectedRef, (snap) => {
+            if (snap.val() === true) {
+                const con = push(conListRef);
+                onDisconnect(con).remove();
+                set(con, true);
+            }
+        });
+        onValue(conListRef, (snap) => {
+            const count = snap.exists() ? Object.keys(snap.val()).length : 0;
+            document.getElementById('liveViewers').innerText = `👁️ ${count} Viewing`;
+        });
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                document.getElementById('displayUsername').innerText = user.displayName || "Bidder";
+                preloadUserCache();
+                
+                get(child(ref(db), `admins/${user.uid}`)).then((snapshot) => { 
+                    if (snapshot.exists() && snapshot.val() === true) {
+                        document.getElementById('adminPanelBtn').style.display = 'block';
+                        document.getElementById('clearChatBtn').style.display = 'block';
+                        document.getElementById('micBtn').style.display = 'block';
+                        initAgora(user.uid, "host");
+                    } else {
+                        document.getElementById('audioControls').style.display = 'flex';
+                        initAgora(user.uid, "audience");
+                    }
+                });
+            } else { window.location.href = "index.html"; }
+        });
+
+        window.logout = function() { signOut(auth).then(() => { window.location.href = "index.html"; }); }
+        window.openAdminPanel = function() { window.location.href = 'admin.html'; }
+
+        async function initAgora(uid, role) {
+            try {
+                agoraClient = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
+                if (role === "host") {
+                    await agoraClient.join(AGORA_APP_ID, "auction_room", null, uid);
+                } else {
+                    agoraClient.on("user-published", async (user, mediaType) => {
+                        await agoraClient.subscribe(user, mediaType);
+                        if (mediaType === "audio") {
+                            user.audioTrack.play();
+                            remoteAudioTracks.push(user.audioTrack);
+                            document.getElementById('audioStatus').style.display = 'flex';
+                        }
+                    });
+                    agoraClient.on("user-unpublished", () => { document.getElementById('audioStatus').style.display = 'none'; });
+                    if (globalAuctionData && globalAuctionData.title !== "Auction Closed") {
+                        await agoraClient.join(AGORA_APP_ID, "auction_room", null, uid);
+                    }
+                }
+            } catch(e) { console.error("Agora Error:", e); }
+        }
+
+        window.toggleMic = async function() {
+            if (!isMicOn) {
+                localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack();
+                await agoraClient.publish([localAudioTrack]);
+                document.getElementById('micBtn').innerText = "🛑 Stop Broadcast";
+                document.getElementById('micBtn').classList.add('active');
+                isMicOn = true;
+            } else {
+                localAudioTrack.close();
+                await agoraClient.unpublish();
+                document.getElementById('micBtn').innerText = "🎙️ Start Broadcast";
+                document.getElementById('micBtn').classList.remove('active');
+                isMicOn = false;
+            }
+        }
+
+        window.toggleMute = function() {
+            const btn = document.getElementById('muteBtn');
+            isMuted = !isMuted;
+            if (isMuted) {
+                remoteAudioTracks.forEach(track => track.setVolume(0));
+                btn.innerText = "🔇 Audio Off";
+                btn.classList.add('muted');
+            } else {
+                remoteAudioTracks.forEach(track => track.setVolume(100));
+                btn.innerText = "🔊 Audio On";
+                btn.classList.remove('muted');
+            }
+        }
+
+        function leaveAudio() {
+             if(agoraClient) {
+                 agoraClient.leave();
+                 document.getElementById('audioStatus').style.display = 'none';
+             }
+        }
+
+        function preloadUserCache() {
+            get(ref(db, 'users')).then((snapshot) => {
+                if (snapshot.exists()) {
+                    Object.values(snapshot.val()).forEach(userData => { if(userData.name) userCache[userData.name] = userData; });
+                    if(globalAuctionData) updateUI(globalAuctionData);
+                }
+            });
+        }
+        function getAvatarUrlByName(name) { return (userCache[name] && userCache[name].profile_image_url) ? userCache[name].profile_image_url : "https://www.gravatar.com/avatar/?d=mp"; }
+
+        window.openPublicProfile = function(name) {
+            name = name.replace("Seller: ", "").trim();
+            const userData = userCache[name];
+            if(!userData) { alert("User profile not found."); return; }
+            currentPPUser = userData; 
+            document.getElementById('ppName').innerText = userData.name;
+            document.getElementById('ppAvatar').src = userData.profile_image_url || "https://www.gravatar.com/avatar/?d=mp";
+            document.getElementById('ppBio').innerText = userData.bio || "No bio provided.";
+            const avg = userData.rating_count > 0 ? (userData.rating_total / userData.rating_count).toFixed(1) : "New";
+            let starStr = "☆☆☆☆☆";
+            if(userData.rating_count > 0) {
+                const roundScore = Math.round(userData.rating_total / userData.rating_count);
+                starStr = "★".repeat(roundScore) + "☆".repeat(5 - roundScore);
+            }
+            document.getElementById('ppRating').innerHTML = `${starStr} <span>(${avg} / 5 from ${userData.rating_count || 0} reviews)</span>`;
+            document.getElementById('ppEmail').innerText = (userData.show_email_publicly && userData.email) ? userData.email : "";
+            loadPPHistory(userData.email, 'sold');
+            document.getElementById('publicProfileModal').style.display = 'flex';
+        }
+        window.closePublicProfile = function(e) { if(e.target === document.getElementById('publicProfileModal')) document.getElementById('publicProfileModal').style.display='none'; }
+        window.switchPPTab = function(mode) {
+            document.querySelectorAll('.public-tab').forEach(t => t.classList.remove('active'));
+            const clickedTab = mode === 'sold' ? 0 : 1;
+            document.querySelectorAll('.public-tab')[clickedTab].classList.add('active');
+            loadPPHistory(currentPPUser.email, mode);
+        }
+        function loadPPHistory(email, mode) {
+            const list = document.getElementById('ppList'); list.innerHTML = "Loading...";
+            get(ref(db, 'sales_history')).then((snapshot) => {
+                list.innerHTML = "";
+                if(!snapshot.exists()) { list.innerHTML = "<div style='text-align:center; padding:10px;'>No history.</div>"; return; }
+                const history = Object.values(snapshot.val());
+                let count = 0;
+                history.forEach(sale => {
+                    let match = false;
+                    if (mode === 'sold') { match = (sale.seller_email && sale.seller_email.toLowerCase() === email.toLowerCase()) || (sale.seller_name === currentPPUser.name); } 
+                    else { match = (sale.winner_email && sale.winner_email.toLowerCase() === email.toLowerCase()) || (sale.winner_name === currentPPUser.name); }
+                    if(match) {
+                        count++;
+                        const div = document.createElement('div'); div.className = 'public-item';
+                        const dateStr = new Date(sale.date).toLocaleDateString();
+                        div.innerHTML = `<span>${sale.item_title}</span> <span style="color:#6b7280; font-size:0.8rem;">${dateStr}</span>`;
+                        list.appendChild(div);
+                    }
+                });
+                if(count === 0) list.innerHTML = "<div style='text-align:center; padding:10px; color:#999;'>No items found.</div>";
+            });
+        }
+
+        const chatRef = query(ref(db, 'auction_chat'), limitToLast(50));
+        window.sendChat = function() {
+            const input = document.getElementById('chatInput');
+            const msg = input.value.trim();
+            if(!msg || !currentUser) return;
+            push(ref(db, 'auction_chat'), { user: currentUser.displayName, text: msg, timestamp: Date.now() });
+            input.value = "";
+        }
+        window.clearChat = function() { if(confirm("Clear chat?")) set(ref(db, 'auction_chat'), null); }
+        onValue(chatRef, (snapshot) => {
+            const chatWindow = document.getElementById('chatWindow'); chatWindow.innerHTML = "";
+            const data = snapshot.val();
+            if(data) {
+                Object.values(data).forEach(msg => {
+                    const div = document.createElement('div'); div.className = 'chat-msg'; 
+                    div.innerHTML = `<strong class="clickable-user" onclick="openPublicProfile(this.innerText)">${msg.user}</strong>: ${msg.text}`; 
+                    chatWindow.appendChild(div);
+                });
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+            }
+        });
+
+        onValue(dbRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                globalAuctionData = data;
+                if (data.end_time > Date.now()) { auctionEndedProcessed = false; }
+                updateUI(data);
+            }
+        });
+
+        function updateUI(data) {
+            const isClosed = (data.title === "Auction Closed");
+            const displayStyle = isClosed ? 'none' : 'block';
+            const gridStyle = isClosed ? 'none' : 'grid';
+            const flexStyle = isClosed ? 'none' : 'flex';
+
+            // AUDIO LOGIC
+            if (isClosed) {
+                leaveAudio(); // CUT CONNECTION
+            } else if (!agoraClient || agoraClient.connectionState === "DISCONNECTED") {
+                 if(currentUser && document.getElementById('adminPanelBtn').style.display === 'none') {
+                     if(agoraClient && agoraClient.connectionState === 'DISCONNECTED') {
+                        agoraClient.join(AGORA_APP_ID, "auction_room", null, currentUser.uid);
+                     }
+                 }
+            }
+
+            document.querySelector('.thumbnails').style.display = gridStyle;
+            document.querySelector('.history-section').style.display = displayStyle;
+            document.getElementById('logisticsBox').style.display = displayStyle;
+            document.querySelector('.timer-block').style.display = flexStyle;
+            document.querySelector('.pricing-card').style.display = displayStyle;
+            document.querySelector('.description-block').style.display = displayStyle;
+            document.getElementById('sellerInfo').style.display = isClosed ? 'none' : (data.seller_name ? 'flex' : 'none');
+            document.querySelector('.tip-jar-box').style.display = displayStyle;
+
+            document.getElementById('itemTitle').innerText = data.title;
+            document.getElementById('itemSubtitle').innerText = data.subtitle;
+            document.getElementById('itemDescription').innerText = data.description;
+            document.getElementById('priceDisplay').innerText = "$" + data.current_bid.toLocaleString();
+
+            if (!isClosed && data.seller_name) {
+                document.getElementById('sellerName').innerText = data.seller_name;
+                document.getElementById('sellerAvatar').src = getAvatarUrlByName(data.seller_name);
+            }
+
+            document.getElementById('dispLoc').innerText = data.location || "Not Specified";
+            document.getElementById('dispPay').innerText = data.payment_methods || "Cash";
+            document.getElementById('dispDel').innerText = data.delivery_method || "Local Pickup";
+
+            const input = document.getElementById('bidInput');
+            if(document.activeElement !== input) input.value = data.current_bid + 1;
+
+            const mainImg = document.getElementById('mainImage');
+            if(!mainImg.getAttribute('data-locked')) mainImg.src = data.image_url;
+            if (!isClosed) updateThumbs(data.images);
+            
+            updateTimer();
+            renderBidHistory(data.bid_history);
+
+            if (currentUser && data.high_bidder_uid === currentUser.uid && !isClosed) {
+                document.getElementById('userMaxBidDisplay').style.display = 'block';
+                document.getElementById('userMaxBidDisplay').classList.add('winning-bid-status');
+                document.getElementById('userMaxBidDisplay').innerHTML = `🎉 <strong>You are the highest bidder!</strong> <br>(Your max bid: $${data.high_bidder_max.toLocaleString()})`;
+            } else {
+                document.getElementById('userMaxBidDisplay').style.display = 'none';
+                document.getElementById('userMaxBidDisplay').classList.remove('winning-bid-status');
+                document.getElementById('userMaxBidDisplay').innerHTML = '';
+            }
+        }
+
+        function updateThumbs(images) {
+            const imgIds = ['thumb1', 'thumb2', 'thumb3', 'thumb4'];
+            imgIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (images && images[id]) { el.src = images[id]; el.parentElement.style.display = 'block'; } 
+                else { el.parentElement.style.display = 'none'; }
+            });
+        }
+        
+        window.changeImage = function(div) {
+            const img = div.querySelector('img');
+            const main = document.getElementById('mainImage');
+            if(img.src) {
+                main.style.opacity = 0;
+                setTimeout(() => { main.src = img.src; main.style.opacity = 1; main.setAttribute('data-locked', 'true'); }, 200);
+            }
+        }
+
+        function renderBidHistory(historyObj) {
+            const list = document.getElementById('bidHistoryList');
+            list.innerHTML = ""; 
+            if (!historyObj) { list.innerHTML = '<div class="bid-item" style="color:#9ca3af;">No bids yet...</div>'; return; }
+            const bidsArray = Object.values(historyObj);
+            bidsArray.sort((a, b) => b.amount - a.amount);
+            bidsArray.forEach(bid => {
+                const row = document.createElement('div');
+                row.className = 'bid-item';
+                const avatarUrl = getAvatarUrlByName(bid.bidder_name);
+                row.innerHTML = `<div class="bidder-flex"><img src="${avatarUrl}" class="mini-avatar"><span class="clickable-user" onclick="openPublicProfile(this.innerText)">${bid.bidder_name}</span></div><span class="bid-amount">$${bid.amount.toLocaleString()}</span>`;
+                list.appendChild(row);
+            });
+        }
+
+        let timerInterval;
+        function updateTimer(endTime) {
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                const now = Date.now();
+                const distance = globalAuctionData.end_time - now;
+                const timerElement = document.getElementById('countdown');
+                const bidBtn = document.querySelector('.bid-btn');
+                const incBtns = document.querySelectorAll('.inc-btn');
+                
+                if(globalAuctionData.title === "Auction Closed") {
+                    clearInterval(timerInterval);
+                    timerElement.innerText = "--:--";
+                    document.getElementById('timerBox').classList.add('timer-ended');
+                    // Force disconnect here just in case
+                    leaveAudio();
+                    return;
+                }
+
+                if (distance < 0) {
+                    clearInterval(timerInterval);
+                    timerElement.textContent = "ENDED";
+                    bidBtn.disabled = true; bidBtn.textContent = "Auction Closed"; bidBtn.style.backgroundColor = "#9ca3af";
+                    incBtns.forEach(b => b.disabled = true);
+                    document.getElementById('timerBox').classList.add('timer-ended');
+
+                    if (!auctionEndedProcessed) {
+                        if (globalAuctionData.title !== "Auction Closed") {
+                            showWinnerModal(globalAuctionData);
+                        }
+                        auctionEndedProcessed = true;
+                    }
+                } else {
+                    bidBtn.disabled = false; bidBtn.textContent = "Place Max Bid"; bidBtn.style.backgroundColor = ""; 
+                    incBtns.forEach(b => b.disabled = false);
+                    document.getElementById('timerBox').classList.remove('timer-ended');
+                    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                    timerElement.textContent = (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds < 10 ? "0" + seconds : seconds);
+                }
+            }, 1000);
+        }
+
+        function showWinnerModal(data) {
+            const reserve = data.reserve_price || 0;
+            const currentBid = data.current_bid || 0;
+            const hasBidder = !!data.high_bidder_uid;
+            const isSold = hasBidder && (currentBid >= reserve);
+
+            if (isSold) {
+                const modal = document.getElementById('winnerModal');
+                const text = document.getElementById('winnerText');
+                const detail = document.getElementById('winnerDetail');
+                const img = document.getElementById('winnerGif');
+
+                if (currentUser && data.high_bidder_uid === currentUser.uid) {
+                    text.innerText = "Congratulations!"; text.style.color = "#16a34a"; 
+                    detail.innerText = "You won this item for $" + currentBid.toLocaleString();
+                    img.src = "https://media.giphy.com/media/26u4cqiYI30juCOGY/giphy.gif";
+                } else {
+                    text.innerText = "SOLD!"; text.style.color = "#1f2937";
+                    detail.innerText = "Sold to " + (data.high_bidder_name || "Unknown") + " for $" + currentBid.toLocaleString();
+                    img.src = "https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExcGJrenUwMW84Mmpia3dpazF1b3JmZTdyNWI2d3Izd2tudGVlbzRuYyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l41YAbDsTJXKANjmE/giphy.gif";
+                }
+                modal.style.display = 'flex';
