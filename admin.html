@@ -60,7 +60,7 @@
         .form-group label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9rem; }
         .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
         
-        /* SETTINGS CARD (RESTORED) */
+        /* SETTINGS CARD */
         .control-card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 30px; display: flex; flex-direction: column; gap: 15px; border-left: 5px solid var(--primary-color); }
         .control-row { display: flex; gap: 15px; align-items: flex-end; }
         .control-input-group { flex: 1; }
@@ -122,7 +122,7 @@
                 
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div class="auto-rotate-box">
-                        <input type="checkbox" id="autoRotateCheck">
+                        <input type="checkbox" id="autoRotateCheck" onchange="toggleAutoRotate(this.checked)">
                         <div>
                             <strong>🔄 Enable Auto-Rotation</strong>
                             <div style="font-size:0.8rem; color:#6b7280;">Automatically start next featured item when timer ends.</div>
@@ -245,7 +245,7 @@
         const storage = getStorage(app);
 
         let activeAuctionData = null;
-        let isTransitioning = false; // Prevent double firing
+        let isTransitioning = false; 
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
@@ -272,13 +272,28 @@
                     const data = snapshot.val();
                     document.getElementById('scheduleInput').value = data.schedule || "";
                     document.getElementById('announcementInput').value = data.announcement || "";
+                    // LOAD CHECKBOX STATE
+                    document.getElementById('autoRotateCheck').checked = data.auto_rotate === true;
                 }
             });
         }
+        
         window.updateSettings = function() {
             const schedule = document.getElementById('scheduleInput').value;
             const announcement = document.getElementById('announcementInput').value;
-            update(ref(db, 'settings'), { schedule: schedule, announcement: announcement }).then(() => { alert("Settings updated!"); });
+            // Also save checkbox here just in case
+            const autoRotate = document.getElementById('autoRotateCheck').checked;
+            
+            update(ref(db, 'settings'), { 
+                schedule: schedule, 
+                announcement: announcement,
+                auto_rotate: autoRotate
+            }).then(() => { alert("Settings updated!"); });
+        }
+
+        // NEW: INSTANT TOGGLE SAVE
+        window.toggleAutoRotate = function(isChecked) {
+            update(ref(db, 'settings'), { auto_rotate: isChecked });
         }
 
         // --- NAVIGATION ---
@@ -415,6 +430,7 @@
                     Date.now() > activeAuctionData.end_time && 
                     !isTransitioning) {
                         
+                        // Check checkbox status from DOM (which is now synced with DB on load)
                         const isAuto = document.getElementById('autoRotateCheck').checked;
                         if(isAuto) {
                             console.log("Auto-Rotating...");
@@ -435,13 +451,10 @@
                 if(!data) return;
 
                 // Filter: Featured AND Not Sold
-                const candidates = Object.values(data).filter(item => 
-                    item.is_featured === true && 
-                    (!item.status_label || !item.status_label.includes("SOLD"))
-                );
-
-                // Sort by Lot
-                candidates.sort((a, b) => a.lot - b.lot);
+                const candidates = Object.entries(data)
+                    .map(([k, v]) => ({...v, key: k}))
+                    .filter(item => item.is_featured === true && (!item.status_label || !item.status_label.includes("SOLD")))
+                    .sort((a, b) => a.lot - b.lot);
 
                 if (candidates.length === 0) {
                     console.log("No candidates found for auto-rotation.");
@@ -449,32 +462,16 @@
                     return;
                 }
 
-                // Find index of current (just finished) item to get the NEXT one
-                const currentKey = activeAuctionData.inventory_key;
-                let nextItem = candidates[0]; // Default to first (loop)
-
-                if (currentKey) {
-                    const currentIndex = candidates.findIndex(c => c.inventory_key === currentKey); // Note: assuming inventory object has key embedded or we need to map entries.
-                    // Actually, we need keys. Let's fix the map above.
-                }
-                
-                // Better approach with keys:
-                const candidatesWithKeys = Object.entries(data)
-                    .map(([k, v]) => ({...v, key: k}))
-                    .filter(item => item.is_featured === true && (!item.status_label || !item.status_label.includes("SOLD")))
-                    .sort((a, b) => a.lot - b.lot);
-
-                if(candidatesWithKeys.length === 0) { isTransitioning = false; return; }
-
                 let nextIndex = 0;
-                const currentIdx = candidatesWithKeys.findIndex(c => c.key === activeAuctionData.inventory_key);
+                // Find current item in the list
+                const currentIdx = candidates.findIndex(c => c.key === activeAuctionData.inventory_key);
                 
                 if (currentIdx !== -1) {
                     // Get next index, looping back to 0 if at end
-                    nextIndex = (currentIdx + 1) % candidatesWithKeys.length;
+                    nextIndex = (currentIdx + 1) % candidates.length;
                 }
                 
-                const targetItem = candidatesWithKeys[nextIndex];
+                const targetItem = candidates[nextIndex];
                 
                 // 3. Queue it up (Wait 3 seconds for effect)
                 setTimeout(() => {
