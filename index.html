@@ -43,6 +43,7 @@
         .status-badge { float: right; font-size: 0.7rem; padding: 2px 8px; border-radius: 12px; font-weight: bold; }
         .status-live { background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; }
         .status-sold { background: #fef3c7; color: #b45309; border: 1px solid #fcd34d; }
+        .status-ended { background: #e5e7eb; color: #374151; border: 1px solid #d1d5db; }
 
         .loading-text { color: #9ca3af; font-style: italic; grid-column: 1/-1; padding: 40px; }
         .footer-text { margin-top: 60px; margin-bottom: 40px; color: #9ca3af; font-size: 0.9rem; text-align: center; }
@@ -77,30 +78,29 @@
 
     <div class="hero-section">
         <div class="hero-card">
-            <div class="hero-label">Next Live Auction Begins</div>
-            <div class="hero-date">December 11th - 7:30pm</div>
+            <div class="hero-label">Live Auction Marketplace</div>
+            <div class="hero-date">Open 24/7</div>
             
             <p class="hero-text">
-                Welcome to The Auction House! Registration is officially open. Our first live event is set for Dec 11th, but you can create your account and list items right now. We might even run a small warm-up auction this Sunday, Dec 7th, so get registered today!
+                Welcome to The Auction House! We are now operating as a live marketplace. Sellers can list items for 15 minutes or up to 7 days. Bid live, win instantly!
             </p>
             
             <span class="signature">— Jamie Rush</span>
 
             <div class="helper-text">Log in or Create an Account to bid.</div>
             
-            <button onclick="openAuthModal()" class="cta-button">Enter Auction Room</button>
-            
+            <button onclick="openAuthModal()" class="cta-button">Create Account / Login</button>
             <br>
-            <div class="helper-link" onclick="openInfoModal()">ℹ️ How This Auction Works</div>
+            <div style="margin-top:15px"><a href="create_listing.html" style="color: #2563eb; font-weight: bold; text-decoration: none;">Have something to sell? List it now &rarr;</a></div>
         </div>
     </div>
 
     <div class="upcoming-section">
-        <h2 class="section-title">Upcoming Auctions</h2>
+        <h2 class="section-title">Active Auctions</h2>
         <div id="lotsGrid" class="grid-container">
-            <div class="loading-text">Loading lots...</div>
+            <div class="loading-text">Loading live auctions...</div>
         </div>
-        <div class="footer-text">Stay tuned! New lots coming soon.</div>
+        <div class="footer-text">Check back often for new listings!</div>
     </div>
 
     <div id="authModal" class="modal-overlay">
@@ -141,25 +141,12 @@
         </div>
     </div>
 
-    <div id="infoModal" class="modal-overlay" onclick="if(event.target===this) this.style.display='none'">
-        <div class="modal-content">
-            <h2 style="color: var(--primary-color); margin-top:0;">How It Works</h2>
-            <ul style="text-align:left; line-height:1.6; color:#4b5563; padding-left:20px;">
-                <li><strong>One Item at a Time:</strong> The auction is open at a set time.</li>
-                <li><strong>Timer:</strong> Bids placed under 30s reset the timer.</li>
-                <li><strong>Binding Bids:</strong> Winning a bid is a contract to buy.</li>
-                <li><strong>Baldwin County Only:</strong> Local pickup/delivery only.</li>
-            </ul>
-            <button class="action-btn" onclick="document.getElementById('infoModal').style.display='none'">Got it!</button>
-        </div>
-    </div>
-
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getDatabase, ref, onValue, set, get, child } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // --- PASTE YOUR FIREBASE CONFIG HERE ---
+        // --- FIREBASE CONFIG ---
         const firebaseConfig = {
           apiKey: "AIzaSyCt0i8a7ZVRlNmSts9yM4uGwV7ghPU59rk",
           authDomain: "eastern-shore-auction.firebaseapp.com",
@@ -174,19 +161,16 @@
         const auth = getAuth(app);
         const db = getDatabase(app);
 
-        // --- AUTH & MODAL LOGIC ---
+        // --- AUTH LOGIC ---
         window.openAuthModal = function() {
             if (auth.currentUser) {
-                // If already logged in, go straight to auction
-                checkBanAndRedirect(auth.currentUser.uid);
+                // If logged in, maybe scroll to auctions or show a message
+                document.querySelector('.upcoming-section').scrollIntoView({behavior: "smooth"});
             } else {
-                // Open modal
                 document.getElementById('authModal').style.display = 'flex';
             }
         }
         
-        window.openInfoModal = function() { document.getElementById('infoModal').style.display = 'flex'; }
-
         window.switchTab = function(mode) {
             document.getElementById('errorMsg').style.display = 'none';
             if(mode === 'login') {
@@ -209,20 +193,6 @@
             else { div.style.display = 'block'; input.setAttribute('required', 'true'); }
         }
 
-        function checkBanAndRedirect(uid) {
-            get(child(ref(db), `users/${uid}`)).then((snapshot) => {
-                if (snapshot.exists()) {
-                    if (snapshot.val().is_approved === false) {
-                        alert("ACCESS DENIED: Your account has been suspended.");
-                    } else {
-                        window.location.href = "auction.html";
-                    }
-                } else {
-                    window.location.href = "auction.html";
-                }
-            });
-        }
-
         window.handleLogin = function() {
             const email = document.getElementById('loginEmail').value;
             const pass = document.getElementById('loginPass').value;
@@ -230,7 +200,11 @@
             btn.disabled = true; btn.innerText = "Verifying...";
             
             signInWithEmailAndPassword(auth, email, pass)
-            .then((userCredential) => { checkBanAndRedirect(userCredential.user.uid); })
+            .then((userCredential) => { 
+                document.getElementById('authModal').style.display = 'none';
+                btn.disabled = false; btn.innerText = "Log In";
+                alert("Welcome back, " + (userCredential.user.displayName || "User") + "!");
+            })
             .catch((error) => { 
                 showError(error.message);
                 btn.disabled = false; btn.innerText = "Log In"; 
@@ -256,7 +230,10 @@
                     set(ref(db, 'users/' + user.uid), {
                         name: name, email: email, is_local: isLocal, pickup_plan: isLocal ? "Local" : pickupPlan,
                         is_approved: isLocal ? true : false, joined_at: Date.now()
-                    }).then(() => { window.location.href = "auction.html"; });
+                    }).then(() => { 
+                        document.getElementById('authModal').style.display = 'none';
+                        alert("Account Created! You can now bid.");
+                    });
                 });
             })
             .catch((error) => { 
@@ -271,43 +248,65 @@
             errDiv.innerText = msg.replace("Firebase: ", "").replace("auth/", "").replace(/-/g, " ");
         }
 
-        // --- INVENTORY GRID ---
-        const inventoryRef = ref(db, 'inventory');
-        onValue(inventoryRef, (snapshot) => {
+        // --- LIVE AUCTION FEED ---
+        // NEW: Listening to 'auctions' node instead of 'inventory'
+        const auctionsRef = ref(db, 'auctions');
+        onValue(auctionsRef, (snapshot) => {
             const grid = document.getElementById('lotsGrid');
             grid.innerHTML = ""; 
             
             const data = snapshot.val();
             if (!data) {
-                grid.innerHTML = '<div class="loading-text">No upcoming auctions found.</div>';
+                grid.innerHTML = '<div class="loading-text">No active auctions right now.<br><a href="create_listing.html" style="color:var(--primary-color)">Be the first to list something!</a></div>';
                 return;
             }
 
-            const items = Object.values(data).sort((a, b) => a.lot - b.lot);
+            // Convert to array and sort by END TIME (Ending soonest first)
+            const items = Object.entries(data).map(([key, val]) => ({ ...val, id: key }));
+            items.sort((a, b) => a.end_time - b.end_time);
 
             items.forEach(item => {
+                const now = Date.now();
                 let statusBadge = "";
-                if (item.status_label && item.status_label.includes("SOLD")) {
-                    statusBadge = `<span class="status-badge status-sold">SOLD</span>`;
-                } else if (item.status_label && item.status_label.includes("LIVE")) {
+                
+                // Determine Status
+                if (item.status === "ended" || now > item.end_time) {
+                    statusBadge = `<span class="status-badge status-ended">ENDED</span>`;
+                } else {
                     statusBadge = `<span class="status-badge status-live">LIVE NOW</span>`;
                 }
 
+                // DYNAMIC LINK: Passes the Auction ID to the next page
                 const card = document.createElement('a');
                 card.className = 'item-card';
-                // Only link to auction if user clicks. Authentication check happens on auction.html anyway.
-                card.href = 'auction.html'; 
+                card.href = `auction.html?id=${item.id}`; 
+                
                 card.innerHTML = `
                     <img src="${item.image_url}" class="card-img" alt="${item.title}" onerror="this.src='https://placehold.co/400x300?text=No+Image'">
                     <div class="card-body">
-                        <div class="card-lot">Lot #${item.lot} ${statusBadge}</div>
+                        <div class="card-lot">${statusBadge}</div>
                         <div class="card-title">${item.title}</div>
-                        <div class="card-price">Est: $${item.start_price}</div>
+                        <div class="card-price" style="display:flex; justify-content:space-between; align-items:center;">
+                            <span>$${item.current_bid}</span>
+                            <span style="font-size:0.8rem; color:#6b7280; font-weight:normal;">${getTimeLeft(item.end_time)} left</span>
+                        </div>
                     </div>
                 `;
                 grid.appendChild(card);
             });
         });
+
+        function getTimeLeft(endTime) {
+            const now = Date.now();
+            const diff = endTime - now;
+            if(diff <= 0) return "0m";
+            const mins = Math.floor(diff / 60000);
+            if(mins > 60) {
+                const hrs = Math.floor(mins / 60);
+                return hrs + "h " + (mins % 60) + "m";
+            }
+            return mins + "m";
+        }
     </script>
 
 </body>
