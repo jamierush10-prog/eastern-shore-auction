@@ -68,6 +68,10 @@
         .control-input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-family: inherit; }
         textarea.control-input { resize: vertical; min-height: 60px; }
 
+        /* AUTO ROTATE TOGGLE */
+        .auto-rotate-box { display: flex; align-items: center; gap: 10px; background: #f0fdf4; padding: 10px; border: 1px solid #bbf7d0; border-radius: 6px; }
+        .auto-rotate-box strong { color: #15803d; }
+
         /* ACTIONS */
         .btn { padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9rem; font-weight: bold; color: white; }
         .btn-queue { background: #16a34a; }
@@ -115,7 +119,17 @@
                     <button class="btn btn-edit" style="height:fit-content; align-self:flex-end;" onclick="updateSettings()">Update All</button>
                 </div>
                 <hr style="border:0; border-top:1px solid #e5e7eb; margin:0;">
-                <button class="btn btn-stop" onclick="finalizeAuction()">⛔ End Current Auction</button>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div class="auto-rotate-box">
+                        <input type="checkbox" id="autoRotateCheck">
+                        <div>
+                            <strong>🔄 Enable Auto-Rotation</strong>
+                            <div style="font-size:0.8rem; color:#6b7280;">Automatically start next featured item when timer ends.</div>
+                        </div>
+                    </div>
+                    <button class="btn btn-stop" style="width: auto;" onclick="finalizeAuction()">⛔ Force End Current Auction</button>
+                </div>
             </div>
 
             <h2>Item Inventory</h2>
@@ -216,19 +230,22 @@
 
         // --- PASTE KEYS HERE ---
         const firebaseConfig = {
-  apiKey: "AIzaSyCt0i8a7ZVRlNmSts9yM4uGwV7ghPU59rk",
-  authDomain: "eastern-shore-auction.firebaseapp.com",
-  databaseURL: "https://eastern-shore-auction-default-rtdb.firebaseio.com",
-  projectId: "eastern-shore-auction",
-  storageBucket: "eastern-shore-auction.firebasestorage.app",
-  messagingSenderId: "771348898846",
-  appId: "1:771348898846:web:3b6371e8f826747fdcba0f"
-};
+          apiKey: "AIzaSyCt0i8a7ZVRlNmSts9yM4uGwV7ghPU59rk",
+          authDomain: "eastern-shore-auction.firebaseapp.com",
+          databaseURL: "https://eastern-shore-auction-default-rtdb.firebaseio.com",
+          projectId: "eastern-shore-auction",
+          storageBucket: "eastern-shore-auction.firebasestorage.app",
+          messagingSenderId: "771348898846",
+          appId: "1:771348898846:web:3b6371e8f826747fdcba0f"
+        };
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getDatabase(app);
         const storage = getStorage(app);
+
+        let activeAuctionData = null;
+        let isTransitioning = false; // Prevent double firing
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
@@ -383,13 +400,90 @@
         window.approveUser = function(uid) { if(confirm("Approve this user?")) update(ref(db, `users/${uid}`), { is_approved: true }); }
         window.banUser = function(uid) { if(confirm("BAN this user?")) update(ref(db, `users/${uid}`), { is_approved: false }); }
 
-        // --- MONITOR ---
-        let activeAuctionData = null;
+        // --- MONITOR & AUTO-PILOT ---
         function monitorActiveAuction() {
             const activeRef = ref(db, 'active_auction');
             onValue(activeRef, (snapshot) => { activeAuctionData = snapshot.val(); updateActiveRowUI(); });
-            setInterval(updateActiveRowUI, 1000);
+            
+            // Check timer every second
+            setInterval(() => {
+                updateActiveRowUI();
+                
+                // AUTO ROTATION LOGIC
+                if (activeAuctionData && 
+                    activeAuctionData.end_time > 0 && 
+                    Date.now() > activeAuctionData.end_time && 
+                    !isTransitioning) {
+                        
+                        const isAuto = document.getElementById('autoRotateCheck').checked;
+                        if(isAuto) {
+                            console.log("Auto-Rotating...");
+                            isTransitioning = true; 
+                            handleAutoTransition();
+                        }
+                }
+            }, 1000);
         }
+
+        async function handleAutoTransition() {
+            // 1. Finalize current auction
+            await finalizeAuction(true); // pass true to skip alert confirm
+
+            // 2. Find next featured item
+            get(ref(db, 'inventory')).then((snapshot) => {
+                const data = snapshot.val();
+                if(!data) return;
+
+                // Filter: Featured AND Not Sold
+                const candidates = Object.values(data).filter(item => 
+                    item.is_featured === true && 
+                    (!item.status_label || !item.status_label.includes("SOLD"))
+                );
+
+                // Sort by Lot
+                candidates.sort((a, b) => a.lot - b.lot);
+
+                if (candidates.length === 0) {
+                    console.log("No candidates found for auto-rotation.");
+                    isTransitioning = false;
+                    return;
+                }
+
+                // Find index of current (just finished) item to get the NEXT one
+                const currentKey = activeAuctionData.inventory_key;
+                let nextItem = candidates[0]; // Default to first (loop)
+
+                if (currentKey) {
+                    const currentIndex = candidates.findIndex(c => c.inventory_key === currentKey); // Note: assuming inventory object has key embedded or we need to map entries.
+                    // Actually, we need keys. Let's fix the map above.
+                }
+                
+                // Better approach with keys:
+                const candidatesWithKeys = Object.entries(data)
+                    .map(([k, v]) => ({...v, key: k}))
+                    .filter(item => item.is_featured === true && (!item.status_label || !item.status_label.includes("SOLD")))
+                    .sort((a, b) => a.lot - b.lot);
+
+                if(candidatesWithKeys.length === 0) { isTransitioning = false; return; }
+
+                let nextIndex = 0;
+                const currentIdx = candidatesWithKeys.findIndex(c => c.key === activeAuctionData.inventory_key);
+                
+                if (currentIdx !== -1) {
+                    // Get next index, looping back to 0 if at end
+                    nextIndex = (currentIdx + 1) % candidatesWithKeys.length;
+                }
+                
+                const targetItem = candidatesWithKeys[nextIndex];
+                
+                // 3. Queue it up (Wait 3 seconds for effect)
+                setTimeout(() => {
+                    queueItem(targetItem.key);
+                    isTransitioning = false;
+                }, 3000);
+            });
+        }
+
         function updateActiveRowUI() {
             document.querySelectorAll('.live-active-row, .live-ended-sold, .live-ended-unsold').forEach(row => {
                 row.classList.remove('live-active-row', 'live-ended-sold', 'live-ended-unsold');
@@ -509,29 +603,37 @@
             });
         }
 
-        window.finalizeAuction = function() {
-            if(!confirm("End the current auction and save results?")) return;
-            get(ref(db, 'active_auction')).then((snapshot) => {
-                const currentAuction = snapshot.val();
-                if (!currentAuction || !currentAuction.inventory_key) { alert("No active auction to finalize."); return; }
-                const reserve = currentAuction.reserve_price || 0;
-                const finalBid = currentAuction.current_bid || 0;
-                const hasBidder = !!currentAuction.high_bidder_uid;
-                let statusLabel = "PASSED";
-                let isSold = false;
-                if (hasBidder && finalBid >= reserve) { statusLabel = `SOLD: $${finalBid}`; isSold = true; } 
-                else { statusLabel = hasBidder ? "PASSED (Reserve)" : "PASSED (No Bids)"; }
-                update(ref(db, `inventory/${currentAuction.inventory_key}`), { status_label: statusLabel });
-                const closeAuction = () => {
-                    set(ref(db, 'active_auction'), { title: "Auction Closed", subtitle: "Check back later", current_bid: 0, image_url: "https://placehold.co/600x400?text=Auction+Closed", end_time: 0 });
-                    alert("Auction finalized and saved!");
-                };
-                if (isSold) {
-                    get(ref(db, `users/${currentAuction.high_bidder_uid}`)).then((userSnap) => {
-                        const winnerEmail = userSnap.exists() ? userSnap.val().email : "Unknown";
-                        saveHistoryRecord(currentAuction, finalBid, winnerEmail, closeAuction);
-                    }).catch(() => { saveHistoryRecord(currentAuction, finalBid, "Error fetching email", closeAuction); });
-                } else { closeAuction(); }
+        window.finalizeAuction = async function(auto = false) {
+            if(!auto && !confirm("End the current auction and save results?")) return;
+            
+            return new Promise((resolve) => {
+                get(ref(db, 'active_auction')).then((snapshot) => {
+                    const currentAuction = snapshot.val();
+                    if (!currentAuction || !currentAuction.inventory_key) { 
+                        if(!auto) alert("No active auction to finalize."); 
+                        resolve();
+                        return; 
+                    }
+                    const reserve = currentAuction.reserve_price || 0;
+                    const finalBid = currentAuction.current_bid || 0;
+                    const hasBidder = !!currentAuction.high_bidder_uid;
+                    let statusLabel = "PASSED";
+                    let isSold = false;
+                    if (hasBidder && finalBid >= reserve) { statusLabel = `SOLD: $${finalBid}`; isSold = true; } 
+                    else { statusLabel = hasBidder ? "PASSED (Reserve)" : "PASSED (No Bids)"; }
+                    update(ref(db, `inventory/${currentAuction.inventory_key}`), { status_label: statusLabel });
+                    const closeAuction = () => {
+                        set(ref(db, 'active_auction'), { title: "Auction Closed", subtitle: "Check back later", current_bid: 0, image_url: "https://placehold.co/600x400?text=Auction+Closed", end_time: 0 });
+                        if(!auto) alert("Auction finalized and saved!");
+                        resolve();
+                    };
+                    if (isSold) {
+                        get(ref(db, `users/${currentAuction.high_bidder_uid}`)).then((userSnap) => {
+                            const winnerEmail = userSnap.exists() ? userSnap.val().email : "Unknown";
+                            saveHistoryRecord(currentAuction, finalBid, winnerEmail, closeAuction);
+                        }).catch(() => { saveHistoryRecord(currentAuction, finalBid, "Error fetching email", closeAuction); });
+                    } else { closeAuction(); }
+                });
             });
         }
 
@@ -544,30 +646,24 @@
                         const auctionData = {
                             lot: newItem.lot, title: newItem.title, subtitle: newItem.subtitle, description: newItem.description,
                             current_bid: newItem.start_price, image_url: newItem.image_url, reserve_price: newItem.reserve_price || 0,
-                            end_time: Date.now() + (24 * 60 * 60 * 1000), images: newItem.images, // 3 MINUTES
+                            
+                            // --- 15 MINUTE TIMER ---
+                            end_time: Date.now() + (15 * 60 * 1000), 
+                            
+                            images: newItem.images, 
                             high_bidder_max: 0, high_bidder_name: "", high_bidder_uid: "", bid_history: null,
                             inventory_key: newKey, seller_name: newItem.seller_name,
                             location: newItem.location, payment_methods: newItem.payment_methods, delivery_method: newItem.delivery_method
                         };
                         set(ref(db, 'active_auction'), auctionData);
                         update(ref(db, `inventory/${newKey}`), { times_run: (newItem.times_run || 0) + 1, status_label: "LIVE" });
-                        alert("Item is LIVE!");
+                        // Only alert if manual
+                        if(!isTransitioning) alert("Item is LIVE!");
                     };
-                    if (currentAuction && currentAuction.inventory_key && currentAuction.inventory_key !== "undefined") {
-                        const reserve = currentAuction.reserve_price || 0;
-                        const finalBid = currentAuction.current_bid || 0;
-                        const hasBidder = !!currentAuction.high_bidder_uid;
-                        let statusLabel = "PASSED";
-                        let isSold = false;
-                        if (hasBidder && finalBid >= reserve) { statusLabel = `SOLD: $${finalBid}`; isSold = true; } 
-                        else { statusLabel = hasBidder ? "PASSED (Reserve)" : "PASSED (No Bids)"; }
-                        update(ref(db, `inventory/${currentAuction.inventory_key}`), { status_label: statusLabel });
-                        if (isSold) {
-                            get(ref(db, `users/${currentAuction.high_bidder_uid}`)).then((userSnap) => {
-                                const winnerEmail = userSnap.exists() ? userSnap.val().email : "Unknown";
-                                saveHistoryRecord(currentAuction, finalBid, winnerEmail, startNew);
-                            }).catch(() => { saveHistoryRecord(currentAuction, finalBid, "Error fetching email", startNew); });
-                        } else { startNew(); }
+                    
+                    // If manually forcing a queue while something else is live, kill the old one first
+                    if (currentAuction && currentAuction.inventory_key && currentAuction.inventory_key !== "undefined" && !isTransitioning) {
+                        finalizeAuction(true).then(() => startNew());
                     } else { startNew(); }
                 });
             });
