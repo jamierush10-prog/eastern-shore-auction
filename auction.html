@@ -79,7 +79,7 @@
         
         .pricing-card { background-color: #f9fafb; padding: 25px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 20px; }
         .current-bid-label { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; color: #6b7280; }
-        .current-price { font-size: 3rem; font-weight: 800; color: var(--text-color); margin: 5px 0 20px 0; }
+        .current-price { font-size: 2.5rem; font-weight: 800; color: var(--text-color); margin: 5px 0 20px 0; }
         
         /* BID CONTROLS */
         .bid-controls { display: flex; flex-direction: column; gap: 15px; }
@@ -104,8 +104,6 @@
         .chat-window { height: 200px; overflow-y: auto; background: white; border: 1px solid #e5e7eb; border-radius: 6px; padding: 10px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px; }
         .chat-msg { font-size: 0.9rem; line-height: 1.4; }
         .chat-msg strong { color: var(--primary-color); margin-right: 5px; }
-        .clickable-user { cursor: pointer; text-decoration: underline; text-decoration-style: dotted; }
-        .clickable-user:hover { color: var(--primary-color); }
         .chat-input-row { display: flex; gap: 10px; }
         #chatInput { padding: 10px; border: 1px solid #ccc; border-radius: 6px; flex: 1; font-size: 0.9rem; }
         .chat-btn { background-color: #374151; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; }
@@ -127,25 +125,12 @@
         /* MODALS */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 30px; border-radius: 8px; text-align: center; width: 90%; max-width: 400px; box-shadow: 0 20px 25px rgba(0,0,0,0.2); position: relative; }
+        
         .confirm-amount { font-size: 2rem; font-weight: 800; color: var(--primary-color); margin: 10px 0; }
         .confirm-actions { display: flex; gap: 10px; margin-top: 20px; }
         .confirm-btn { flex: 1; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
         .btn-yes { background: var(--primary-color); color: white; }
         .btn-no { background: #e5e7eb; color: #374151; }
-
-        /* PUBLIC PROFILE */
-        .public-profile-header { text-align: center; margin-bottom: 20px; }
-        .public-avatar { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 10px; }
-        .public-name { font-size: 1.5rem; font-weight: bold; }
-        .public-rating { color: var(--gold-color); font-size: 1.2rem; margin: 5px 0; }
-        .public-rating span { font-size: 0.9rem; color: #6b7280; vertical-align: middle; }
-        .public-email { color: var(--primary-color); font-weight: bold; margin-bottom: 10px; font-size: 0.9rem; }
-        .public-bio { font-style: italic; color: #555; margin: 10px 0; background: #f9fafb; padding: 10px; border-radius: 6px; font-size: 0.9rem; }
-        .public-tabs { display: flex; border-bottom: 1px solid #e5e7eb; margin-bottom: 15px; }
-        .public-tab { flex: 1; text-align: center; padding: 10px; cursor: pointer; font-weight: bold; color: #6b7280; }
-        .public-tab.active { border-bottom: 2px solid var(--primary-color); color: var(--primary-color); }
-        .public-list { max-height: 200px; overflow-y: auto; list-style: none; padding: 0; margin: 0; }
-        .public-item { padding: 8px; border-bottom: 1px solid #f3f4f6; font-size: 0.9rem; display: flex; justify-content: space-between; }
 
         #winnerIcon { font-size: 4rem; margin-bottom: 10px; }
         #winnerText { font-size: 1.8rem; font-weight: bold; margin: 10px 0; color: var(--text-color); }
@@ -175,17 +160,15 @@
             <span style="color:#4b5563">|</span>
             <div onclick="logout()" class="nav-link">Sign Out</div>
         </div>
-        <div class="brand-name">The Auction House</div>
+        <div class="brand-name">Eastern Shore Auction House</div>
         <div class="header-right">
             <div id="liveViewers" class="viewer-count">👁️ 1 Viewing</div>
             
-            <div id="audioControls" class="audio-control-group">
-                <div id="audioStatus" class="audio-status" style="display:none;">🔊 Live Audio</div>
+            <div id="audioControls" class="audio-control-group" style="display:none;"> <div id="audioStatus" class="audio-status" style="display:none;">🔊 Live</div>
                 <button id="muteBtn" class="btn-mute" onclick="toggleMute()">🔊 Audio On</button>
             </div>
 
             <button id="micBtn" class="mic-btn" onclick="toggleMic()">🎙️ Start Broadcast</button>
-
             <button id="adminPanelBtn" onclick="openAdminPanel()">ADMIN DASHBOARD</button>
         </div>
     </header>
@@ -209,10 +192,7 @@
             <h1 id="itemTitle">Loading...</h1>
             <div class="subtitle" id="itemSubtitle">...</div>
             
-            <div id="sellerInfo" class="seller-info">
-                <img id="sellerAvatar" src="https://www.gravatar.com/avatar/?d=mp" class="seller-avatar">
-                <div>Seller: <strong id="sellerName" class="clickable-user" onclick="openPublicProfile(this.innerText)">...</strong></div>
-            </div>
+            <div id="sellerInfo" class="seller-info">Seller: <strong id="sellerName">...</strong></div>
 
             <div id="logisticsBox" class="logistics-box">
                 <div class="logistics-item"><div class="log-icon">📍</div><div class="log-text"><strong>Location:</strong> <span id="dispLoc">...</span></div></div>
@@ -232,8 +212,11 @@
                         <button class="inc-btn" onclick="addToBid(5)">+$5</button>
                         <button class="inc-btn" onclick="addToBid(10)">+$10</button>
                     </div>
-                    <div class="bid-input-row"><span class="currency-symbol">$</span><input type="number" id="bidInput" placeholder="Total Max Bid" onfocus="this.select()"></div>
-                    <button class="bid-btn" id="mainBidBtn" onclick="openConfirm()">Place Max Bid</button>
+                    <div class="bid-input-row">
+                        <span class="currency-symbol">$</span>
+                        <input type="number" id="bidInput" placeholder="Total Max Bid" onfocus="this.select()">
+                    </div>
+                    <button class="bid-btn" onclick="openConfirm()">Place Max Bid</button>
                     <div id="userMaxBidDisplay">Your current max bid is set to: <strong id="userMaxVal">...</strong></div>
                 </div>
             </div>
@@ -259,24 +242,6 @@
                     <a href="https://cash.app/$pawpawrush" target="_blank" class="tip-link tip-cashapp">Cash App</a>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <div id="publicProfileModal" class="modal-overlay" onclick="closePublicProfile(event)">
-        <div class="modal-content">
-            <div class="public-profile-header">
-                <img id="ppAvatar" src="" class="public-avatar">
-                <div id="ppName" class="public-name">Loading...</div>
-                <div id="ppRating" class="public-rating">☆☆☆☆☆ <span>(New)</span></div>
-                <div id="ppEmail" class="public-email"></div>
-                <div id="ppBio" class="public-bio"></div>
-            </div>
-            <div class="public-tabs">
-                <div class="public-tab active" onclick="switchPPTab('sold')">Items Sold</div>
-                <div class="public-tab" onclick="switchPPTab('bought')">Items Bought</div>
-            </div>
-            <div id="ppList" class="public-list"></div>
-            <button class="btn-yes confirm-btn" style="margin-top:20px; width:100%" onclick="document.getElementById('publicProfileModal').style.display='none'">Close</button>
         </div>
     </div>
 
@@ -308,7 +273,7 @@
         import { getDatabase, ref, onValue, set, get, push, update, child, query, limitToLast, remove, onDisconnect } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
         // --- PASTE KEYS HERE ---
-        const firebaseConfig = {
+       const firebaseConfig = {
   apiKey: "AIzaSyCt0i8a7ZVRlNmSts9yM4uGwV7ghPU59rk",
   authDomain: "eastern-shore-auction.firebaseapp.com",
   databaseURL: "https://eastern-shore-auction-default-rtdb.firebaseio.com",
@@ -329,17 +294,14 @@
         let globalCurrentBid = 0;
         let globalAuctionData = null;
         let auctionEndedProcessed = false;
-        let userCache = {}; 
-        let timerInterval = null;
-        let currentPPUser = null;
         
         // AGORA
         let agoraClient = null;
         let localAudioTrack = null;
-        let isMicOn = false; // For Admin Mic
-        let isMuted = false; // For User Listening
-        let remoteAudioTracks = []; // Track all incoming audio
-        const AGORA_APP_ID = "YOUR_AGORA_APP_ID_HERE"; 
+        let isMicOn = false; // Admin Mic
+        let isMuted = false; // User Mute
+        let remoteAudioTracks = []; 
+        const AGORA_APP_ID = "YOUR_AGORA_APP_ID_HERE"; // PASTE YOUR APP ID
 
         // --- SAFETY TIMER ---
         setTimeout(() => {
@@ -347,7 +309,7 @@
             if(loader && loader.style.display !== 'none') loader.style.display = 'none';
         }, 3000);
 
-        // --- PRESENCE SYSTEM ---
+        // --- PRESENCE ---
         const connectedRef = ref(db, ".info/connected");
         const conListRef = ref(db, "connections");
         onValue(connectedRef, (snap) => {
@@ -366,7 +328,6 @@
             if (user) {
                 currentUser = user;
                 document.getElementById('displayUsername').innerText = user.displayName || "Bidder";
-                preloadUserCache();
                 
                 get(child(ref(db), `admins/${user.uid}`)).then((snapshot) => { 
                     if (snapshot.exists() && snapshot.val() === true) {
@@ -374,12 +335,10 @@
                         document.getElementById('adminPanelBtn').style.display = 'block';
                         document.getElementById('clearChatBtn').style.display = 'block';
                         document.getElementById('micBtn').style.display = 'block';
-                        
-                        // Admin acts as Host (Broadcasts)
                         initAgora(user.uid, "host");
                     } else {
                         // USER
-                        document.querySelector('.audio-control-group').style.display = 'flex'; // Show Mute/Status
+                        document.getElementById('audioControls').style.display = 'flex';
                         initAgora(user.uid, "audience");
                     }
                 });
@@ -392,7 +351,7 @@
         window.logout = function() { signOut(auth).then(() => { window.location.href = "index.html"; }); }
         window.openAdminPanel = function() { window.location.href = 'admin.html'; }
 
-        // --- AGORA LOGIC (UPDATED) ---
+        // --- AGORA LOGIC ---
         async function initAgora(uid, role) {
             try {
                 agoraClient = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
@@ -400,26 +359,26 @@
                 if (role === "host") {
                     await agoraClient.join(AGORA_APP_ID, "auction_room", null, uid);
                 } else {
-                    // Audience Auto-Join
+                    // Audience
                     agoraClient.on("user-published", async (user, mediaType) => {
                         await agoraClient.subscribe(user, mediaType);
                         if (mediaType === "audio") {
                             user.audioTrack.play();
-                            remoteAudioTracks.push(user.audioTrack); // Track for muting
-                            document.getElementById('audioStatus').style.display = 'flex'; // Show "Live Audio"
+                            remoteAudioTracks.push(user.audioTrack);
+                            document.getElementById('audioStatus').style.display = 'flex'; // Show badge
                         }
                     });
+                    agoraClient.on("user-unpublished", () => { document.getElementById('audioStatus').style.display = 'none'; });
                     
-                    agoraClient.on("user-unpublished", () => { 
-                        document.getElementById('audioStatus').style.display = 'none'; 
-                    });
-
-                    await agoraClient.join(AGORA_APP_ID, "auction_room", null, uid);
+                    // DO NOT JOIN YET IF AUCTION CLOSED
+                    if (globalAuctionData && globalAuctionData.title !== "Auction Closed") {
+                        await agoraClient.join(AGORA_APP_ID, "auction_room", null, uid);
+                    }
                 }
             } catch(e) { console.error("Agora Error:", e); }
         }
 
-        // ADMIN: TOGGLE BROADCAST
+        // ADMIN MIC
         window.toggleMic = async function() {
             if (!isMicOn) {
                 localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack();
@@ -436,93 +395,31 @@
             }
         }
 
-        // USER: TOGGLE MUTE
+        // USER MUTE
         window.toggleMute = function() {
             const btn = document.getElementById('muteBtn');
             isMuted = !isMuted;
-
             if (isMuted) {
-                // Mute all remote tracks
                 remoteAudioTracks.forEach(track => track.setVolume(0));
                 btn.innerText = "🔇 Audio Off";
                 btn.classList.add('muted');
             } else {
-                // Unmute
                 remoteAudioTracks.forEach(track => track.setVolume(100));
                 btn.innerText = "🔊 Audio On";
                 btn.classList.remove('muted');
             }
         }
 
-        // DISCONNECT LOGIC (Save Minutes)
+        // LEAVE AUDIO HELPER
         function leaveAudio() {
             if (agoraClient) {
                 agoraClient.leave();
-                document.querySelector('.audio-control-group').style.display = 'none';
-                document.getElementById('micBtn').style.display = 'none';
+                document.getElementById('audioControls').style.display = 'none'; // Hide buttons
+                document.getElementById('audioStatus').style.display = 'none';
             }
         }
 
-        // --- DATA LOGIC ---
-        function preloadUserCache() {
-            get(ref(db, 'users')).then((snapshot) => {
-                if (snapshot.exists()) {
-                    Object.values(snapshot.val()).forEach(userData => { if(userData.name) userCache[userData.name] = userData; });
-                    if(globalAuctionData) updateUI(globalAuctionData);
-                }
-            });
-        }
-        function getAvatarUrlByName(name) { return (userCache[name] && userCache[name].profile_image_url) ? userCache[name].profile_image_url : "https://www.gravatar.com/avatar/?d=mp"; }
-
-        window.openPublicProfile = function(name) {
-            name = name.replace("Seller: ", "").trim();
-            const userData = userCache[name];
-            if(!userData) { alert("User profile not found."); return; }
-            currentPPUser = userData; 
-            document.getElementById('ppName').innerText = userData.name;
-            document.getElementById('ppAvatar').src = userData.profile_image_url || "https://www.gravatar.com/avatar/?d=mp";
-            document.getElementById('ppBio').innerText = userData.bio || "No bio provided.";
-            const avg = userData.rating_count > 0 ? (userData.rating_total / userData.rating_count).toFixed(1) : "New";
-            let starStr = "☆☆☆☆☆";
-            if(userData.rating_count > 0) {
-                const roundScore = Math.round(userData.rating_total / userData.rating_count);
-                starStr = "★".repeat(roundScore) + "☆".repeat(5 - roundScore);
-            }
-            document.getElementById('ppRating').innerHTML = `${starStr} <span>(${avg} / 5 from ${userData.rating_count || 0} reviews)</span>`;
-            document.getElementById('ppEmail').innerText = (userData.show_email_publicly && userData.email) ? userData.email : "";
-            loadPPHistory(userData.email, 'sold');
-            document.getElementById('publicProfileModal').style.display = 'flex';
-        }
-        window.closePublicProfile = function(e) { if(e.target === document.getElementById('publicProfileModal')) document.getElementById('publicProfileModal').style.display='none'; }
-        window.switchPPTab = function(mode) {
-            document.querySelectorAll('.public-tab').forEach(t => t.classList.remove('active'));
-            const clickedTab = mode === 'sold' ? 0 : 1;
-            document.querySelectorAll('.public-tab')[clickedTab].classList.add('active');
-            loadPPHistory(currentPPUser.email, mode);
-        }
-        function loadPPHistory(email, mode) {
-            const list = document.getElementById('ppList'); list.innerHTML = "Loading...";
-            get(ref(db, 'sales_history')).then((snapshot) => {
-                list.innerHTML = "";
-                if(!snapshot.exists()) { list.innerHTML = "<div style='text-align:center; padding:10px;'>No history.</div>"; return; }
-                const history = Object.values(snapshot.val());
-                let count = 0;
-                history.forEach(sale => {
-                    let match = false;
-                    if (mode === 'sold') { match = (sale.seller_email && sale.seller_email.toLowerCase() === email.toLowerCase()) || (sale.seller_name === currentPPUser.name); } 
-                    else { match = (sale.winner_email && sale.winner_email.toLowerCase() === email.toLowerCase()) || (sale.winner_name === currentPPUser.name); }
-                    if(match) {
-                        count++;
-                        const div = document.createElement('div'); div.className = 'public-item';
-                        const dateStr = new Date(sale.date).toLocaleDateString();
-                        div.innerHTML = `<span>${sale.item_title}</span> <span style="color:#6b7280; font-size:0.8rem;">${dateStr}</span>`;
-                        list.appendChild(div);
-                    }
-                });
-                if(count === 0) list.innerHTML = "<div style='text-align:center; padding:10px; color:#999;'>No items found.</div>";
-            });
-        }
-
+        // --- CHAT ---
         const chatRef = query(ref(db, 'auction_chat'), limitToLast(50));
         window.sendChat = function() {
             const input = document.getElementById('chatInput');
@@ -537,86 +434,90 @@
             const data = snapshot.val();
             if(data) {
                 Object.values(data).forEach(msg => {
-                    const div = document.createElement('div'); div.className = 'chat-msg'; 
-                    div.innerHTML = `<strong class="clickable-user" onclick="openPublicProfile(this.innerText)">${msg.user}</strong>: ${msg.text}`; 
-                    chatWindow.appendChild(div);
+                    const div = document.createElement('div'); div.className = 'chat-msg'; div.innerHTML = `<strong>${msg.user}:</strong> ${msg.text}`; chatWindow.appendChild(div);
                 });
                 chatWindow.scrollTop = chatWindow.scrollHeight;
             }
         });
 
+        // --- AUCTION DATA ---
         onValue(dbRef, (snapshot) => {
             const data = snapshot.val();
             if (data) {
                 globalAuctionData = data;
                 if (data.end_time > Date.now()) { auctionEndedProcessed = false; }
-                updateUI(data);
+
+                const isClosed = (data.title === "Auction Closed");
+                const displayStyle = isClosed ? 'none' : 'block';
+                const gridStyle = isClosed ? 'none' : 'grid';
+                const flexStyle = isClosed ? 'none' : 'flex';
+
+                // AUTO-DISCONNECT AUDIO IF CLOSED
+                if (isClosed) {
+                    leaveAudio();
+                } else {
+                    // Re-show controls if open and user
+                     if(currentUser && document.getElementById('adminPanelBtn').style.display === 'none') {
+                         document.getElementById('audioControls').style.display = 'flex';
+                         // Check if joined
+                         if(agoraClient && agoraClient.connectionState === 'DISCONNECTED') {
+                             agoraClient.join(AGORA_APP_ID, "auction_room", null, currentUser.uid);
+                         }
+                     }
+                }
+
+                document.querySelector('.thumbnails').style.display = gridStyle;
+                document.querySelector('.history-section').style.display = displayStyle;
+                document.getElementById('logisticsBox').style.display = displayStyle;
+                document.querySelector('.timer-block').style.display = flexStyle;
+                document.querySelector('.pricing-card').style.display = displayStyle;
+                document.querySelector('.description-block').style.display = displayStyle;
+                document.getElementById('sellerInfo').style.display = isClosed ? 'none' : (data.seller_name ? 'block' : 'none');
+                document.querySelector('.tip-jar-box').style.display = displayStyle;
+
+                document.getElementById('itemTitle').innerText = data.title;
+                document.getElementById('itemSubtitle').innerText = data.subtitle;
+                document.getElementById('itemDescription').innerText = data.description;
+                document.getElementById('priceDisplay').innerText = "$" + data.current_bid.toLocaleString();
+                globalCurrentBid = data.current_bid;
+                
+                if (!isClosed && data.seller_name) { document.getElementById('sellerName').innerText = data.seller_name; }
+
+                document.getElementById('dispLoc').innerText = data.location || "Not Specified";
+                document.getElementById('dispPay').innerText = data.payment_methods || "Cash";
+                document.getElementById('dispDel').innerText = data.delivery_method || "Local Pickup";
+
+                const input = document.getElementById('bidInput');
+                if(document.activeElement !== input) input.value = globalCurrentBid + 1;
+
+                const mainImg = document.getElementById('mainImage');
+                if(!mainImg.getAttribute('data-locked')) mainImg.src = data.image_url;
+                if (!isClosed) updateThumbs(data.images);
+                
+                updateTimer(data.end_time);
+                renderBidHistory(data.bid_history);
+
+                if (currentUser && data.high_bidder_uid === currentUser.uid && !isClosed) {
+                    document.getElementById('userMaxBidDisplay').style.display = 'block';
+                    document.getElementById('userMaxBidDisplay').classList.add('winning-bid-status');
+                    document.getElementById('userMaxBidDisplay').innerHTML = `🎉 <strong>You are the highest bidder!</strong> <br>(Your max bid: $${data.high_bidder_max.toLocaleString()})`;
+                } else {
+                    document.getElementById('userMaxBidDisplay').style.display = 'none';
+                    document.getElementById('userMaxBidDisplay').classList.remove('winning-bid-status');
+                    document.getElementById('userMaxBidDisplay').innerHTML = '';
+                }
+
+            } else {
+                set(dbRef, { title: "Waiting...", current_bid: 0, image_url: "https://placehold.co/600x400?text=Waiting", end_time: Date.now() });
             }
         });
-
-        function updateUI(data) {
-            const isClosed = (data.title === "Auction Closed");
-            const displayStyle = isClosed ? 'none' : 'block';
-            const gridStyle = isClosed ? 'none' : 'grid';
-            const flexStyle = isClosed ? 'none' : 'flex';
-
-            // Toggle Audio Logic
-            if (isClosed) {
-                leaveAudio(); // DISCONNECT to save minutes
-            } else if (!agoraClient || agoraClient.connectionState === "DISCONNECTED") {
-                // If open and not connected, re-init (only if not admin who manages their own mic)
-                // We will let page reload handle the re-connect for simplicity
-            }
-
-            document.querySelector('.thumbnails').style.display = gridStyle;
-            document.querySelector('.history-section').style.display = displayStyle;
-            document.getElementById('logisticsBox').style.display = displayStyle;
-            document.querySelector('.timer-block').style.display = flexStyle;
-            document.querySelector('.pricing-card').style.display = displayStyle;
-            document.querySelector('.description-block').style.display = displayStyle;
-            document.getElementById('sellerInfo').style.display = isClosed ? 'none' : (data.seller_name ? 'flex' : 'none');
-            document.querySelector('.tip-jar-box').style.display = displayStyle;
-
-            document.getElementById('itemTitle').innerText = data.title;
-            document.getElementById('itemSubtitle').innerText = data.subtitle;
-            document.getElementById('itemDescription').innerText = data.description;
-            document.getElementById('priceDisplay').innerText = "$" + data.current_bid.toLocaleString();
-            globalCurrentBid = data.current_bid;
-
-            if (!isClosed && data.seller_name) {
-                document.getElementById('sellerName').innerText = data.seller_name;
-                document.getElementById('sellerAvatar').src = getAvatarUrlByName(data.seller_name);
-            }
-
-            document.getElementById('dispLoc').innerText = data.location || "Not Specified";
-            document.getElementById('dispPay').innerText = data.payment_methods || "Cash";
-            document.getElementById('dispDel').innerText = data.delivery_method || "Local Pickup";
-
-            const input = document.getElementById('bidInput');
-            if(document.activeElement !== input) input.value = globalCurrentBid + 1;
-
-            const mainImg = document.getElementById('mainImage');
-            if(!mainImg.getAttribute('data-locked')) mainImg.src = data.image_url;
-            if (!isClosed) updateThumbs(data.images);
-            
-            updateTimer();
-            renderBidHistory(data.bid_history);
-
-            if (currentUser && data.high_bidder_uid === currentUser.uid && !isClosed) {
-                document.getElementById('userMaxBidDisplay').style.display = 'block';
-                document.getElementById('userMaxBidDisplay').classList.add('winning-bid-status');
-                document.getElementById('userMaxBidDisplay').innerHTML = `🎉 <strong>You are the highest bidder!</strong> <br>(Your max bid: $${data.high_bidder_max.toLocaleString()})`;
-            } else {
-                document.getElementById('userMaxBidDisplay').style.display = 'none';
-            }
-        }
 
         function updateThumbs(images) {
             const imgIds = ['thumb1', 'thumb2', 'thumb3', 'thumb4'];
             imgIds.forEach(id => {
                 const el = document.getElementById(id);
-                if (images && images[id]) { el.src = images[id]; el.parentElement.style.display = 'block'; } 
-                else { el.parentElement.style.display = 'none'; }
+                const parent = el.parentElement;
+                if (images && images[id]) { el.src = images[id]; parent.style.display = 'block'; } else { parent.style.display = 'none'; }
             });
         }
         
@@ -638,21 +539,22 @@
             bidsArray.forEach(bid => {
                 const row = document.createElement('div');
                 row.className = 'bid-item';
-                const avatarUrl = getAvatarUrlByName(bid.bidder_name);
-                row.innerHTML = `<div class="bidder-flex"><img src="${avatarUrl}" class="mini-avatar"><span class="clickable-user" onclick="openPublicProfile(this.innerText)">${bid.bidder_name}</span></div><span class="bid-amount">$${bid.amount.toLocaleString()}</span>`;
+                row.innerHTML = `<div class="bidder-flex"><div style="width:24px;height:24px;background:#ddd;border-radius:50%;"></div><span>${bid.name}</span></div><span class="bid-amount">$${bid.amount.toLocaleString()}</span>`;
                 list.appendChild(row);
             });
         }
 
-        function updateTimer() {
+        let timerInterval;
+        function updateTimer(endTime) {
             if (timerInterval) clearInterval(timerInterval);
             timerInterval = setInterval(() => {
                 const now = Date.now();
-                const distance = globalAuctionData.end_time - now;
+                const distance = endTime - now;
                 const timerElement = document.getElementById('countdown');
                 const bidBtn = document.querySelector('.bid-btn');
                 const incBtns = document.querySelectorAll('.inc-btn');
                 
+                // CHECK CLOSED TITLE
                 if(globalAuctionData.title === "Auction Closed") {
                     clearInterval(timerInterval);
                     timerElement.innerText = "--:--";
@@ -666,16 +568,14 @@
                     bidBtn.disabled = true; bidBtn.textContent = "Auction Closed"; bidBtn.style.backgroundColor = "#9ca3af";
                     incBtns.forEach(b => b.disabled = true);
                     document.getElementById('timerBox').classList.add('timer-ended');
-
-                    if (!auctionEndedProcessed) {
-                        const reserve = globalAuctionData.reserve_price || 0;
-                        const currentBid = globalAuctionData.current_bid || 0;
-                        const hasBidder = !!globalAuctionData.high_bidder_uid;
-                        if (hasBidder && currentBid >= reserve) {
-                             showWinnerModal(globalAuctionData);
+                    
+                    if (!auctionEndedProcessed && globalAuctionData) {
+                        if (globalAuctionData.title !== "Auction Closed") {
+                            showWinnerModal(globalAuctionData);
                         }
                         auctionEndedProcessed = true;
                     }
+
                 } else {
                     bidBtn.disabled = false; bidBtn.textContent = "Place Max Bid"; bidBtn.style.backgroundColor = ""; 
                     incBtns.forEach(b => b.disabled = false);
@@ -688,17 +588,16 @@
         }
 
         function showWinnerModal(data) {
+            const modal = document.getElementById('winnerModal');
+            const text = document.getElementById('winnerText');
+            const detail = document.getElementById('winnerDetail');
+            const img = document.getElementById('winnerGif');
             const reserve = data.reserve_price || 0;
             const currentBid = data.current_bid || 0;
             const hasBidder = !!data.high_bidder_uid;
             const isSold = hasBidder && (currentBid >= reserve);
 
             if (isSold) {
-                const modal = document.getElementById('winnerModal');
-                const text = document.getElementById('winnerText');
-                const detail = document.getElementById('winnerDetail');
-                const img = document.getElementById('winnerGif');
-
                 if (currentUser && data.high_bidder_uid === currentUser.uid) {
                     text.innerText = "Congratulations!"; text.style.color = "#16a34a"; 
                     detail.innerText = "You won this item for $" + currentBid.toLocaleString();
@@ -731,6 +630,7 @@
                 if (Date.now() > data.end_time) { alert("Auction has ended!"); return; }
                 const currentLeaderMax = data.high_bidder_max || 0;
                 const currentLeaderUID = data.high_bidder_uid || "";
+                const currentPrice = data.current_bid;
                 const now = Date.now();
                 let newEndTime = data.end_time;
                 if ((data.end_time - now) < 30000) { newEndTime = now + 30000; }
@@ -740,22 +640,22 @@
                     return;
                 }
                 if (myMaxBid > currentLeaderMax) {
-                    let newPrice = (currentLeaderMax > 0) ? (currentLeaderMax + 1) : (data.current_bid + 1);
-                    if(newPrice < data.current_bid + 1) newPrice = data.current_bid + 1;
+                    let newPrice = (currentLeaderMax > 0) ? (currentLeaderMax + 1) : (currentPrice + 1);
+                    if(newPrice < currentPrice + 1) newPrice = currentPrice + 1;
                     update(dbRef, { 
                         current_bid: newPrice, high_bidder_max: myMaxBid, high_bidder_uid: currentUser.uid, high_bidder_name: currentUser.displayName, end_time: newEndTime 
                     });
                     const historyRef = ref(db, auctionId + '/bid_history');
-                    push(historyRef, { bidder_name: currentUser.displayName, amount: newPrice, timestamp: Date.now() });
-                    alert("You are high bidder!");
+                    push(historyRef, { name: currentUser.displayName, amount: newPrice, timestamp: Date.now() });
+                    alert("You are now the highest bidder!");
                 } else {
                     let newPrice = myMaxBid + 1;
                     if (myMaxBid === currentLeaderMax) newPrice = myMaxBid;
                     update(dbRef, { current_bid: newPrice, end_time: newEndTime });
                     const historyRef = ref(db, auctionId + '/bid_history');
-                    push(historyRef, { bidder_name: currentUser.displayName, amount: myMaxBid, timestamp: Date.now() });
-                    push(historyRef, { bidder_name: data.high_bidder_name, amount: newPrice, timestamp: Date.now() + 1 });
-                    alert("Outbid by proxy!");
+                    push(historyRef, { name: currentUser.displayName, amount: myMaxBid, timestamp: Date.now() });
+                    push(historyRef, { name: data.high_bidder_name, amount: newPrice, timestamp: Date.now() + 1 });
+                    alert("You were outbid by an automatic proxy bid.");
                 }
             });
         };
