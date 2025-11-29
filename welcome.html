@@ -54,28 +54,32 @@
 
     <div class="container">
         <h1>Welcome to the Community!</h1>
-        <p style="text-align: center; font-size: 1.1rem; color: #4b5563;">
-            We are currently gathering items for our Grand Opening Auction. <br>
-            Please review how our platform works below.
+        <p style="text-align: center; font-size: 1.1rem; color: #4b5563; line-height: 1.6;">
+            We are currently accepting registration for buyers and sellers.<br>
+            Sign up today to ensure you can enter the auction room without delay!<br><br>
+            <strong>Next Live Auction: December 11th at 7:30pm</strong><br>
+            <em>We are currently accepting item listings for this event.</em>
         </p>
 
         <div class="rules-box">
+            <p><strong>🚫 No Fees</strong><br>
+            There are absolutely <strong>no seller or buyer fees</strong>. You keep 100% of the final sale price.</p>
+
+            <p><strong>🤝 Contracts & Liability</strong><br>
+            Winning bids form a contract between the Seller and the Buyer. The Auction House is a platform service only to connect buyers and sellers. We are not responsible for the quality of items sold or payment processing.</p>
+
             <p><strong>⏰ Live Format</strong><br>
             The auction opens at a set time. Only one auction lot is up for bid at a time ("on the block").</p>
             
             <p><strong>⏳ 3-Minute Timer</strong><br>
             Each item is on the block for 3 minutes. Bids placed with less than 30 seconds remaining will reset the timer to 30 seconds.</p>
             
-            <p><strong>🤝 Contracts & Liability</strong><br>
-            Winning bids form a contract between the Seller and the Buyer. The Auction House is a platform service only to connect buyers and sellers. We are not responsible for the quality of items sold or payment processing.</p>
-            
             <p><strong>📍 Baldwin County Only</strong><br>
             This site is for buyers and sellers located in Baldwin County, Alabama. All auctions are designed for local pickup or delivery without shipping costs.</p>
         </div>
 
         <div class="action-area">
-            <h3 style="margin-bottom: 15px;">Have something to sell?</h3>
-            <button onclick="handleListButton()" class="btn-list" id="listBtn">+ List an Item Now</button>
+            <button onclick="handleListButton()" class="btn-list" id="listBtn">Register / Sign In</button>
         </div>
 
         <div id="adminControls">
@@ -156,7 +160,7 @@
         // --- BUTTON LOGIC ---
         window.handleListButton = function() {
             if (isLoggedIn) {
-                // If logged in, go to Account Page
+                // If logged in, go to Account Page to list item
                 window.location.href = "account.html";
             } else {
                 // If not logged in, show Modal
@@ -169,7 +173,10 @@
             const email = document.getElementById('loginEmail').value;
             const pass = document.getElementById('loginPass').value;
             signInWithEmailAndPassword(auth, email, pass)
-            .then(() => { window.location.href = "account.html"; }) // Go to account after login
+            .then(() => { 
+                // Go to Account Page on success
+                window.location.href = "account.html"; 
+            })
             .catch((error) => { alert(error.message); });
         }
 
@@ -186,10 +193,15 @@
                 updateProfile(user, { displayName: name })
                 .then(() => {
                     set(ref(db, 'users/' + user.uid), {
-                        name: name, email: email, is_local: isLocal, pickup_plan: isLocal ? "Local" : pickupPlan,
-                        is_approved: isLocal ? true : false, joined_at: Date.now()
+                        name: name,
+                        email: email,
+                        is_local: isLocal,
+                        pickup_plan: isLocal ? "Local" : pickupPlan,
+                        is_approved: isLocal ? true : false,
+                        joined_at: Date.now()
                     }).then(() => { 
-                        window.location.href = "account.html"; // Go to account after signup
+                        // Go to Account Page on success
+                        window.location.href = "account.html"; 
                     });
                 });
             })
