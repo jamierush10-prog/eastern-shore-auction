@@ -22,13 +22,11 @@
         .profile-item { display: flex; flex-direction: column; }
         .profile-label { font-size: 0.85rem; font-weight: bold; color: #6b7280; text-transform: uppercase; margin-bottom: 5px; }
         .profile-value { font-size: 1.1rem; font-weight: 500; color: #1f2937; display: flex; align-items: center; }
-        
-        /* UPDATED RATING STYLE */
         .profile-rating { font-size: 1rem; color: var(--gold-color); margin-left: 10px; }
-        .rating-text { font-size: 0.8rem; color: #6b7280; margin-left: 5px; vertical-align: middle; }
-        
+        .rating-text { font-size: 0.8rem; color: #6b7280; vertical-align: middle; }
         .bio-text { font-style: italic; color: #4b5563; line-height: 1.5; font-size: 1rem; background: #f9fafb; padding: 10px; border-radius: 6px; border-left: 4px solid var(--primary-color); }
 
+        /* BUTTONS */
         .btn { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; color: white; text-decoration: none; display: inline-block; }
         .btn-save { background: var(--primary-color); }
         .btn-reset { background: #4b5563; font-size: 0.9rem; }
@@ -39,8 +37,15 @@
         
         .btn-rate { background: var(--gold-color); padding: 6px 12px; font-size: 0.8rem; color: #fff; text-shadow: 0 1px 1px rgba(0,0,0,0.2); margin-left: 5px; }
         .btn-contact { background: var(--info-color); padding: 6px 12px; font-size: 0.8rem; color: #fff; }
+        
         .btn-pay { background: var(--purple-color); padding: 6px 12px; font-size: 0.8rem; color: #fff; margin-right: 5px; }
         .btn-pay:hover { background: #6d28d9; }
+        
+        /* FINANCIAL TEXT */
+        .fin-block { display: flex; flex-direction: column; gap: 2px; }
+        .fin-row { font-size: 0.85rem; color: #4b5563; display: flex; justify-content: space-between; width: 140px; }
+        .fin-label { font-weight: bold; color: #6b7280; text-transform: uppercase; font-size: 0.7rem; }
+        .fin-val { font-weight: bold; color: #1f2937; font-size: 1.1rem; }
 
         .lists-container { display: flex; flex-direction: column; gap: 30px; } 
         table { width: 100%; border-collapse: collapse; font-size: 0.9rem; margin-top: 10px; }
@@ -54,9 +59,33 @@
         .st-sold { background: #111827; color: #fff; }
         .st-inactive { background: #f3f4f6; color: #9ca3af; text-decoration: line-through; }
 
+        /* MODALS */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
-        
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 0.9rem; font-weight: bold; margin-bottom: 5px; color: #4b5563; }
+        .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        input[type="file"] { padding: 6px; background: #f9fafb; }
+
+        .pay-link { display: block; width: 100%; padding: 12px; margin-bottom: 10px; text-align: center; text-decoration: none; font-weight: bold; color: white; border-radius: 6px; }
+        .pay-venmo { background: #008CFF; }
+        .pay-cashapp { background: #00D632; }
+        .invoice-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; font-size: 1rem; }
+        .invoice-total { font-weight: bold; border-top: 2px solid #333; border-bottom: none; margin-top: 10px; padding-top: 15px; font-size: 1.1rem; }
+
+        /* NEW NOTICE BOX */
+        .review-notice {
+            background-color: #fff7ed;
+            border: 1px solid #fed7aa;
+            color: #9a3412;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            text-align: center;
+            line-height: 1.4;
+        }
+
         /* PROFILE IMAGE */
         .profile-header { display: flex; align-items: flex-start; gap: 30px; margin-bottom: 30px; }
         .profile-img-container { position: relative; width: 120px; height: 120px; flex-shrink: 0; }
@@ -64,20 +93,6 @@
         .profile-upload-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; background: rgba(0,0,0,0.5); color: white; display: flex; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.2s; cursor: pointer; font-size: 0.8rem; text-align: center; font-weight: bold; }
         .profile-img-container:hover .profile-upload-overlay { opacity: 1; }
         #profileFileInput { display: none; }
-
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; font-size: 0.9rem; font-weight: bold; margin-bottom: 5px; color: #4b5563; }
-        .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        input[type="file"] { padding: 6px; background: #f9fafb; }
-
-        .fin-row { font-size: 0.85rem; color: #4b5563; margin-bottom: 2px; }
-        .fin-label { font-weight: bold; color: #6b7280; text-transform: uppercase; font-size: 0.7rem; }
-        .fin-val { font-weight: bold; color: #1f2937; font-size: 1.1rem; }
-        .pay-link { display: block; width: 100%; padding: 12px; margin-bottom: 10px; text-align: center; text-decoration: none; font-weight: bold; color: white; border-radius: 6px; }
-        .pay-venmo { background: #008CFF; }
-        .pay-cashapp { background: #00D632; }
-        .invoice-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; font-size: 1rem; }
-        .invoice-total { font-weight: bold; border-top: 2px solid #333; border-bottom: none; margin-top: 10px; padding-top: 15px; font-size: 1.1rem; }
 
         .star-input { display: flex; flex-direction: row-reverse; justify-content: center; gap: 5px; font-size: 2rem; }
         .star-input input { display: none; }
@@ -189,10 +204,16 @@
 
     <div id="listingModal" class="modal-overlay">
         <div class="modal-content">
-            <h2 id="listingModalTitle" style="margin-top:0;">List Item for Auction</h2>
+            <h2 id="listingModalTitle" style="margin-top:0; margin-bottom:5px;">List Item for Auction</h2>
+            
+            <div class="review-notice">
+                <strong>⚠️ Note:</strong> All items are reviewed and approved by our team before being posted to the live auction schedule.
+            </div>
+
             <form onsubmit="event.preventDefault(); submitListing();">
                 <input type="hidden" id="editKey"> 
                 <input type="hidden" id="existingMainUrl"><input type="hidden" id="existingThumb1"><input type="hidden" id="existingThumb2"><input type="hidden" id="existingThumb3">
+                
                 <div class="form-group"><label>Seller Name (You):</label><input type="text" id="listSeller" disabled></div>
                 <div class="form-group"><label>Item Title:</label><input type="text" id="listTitle" required></div>
                 <div class="form-group"><label>Subtitle:</label><input type="text" id="listSub" placeholder="Condition / Category"></div>
@@ -200,11 +221,13 @@
                 <div class="form-group" style="background:#f0f9ff; padding:10px; border-radius:6px; border:1px solid #bae6fd;"><label>💵 Payment Accepted:</label><input type="text" id="listPay" required></div>
                 <div class="form-group" style="background:#f0f9ff; padding:10px; border-radius:6px; border:1px solid #bae6fd;"><label>🚚 Delivery Preference:</label><input type="text" id="listDel" required></div>
                 <div class="form-group"><label>Starting Price ($):</label><input type="number" id="listPrice" required></div>
-                <div class="form-group"><label>Main Photo (Required):</label><input type="file" id="fileMain" accept="image/*"><small style="color:#666;">(Required for new items. Leave blank to keep existing)</small></div>
+                <div class="form-group"><label>Main Photo:</label><input type="file" id="fileMain" accept="image/*"><small style="color:#666;">(Required for new items)</small></div>
                 <div class="form-group"><label>Extra Photo 1:</label><input type="file" id="fileThumb1" accept="image/*"></div>
                 <div class="form-group"><label>Extra Photo 2:</label><input type="file" id="fileThumb2" accept="image/*"></div>
                 <div class="form-group"><label>Extra Photo 3:</label><input type="file" id="fileThumb3" accept="image/*"></div>
-                <div class="form-group"><label>Description:</label><textarea id="listDesc" rows="3" required></textarea></div>
+                
+                <div class="form-group"><label>Description:</label><textarea id="listDesc" rows="6" required placeholder="Please describe your item in detail..."></textarea></div>
+                
                 <button type="submit" id="submitListBtn" class="btn btn-save" style="width:100%">Submit Item</button>
                 <button type="button" class="btn btn-reset" style="width:100%; margin:10px 0 0 0;" onclick="document.getElementById('listingModal').style.display='none'">Cancel</button>
             </form>
@@ -220,24 +243,6 @@
                 <p><strong>Phone:</strong> <a id="contactPhone" href="#" style="color:var(--primary-color);">...</a></p>
             </div>
             <button class="btn btn-reset" style="width:100%; margin:0;" onclick="document.getElementById('contactModal').style.display='none'">Close</button>
-        </div>
-    </div>
-
-    <div id="payFeeModal" class="modal-overlay">
-        <div class="modal-content">
-            <h2>Pay Auction Fee</h2>
-            <div style="text-align:left; margin-bottom:20px;">
-                <div class="invoice-row"><span>Total Sale Price:</span> <span id="invTotal">$0</span></div>
-                <div class="invoice-row" style="color:var(--danger-color)"><span>Auction Fee (10%):</span> <strong><span id="invFee">$0</span></strong></div>
-                <div class="invoice-row invoice-total" style="color:var(--success-color)"><span>Balance Due to Seller:</span> <strong><span id="invNet">$0</span></strong></div>
-            </div>
-            <p style="margin-bottom:10px; font-size:0.9rem; font-weight:bold;">Step 1: Pay Fee via Venmo/CashApp</p>
-            <a href="https://venmo.com/u/James-Rush-127" target="_blank" class="pay-link pay-venmo">Venmo (@James-Rush-127)</a>
-            <a href="https://cash.app/$pawpawrush" target="_blank" class="pay-link pay-cashapp">CashApp ($pawpawrush)</a>
-            <p style="font-size:0.8rem; color:#666; margin:15px 0;">Step 2: After paying, click Confirm to notify the seller.</p>
-            <input type="hidden" id="payKey">
-            <button class="btn btn-save" style="width:100%" onclick="confirmFeePaid()">✅ I Have Sent Fee Payment</button>
-            <button class="btn btn-reset" style="width:100%; margin-top:10px;" onclick="document.getElementById('payFeeModal').style.display='none'">Cancel</button>
         </div>
     </div>
 
@@ -262,7 +267,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getDatabase, ref, onValue, update, child, get, push, runTransaction, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-        import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
         // --- PASTE KEYS HERE ---
        const firebaseConfig = {
@@ -278,7 +282,6 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getDatabase(app);
-        const storage = getStorage(app);
         let currentUser = null;
         let allUsersCache = []; 
 
@@ -304,7 +307,6 @@
             });
         }
 
-        // --- PROFILE LOGIC (WITH RATING UPDATE) ---
         function loadUserProfile(uid) {
             const userRef = ref(db, `users/${uid}`);
             onValue(userRef, (snapshot) => {
@@ -320,25 +322,10 @@
                     document.getElementById('dispPhone').innerText = data.phone || "Not Set";
                     document.getElementById('dispBio').innerText = data.bio || "No bio information provided yet.";
                     if(data.profile_image_url) document.getElementById('currentProfileImg').src = data.profile_image_url;
-                    
                     const joinDate = data.joined_at ? new Date(data.joined_at).toLocaleDateString() : new Date().toLocaleDateString();
                     document.getElementById('dispDate').innerText = joinDate;
-
-                    // --- NEW RATING DISPLAY LOGIC ---
-                    const totalStars = data.rating_total || 0;
-                    const countReviews = data.rating_count || 0;
-                    const avg = countReviews > 0 ? (totalStars / countReviews).toFixed(1) : "New";
-                    
-                    let starStr = "☆☆☆☆☆";
-                    if(countReviews > 0) {
-                        const roundScore = Math.round(totalStars / countReviews);
-                        starStr = "★".repeat(roundScore) + "☆".repeat(5 - roundScore);
-                    }
-                    
-                    document.getElementById('userRatingDisplay').innerHTML = `
-                        ${starStr} <span class="rating-text">(${avg} / 5 from ${countReviews} reviews)</span>
-                    `;
-                    
+                    const avg = data.rating_count > 0 ? (data.rating_total / data.rating_count).toFixed(1) : "New";
+                    document.getElementById('userRatingDisplay').innerHTML = `<span style="color:#f59e0b">★</span> <span class="rating-text">(${avg} / 5)</span>`;
                     document.getElementById('editShowEmail').checked = data.show_email_publicly || false;
                 } else {
                     set(ref(db, `users/${uid}`), { name: currentUser.displayName, email: currentUser.email, phone: "", is_local: true, is_approved: true, joined_at: Date.now() });
@@ -350,14 +337,14 @@
             const file = input.files[0];
             if (!file) return;
             document.querySelector('.profile-upload-overlay').innerText = "Uploading...";
-            try {
-                const fileRef = sRef(storage, `profile_images/${currentUser.uid}_profile.jpg`);
-                await uploadBytes(fileRef, file);
-                const downloadURL = await getDownloadURL(fileRef);
-                await update(ref(db, `users/${currentUser.uid}`), { profile_image_url: downloadURL });
-                alert("Profile image updated!");
-            } catch (error) { console.error(error); alert("Failed to upload image."); } 
-            finally { document.querySelector('.profile-upload-overlay').innerText = "Click to Change"; input.value = ''; }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                update(ref(db, `users/${currentUser.uid}`), { profile_image_url: e.target.result }).then(() => {
+                    alert("Profile image updated!");
+                    document.querySelector('.profile-upload-overlay').innerText = "Click to Change";
+                });
+            };
+            reader.readAsDataURL(file);
         }
 
         window.openEditProfileModal = function() {
@@ -377,7 +364,6 @@
             });
         }
 
-        // --- HISTORY LOGIC ---
         function loadUserHistory(userEmail) {
             const historyRef = ref(db, 'sales_history');
             onValue(historyRef, (snapshot) => {
@@ -395,28 +381,22 @@
                         const sellerName = seller ? seller.name : (item.seller_name || "Unknown");
                         const sellerEmail = item.seller_email || "";
                         const sellerPhone = seller ? seller.phone : "N/A";
-                        // HIDE RATE IF SELF
                         let rateBtn = `<button class="btn btn-rate" onclick="openRateModal('${sellerEmail}', '${sellerName}')">Rate</button>`;
                         if(sellerEmail.toLowerCase() === userEmail.toLowerCase()) rateBtn = '';
-
                         const tr = document.createElement('tr');
                         tr.innerHTML = `<td>${dateStr}</td><td>${item.item_title}</td><td>${sellerName}</td><td><div class="fin-row"><span class="fin-val">$${item.final_price}</span></div></td><td><button class="btn btn-contact" onclick="viewContact('${sellerName}', '${sellerEmail}', '${sellerPhone}')">Contact</button>${rateBtn}</td>`;
                         purchasesTbody.appendChild(tr);
                     }
-                    // SELLER VIEW
                     let isSeller = false;
                     if(item.seller_email && item.seller_email.toLowerCase() === userEmail.toLowerCase()) isSeller = true;
                     else if(item.seller_name && item.seller_name === currentUser.displayName) isSeller = true;
-
                     if (isSeller) {
                         const buyer = allUsersCache.find(u => u.email && u.email.toLowerCase() === (item.winner_email || "").toLowerCase());
                         const buyerName = buyer ? buyer.name : (item.winner_name || "Unknown");
                         const buyerEmail = item.winner_email || "";
                         const buyerPhone = buyer ? buyer.phone : "N/A";
-                        // HIDE RATE IF SELF
                         let rateBtn = `<button class="btn btn-rate" onclick="openRateModal('${buyerEmail}', '${buyerName}')">Rate</button>`;
                         if(buyerEmail.toLowerCase() === userEmail.toLowerCase()) rateBtn = '';
-
                         const tr = document.createElement('tr');
                         tr.innerHTML = `<td>${dateStr}</td><td>${item.item_title}</td><td>${buyerName}</td><td><div class="fin-row"><span class="fin-val">$${item.final_price}</span></div></td><td><button class="btn btn-contact" onclick="viewContact('${buyerName}', '${buyerEmail}', '${buyerPhone}')">Contact</button>${rateBtn}</td>`;
                         salesTbody.appendChild(tr);
@@ -433,14 +413,10 @@
         }
 
         window.openRateModal = function(email, name) {
-            if(!email) { alert("Cannot rate this user (No email found)."); return; }
+            if(!email) { alert("Cannot rate user (No email found)."); return; }
             if(email.toLowerCase() === currentUser.email.toLowerCase()) { alert("You cannot rate yourself."); return; }
-            
-            document.getElementById('rateTargetName').innerText = name; 
-            document.getElementById('rateTargetEmail').value = email; 
-            document.getElementById('ratingModal').style.display = 'flex';
+            document.getElementById('rateTargetName').innerText = name; document.getElementById('rateTargetEmail').value = email; document.getElementById('ratingModal').style.display = 'flex';
         }
-        
         window.submitRating = function() {
             const email = document.getElementById('rateTargetEmail').value;
             const stars = parseInt(document.querySelector('input[name="rating"]:checked').value);
@@ -460,7 +436,6 @@
             document.getElementById('listingModal').style.display = 'flex';
         }
 
-        // EDIT LOGIC
         window.editListing = function(key) {
             get(ref(db, `inventory/${key}`)).then((snapshot) => {
                 if (snapshot.exists()) {
@@ -495,11 +470,13 @@
             document.getElementById('existingThumb3').value = "";
         }
 
-        async function uploadImage(file) {
-            if (!file) return "";
-            const fileRef = sRef(storage, 'user_uploads/' + Date.now() + '_' + file.name);
-            await uploadBytes(fileRef, file);
-            return await getDownloadURL(fileRef);
+        const convertBase64 = (file) => {
+            return new Promise((resolve, reject) => {
+                const fileReader = new FileReader();
+                fileReader.readAsDataURL(file);
+                fileReader.onload = () => { resolve(fileReader.result); };
+                fileReader.onerror = (error) => { reject(error); };
+            });
         }
 
         window.submitListing = async function() {
@@ -507,10 +484,14 @@
             try {
                 const key = document.getElementById('editKey').value;
                 const mainFile = document.getElementById('fileMain').files[0];
-                const mainUrl = mainFile ? await uploadImage(mainFile) : document.getElementById('existingMainUrl').value;
-                const thumb1Url = await uploadImage(document.getElementById('fileThumb1').files[0]) || document.getElementById('existingThumb1').value;
-                const thumb2Url = await uploadImage(document.getElementById('fileThumb2').files[0]) || document.getElementById('existingThumb2').value;
-                const thumb3Url = await uploadImage(document.getElementById('fileThumb3').files[0]) || document.getElementById('existingThumb3').value;
+                const mainUrl = mainFile ? await convertBase64(mainFile) : document.getElementById('existingMainUrl').value;
+                let thumb1Url = document.getElementById('existingThumb1').value;
+                let thumb2Url = document.getElementById('existingThumb2').value;
+                let thumb3Url = document.getElementById('existingThumb3').value;
+
+                if(document.getElementById('fileThumb1').files[0]) thumb1Url = await convertBase64(document.getElementById('fileThumb1').files[0]);
+                if(document.getElementById('fileThumb2').files[0]) thumb2Url = await convertBase64(document.getElementById('fileThumb2').files[0]);
+                if(document.getElementById('fileThumb3').files[0]) thumb3Url = await convertBase64(document.getElementById('fileThumb3').files[0]);
 
                 if(!mainUrl) { alert("Main photo required."); submitBtn.disabled = false; submitBtn.innerText = "Submit Item"; return; }
 
@@ -543,7 +524,6 @@
                             <button class="btn btn-cancel" onclick="makeInactive('${item.key}')">Deactivate</button>
                         `;
                     }
-
                     const tr = document.createElement('tr');
                     tr.innerHTML = `<td>${statusBadge}</td><td>${item.title}</td><td>$${item.start_price}</td><td>${resultText}</td><td>${actionButtons}</td>`;
                     tbody.appendChild(tr);
