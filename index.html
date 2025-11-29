@@ -3,332 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Auction House | Baldwin County</title>
+    <title>Eastern Shore Auction House</title>
     <style>
-        :root { --primary-color: #2563eb; --header-bg: #111827; --header-text: #f9fafb; --bg-color: #f3f4f6; --text-color: #1f2937; --live-color: #dc2626; --sold-color: #b91c1c; --info-color: #0891b2; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        :root { --primary-color: #2563eb; --bg-color: #f3f4f6; --text-color: #1f2937; --header-bg: #111827; }
+        body { font-family: -apple-system, system-ui, sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; display: flex; flex-direction: column; min-height: 100vh; }
+
+        /* HEADER */
+        .header-strip { background-color: var(--header-bg); color: #9ca3af; padding: 12px 0; text-align: center; font-size: 0.9rem; font-style: italic; letter-spacing: 0.5px; border-bottom: 4px solid var(--primary-color); }
         
-        header { width: 100%; background-color: var(--header-bg); color: var(--header-text); padding: 40px 20px; text-align: center; }
-        .brand-name { font-family: "Georgia", "Times New Roman", serif; font-size: 2.5rem; letter-spacing: 2px; font-weight: bold; text-transform: uppercase; margin-bottom: 10px; }
-        .tagline { font-size: 1.1rem; color: #9ca3af; font-style: italic; }
-
-        .info-card { background: white; padding: 30px; margin-top: -30px; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; max-width: 600px; width: 90%; border-bottom: 4px solid var(--primary-color); }
-        .schedule-title { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; color: #6b7280; font-weight: bold; }
-        .schedule-time { font-size: 1.8rem; font-weight: 800; margin: 10px 0; }
+        /* MAIN HERO CARD */
+        .hero-section { display: flex; justify-content: center; margin-top: 40px; padding: 0 20px; }
+        .hero-card { background: white; max-width: 600px; width: 100%; padding: 50px 40px; border-radius: 12px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.08); }
+        .hero-label { font-size: 0.8rem; font-weight: bold; color: #6b7280; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 15px; }
+        .hero-date { font-size: 2.2rem; font-weight: 800; color: var(--text-color); margin: 0 0 25px 0; line-height: 1.1; letter-spacing: -0.5px; }
+        .hero-text { color: #dc2626; line-height: 1.7; font-size: 1rem; margin-bottom: 30px; font-weight: 500; }
+        .signature { font-family: "Georgia", serif; font-style: italic; color: #b91c1c; margin-bottom: 35px; display: block; font-size: 1.1rem; }
         
-        .announcement-text { font-size: 1rem; color: #dc2626; margin-bottom: 15px; white-space: pre-wrap; line-height: 1.5; }
-        .announcement-text strong { font-weight: 900; text-decoration: underline; }
-
-        .enter-btn { cursor: pointer; display: inline-block; background-color: var(--primary-color); color: white; border: none; padding: 15px 40px; border-radius: 50px; font-weight: bold; font-size: 1.1rem; margin-top: 20px; transition: transform 0.2s, background 0.2s; box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3); text-decoration: none; }
-        .enter-btn:hover { background-color: #1d4ed8; transform: translateY(-2px); }
-
-        .how-btn { display: block; margin: 15px auto 0; background: transparent; border: none; color: var(--info-color); font-weight: bold; cursor: pointer; text-decoration: underline; }
-        .how-btn:hover { color: #0e7490; }
-
-        .catalog-section { max-width: 1000px; width: 90%; margin: 50px 0; }
-        .section-header { display: flex; justify-content: center; align-items: center; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px; margin-bottom: 30px; }
-        .section-title { font-family: "Georgia", serif; font-size: 1.8rem; margin: 0; }
+        .cta-button { display: inline-block; background-color: var(--primary-color); color: white; padding: 16px 32px; border-radius: 30px; font-weight: bold; font-size: 1.1rem; text-decoration: none; transition: transform 0.2s, background 0.2s; box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3); }
+        .cta-button:hover { background-color: #1d4ed8; transform: translateY(-2px); }
         
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
-        .card { background: white; border-radius: 8px; overflow: hidden; border: 1px solid #e5e7eb; transition: transform 0.2s; display: flex; flex-direction: column; position: relative; cursor: pointer; }
-        .card:hover { transform: translateY(-3px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        .card img { width: 100%; height: 200px; object-fit: cover; }
-        .card-body { padding: 15px; flex: 1; display: flex; flex-direction: column; }
-        .card-title { font-weight: bold; margin-bottom: 5px; font-size: 1.1rem; }
-        .card-lot { font-size: 0.9rem; color: #6b7280; margin-top: auto; }
-        .card-lot strong { color: #374151; }
+        .helper-text { margin-bottom: 20px; font-size: 1rem; color: #1f2937; }
+        .helper-link { color: #5b6676; text-decoration: underline; text-decoration-style: dotted; font-size: 0.85rem; cursor: pointer; display: inline-block; margin-top: 25px; font-weight: bold; }
 
-        .stamp { position: absolute; top: 10px; right: 10px; padding: 5px 12px; font-weight: 900; text-transform: uppercase; border-radius: 4px; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-        .stamp-live { background-color: var(--live-color); color: white; animation: pulse 1.5s infinite; border: 2px solid white; }
-        .stamp-sold { background-color: rgba(255, 255, 255, 0.9); color: var(--sold-color); border: 3px solid var(--sold-color); transform: rotate(-15deg); top: 40px; right: 20px; font-size: 1.2rem; padding: 5px 20px; border-radius: 8px; letter-spacing: 2px; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-
-        #authModal, #infoModal, #lotDetailModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-content { background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 380px; box-shadow: 0 20px 25px rgba(0,0,0,0.2); position: relative; }
+        /* UPCOMING SECTION */
+        .upcoming-section { max-width: 1000px; margin: 80px auto; padding: 0 20px; text-align: center; }
+        h2.section-title { font-family: "Georgia", serif; font-size: 2.2rem; color: var(--text-color); margin-bottom: 50px; display: inline-block; font-weight: bold; border-bottom: 2px solid #e5e7eb; padding-bottom: 20px; }
         
-        .tabs { display: flex; margin-bottom: 20px; border-bottom: 2px solid #e5e7eb; }
-        .tab { flex: 1; padding: 10px; text-align: center; cursor: pointer; font-weight: bold; color: #6b7280; transition: color 0.2s; }
-        .tab.active { color: var(--primary-color); border-bottom: 2px solid var(--primary-color); }
-        .form-group { margin-bottom: 15px; }
-        .form-group input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
-        .action-btn { width: 100%; padding: 12px; background: var(--header-bg); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1rem; }
-        .error-msg { color: #dc2626; font-size: 0.9rem; margin-bottom: 10px; display: none; text-align: center; background: #fee2e2; padding: 8px; border-radius: 4px; }
-        .close-reg { text-align: center; margin-top: 15px; cursor: pointer; color: #6b7280; font-size: 0.9rem; text-decoration: underline; display: block; }
-        .radio-group { display: flex; gap: 15px; margin-bottom: 15px; }
-        .radio-label { font-weight: normal; cursor: pointer; display: flex; align-items: center; gap: 5px; }
-        #nonLocalWarning { display: none; background: #fff7ed; border: 1px solid #fed7aa; padding: 10px; border-radius: 6px; margin-bottom: 15px; font-size: 0.85rem; color: #9a3412; }
-        .close-modal-btn { position: absolute; top: 15px; right: 20px; font-size: 1.8rem; cursor: pointer; color: #9ca3af; }
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 30px; justify-content: center; }
+        
+        /* ITEM CARD */
+        .item-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: transform 0.2s; cursor: pointer; text-decoration: none; color: inherit; display: flex; flex-direction: column; border: 1px solid #f3f4f6; }
+        .item-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
+        .card-img { width: 100%; height: 200px; object-fit: cover; background: #eee; }
+        .card-body { padding: 20px; text-align: left; }
+        .card-lot { font-size: 0.75rem; color: #6b7280; font-weight: bold; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 0.5px; }
+        .card-title { font-weight: bold; font-size: 1.1rem; margin-bottom: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #111827; }
+        .card-price { color: #16a34a; font-weight: bold; font-size: 1.1rem; }
+        
+        .status-badge { float: right; font-size: 0.7rem; padding: 2px 8px; border-radius: 12px; font-weight: bold; }
+        .status-live { background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; }
+        .status-sold { background: #fef3c7; color: #b45309; border: 1px solid #fcd34d; }
 
-        .info-list { text-align: left; line-height: 1.6; color: #4b5563; margin-bottom: 20px; padding-left: 20px; list-style: disc; }
-        .info-list li { margin-bottom: 12px; }
-        .info-list strong { color: #1f2937; }
+        .loading-text { color: #9ca3af; font-style: italic; grid-column: 1/-1; padding: 40px; }
+        .footer-text { margin-top: 60px; margin-bottom: 40px; color: #9ca3af; font-size: 0.9rem; text-align: center; }
 
-        .logistics-box { background-color: #f9fafb; border: 1px solid #e5e7eb; padding: 15px; border-radius: 8px; margin-top: 20px; font-size: 0.9rem; color: #4b5563; text-align: left; }
-        .logistics-item { margin-bottom: 8px; display: flex; align-items: flex-start; gap: 10px; }
-        .log-icon { font-size: 1.1rem; min-width: 25px; }
-
-        @media (max-width: 600px) { .section-header { flex-direction: column; gap: 15px; text-align: center; } }
+        @media (max-width: 600px) {
+            .hero-date { font-size: 1.8rem; }
+            .grid-container { grid-template-columns: 1fr 1fr; gap: 15px; }
+            .item-card { border-radius: 8px; }
+            .card-img { height: 150px; }
+        }
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="brand-name">The Auction House</div>
-        <div class="tagline">Baldwin County, Alabama</div>
-    </header>
+    <div class="header-strip">Baldwin County, Alabama</div>
 
-    <div class="info-card">
-        <div class="schedule-title">Next Live Auction Begins</div>
-        <div class="schedule-time" id="scheduleDisplay">Loading schedule...</div>
-        <div id="announcementDisplay" class="announcement-text"></div>
-
-        <p>Log in or Create an Account to bid.</p>
-        <button onclick="openAuthModal()" class="enter-btn">Enter Auction Room</button>
-        <button onclick="openInfoModal()" class="how-btn">ℹ️ How This Auction Works</button>
-    </div>
-
-    <div class="catalog-section">
-        <div class="section-header">
-            <h2 class="section-title">Upcoming Lots</h2>
-        </div>
-        <div class="grid" id="upcomingGrid">
-            <div style="grid-column: 1/-1; text-align:center; color:#999; padding:40px;">Loading upcoming lots...</div>
-        </div>
-    </div>
-
-    <div id="infoModal" class="modal-overlay" onclick="if(event.target===this) this.style.display='none'">
-        <div class="modal-content">
-            <h2 style="color: var(--primary-color); margin-top:0;">How It Works & Rules</h2>
-            <ul class="info-list">
-                <li><strong>One Item at a Time:</strong> The auction is open at a set time, one auction lot is up for bid at a time.</li>
-                <li><strong>3-Minute Timer:</strong> The auction lasts for 3 minutes. Bids placed with less than 30 seconds will reset the timer to 30 seconds.</li>
-                <li><strong>Binding Bids:</strong> Winning bids is a contract between the seller and the buyer.</li>
-                <li><strong>Baldwin County Only:</strong> The Auction House is for buyers and sellers located in Baldwin County Alabama. Local pickup/delivery only.</li>
-                <li><strong>No Fees:</strong> There are currently no buyer or seller fees. You keep 100% of the sale.</li>
-            </ul>
-            <button class="action-btn" onclick="document.getElementById('infoModal').style.display='none'">Got it!</button>
-        </div>
-    </div>
-
-    <div id="lotDetailModal" class="modal-overlay" onclick="if(event.target===this) this.style.display='none'">
-        <div class="modal-content">
-            <span class="close-modal-btn" onclick="document.getElementById('lotDetailModal').style.display='none'">&times;</span>
-            <h2 id="detailTitle" style="margin-top: 0; color: var(--primary-color);">Item Title</h2>
-            <div style="margin-bottom: 15px; font-weight: bold; color: #6b7280;" id="detailLot">Lot #</div>
-            <div style="text-align: left;"><strong>Description:</strong><p id="detailDescription" style="white-space: pre-wrap; color: #4b5563; margin-top:5px;">...</p></div>
-            <div class="logistics-box">
-                <div class="logistics-item"><div class="log-icon">📍</div><div><strong>Location:</strong> <span id="detailLoc">...</span></div></div>
-                <div class="logistics-item"><div class="log-icon">💵</div><div><strong>Payment:</strong> <span id="detailPay">...</span></div></div>
-                <div class="logistics-item"><div class="log-icon">🚚</div><div><strong>Delivery:</strong> <span id="detailDel">...</span></div></div>
-            </div>
-            <button class="action-btn" style="margin-top: 20px;" onclick="document.getElementById('lotDetailModal').style.display='none'">Close</button>
-        </div>
-    </div>
-
-    <div id="authModal" class="modal-overlay">
-        <div class="modal-content" style="max-width: 380px;">
-            <div class="tabs"><div class="tab active" onclick="switchTab('login')">Log In</div><div class="tab" onclick="switchTab('register')">Sign Up</div></div>
-            <div id="errorMsg" class="error-msg" style="color:red; display:none; margin-bottom:10px;"></div>
+    <div class="hero-section">
+        <div class="hero-card">
+            <div class="hero-label">Next Live Auction Begins</div>
+            <div class="hero-date">December 11th - 7:30pm</div>
             
-            <form id="loginForm" onsubmit="event.preventDefault(); handleLogin();">
-                <div class="form-group"><input type="email" id="loginEmail" placeholder="Email Address" required></div>
-                <div class="form-group"><input type="password" id="loginPass" placeholder="Password" required></div>
-                <button type="submit" class="action-btn">Log In</button>
-            </form>
+            <p class="hero-text">
+                Welcome to The Auction House! Registration is officially open. Our first live event is set for Dec 11th, but you can create your account and list items right now. We might even run a small warm-up auction this Sunday, Dec 7th, so get registered today!
+            </p>
             
-            <form id="registerForm" style="display:none;" onsubmit="event.preventDefault(); handleRegister();">
-                <div class="form-group"><input type="text" id="regName" placeholder="Username" required></div>
-                <div class="form-group"><input type="email" id="regEmail" placeholder="Email Address" required></div>
-                <div class="form-group"><input type="password" id="regPass" placeholder="Password (6+ chars)" required></div>
-                <div class="form-group">
-                    <label>Located in Baldwin County, AL?</label>
-                    <div class="radio-group">
-                        <label class="radio-label"><input type="radio" name="isLocal" value="yes" checked onchange="toggleLocalFields(true)"> Yes</label>
-                        <label class="radio-label"><input type="radio" name="isLocal" value="no" onchange="toggleLocalFields(false)"> No</label>
-                    </div>
-                </div>
-                <div id="nonLocalWarning"><strong>Note:</strong> Non-local accounts require Admin approval.<div class="form-group" style="margin-top:10px;"><input type="text" id="pickupPlan" placeholder="Can you arrange local pickup?"></div></div>
-                <button type="submit" class="action-btn">Create Account</button>
-            </form>
-            <span class="close-reg" onclick="document.getElementById('authModal').style.display='none'">Cancel</span>
+            <span class="signature">— Jamie Rush</span>
+
+            <div class="helper-text">Log in or Create an Account to bid.</div>
+            
+            <a href="auction.html" class="cta-button">Enter Auction Room</a>
+            
+            <br>
+            <div class="helper-link" onclick="location.href='auction.html'">ℹ️ How This Auction Works</div>
         </div>
+    </div>
+
+    <div class="upcoming-section">
+        <h2 class="section-title">Upcoming Auctions</h2>
+        
+        <div id="lotsGrid" class="grid-container">
+            <div class="loading-text">Loading lots...</div>
+        </div>
+        
+        <div class="footer-text">Stay tuned! New lots coming soon.</div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getDatabase, ref, onValue, set, get, child } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // --- PASTE FIREBASE KEYS HERE ---
-  const firebaseConfig = {
-  apiKey: "AIzaSyCt0i8a7ZVRlNmSts9yM4uGwV7ghPU59rk",
-  authDomain: "eastern-shore-auction.firebaseapp.com",
-  databaseURL: "https://eastern-shore-auction-default-rtdb.firebaseio.com",
-  projectId: "eastern-shore-auction",
-  storageBucket: "eastern-shore-auction.firebasestorage.app",
-  messagingSenderId: "771348898846",
-  appId: "1:771348898846:web:3b6371e8f826747fdcba0f"
-};
+        // --- PASTE YOUR FIREBASE CONFIG HERE ---
+        const firebaseConfig = {
+          apiKey: "AIzaSyCt0i8a7ZVRlNmSts9yM4uGwV7ghPU59rk",
+          authDomain: "eastern-shore-auction.firebaseapp.com",
+          databaseURL: "https://eastern-shore-auction-default-rtdb.firebaseio.com",
+          projectId: "eastern-shore-auction",
+          storageBucket: "eastern-shore-auction.firebasestorage.app",
+          messagingSenderId: "771348898846",
+          appId: "1:771348898846:web:3b6371e8f826747fdcba0f"
+        };
 
         const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
         const db = getDatabase(app);
-        let inventoryData = null;
-        let activeAuctionKey = null;
-        let activeEndTime = 0;
 
-        window.openInfoModal = function() { document.getElementById('infoModal').style.display = 'flex'; }
-        
-        // --- DIRECT ENTRY LOGIC ---
-        window.openAuthModal = function() { 
-            if(auth.currentUser) { 
-                checkBanAndRedirect(auth.currentUser.uid);
-            } else { 
-                document.getElementById('authModal').style.display = 'flex'; 
-            } 
-        }
-
-        function checkBanAndRedirect(uid) {
-            get(child(ref(db), `users/${uid}`)).then((snapshot) => {
-                if (snapshot.exists()) {
-                    if (snapshot.val().is_approved === false) {
-                        alert("ACCESS DENIED: Your account has been suspended.");
-                        // User can stay logged in but can't enter auction
-                    } else {
-                        window.location.href = "auction.html";
-                    }
-                } else {
-                    window.location.href = "auction.html";
-                }
-            });
-        }
-
-        onValue(ref(db, 'settings'), (snapshot) => {
-            const data = snapshot.val() || {};
-            document.getElementById('scheduleDisplay').innerText = data.schedule || "Schedule TBA";
-            let text = data.announcement || "";
-            if (text) text = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-            document.getElementById('announcementDisplay').innerHTML = text;
-        });
-
-        onValue(ref(db, 'active_auction'), (snapshot) => {
-            const data = snapshot.val();
-            activeAuctionKey = data ? data.inventory_key : null;
-            if(data) activeEndTime = data.end_time;
-            renderGrid(); 
-        });
-
-        onValue(ref(db, 'inventory'), (snapshot) => {
-            inventoryData = snapshot.val();
-            renderGrid();
-        });
-
-        setInterval(renderGrid, 1000);
-
-        function renderGrid() {
-            const grid = document.getElementById('upcomingGrid');
-            if (!inventoryData) { grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#999;">Loading...</div>'; return; }
-            const items = Object.entries(inventoryData).map(([key, val]) => ({ ...val, key }));
-            const featuredItems = items.filter(item => item.is_featured === true);
-            featuredItems.sort((a, b) => a.lot - b.lot);
-
-            if (featuredItems.length === 0) { grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#999;">Stay tuned! New lots coming soon.</div>'; return; }
-            
+        // Fetch Inventory
+        const inventoryRef = ref(db, 'inventory');
+        onValue(inventoryRef, (snapshot) => {
+            const grid = document.getElementById('lotsGrid');
             grid.innerHTML = ""; 
-            const now = Date.now();
+            
+            const data = snapshot.val();
+            if (!data) {
+                grid.innerHTML = '<div class="loading-text">No upcoming auctions found.</div>';
+                return;
+            }
 
-            featuredItems.forEach(item => {
-                let stampHTML = "";
-                if (item.key === activeAuctionKey && activeEndTime > now) {
-                    stampHTML = '<div class="stamp stamp-live">LIVE NOW</div>';
-                } else if (item.status_label && item.status_label.includes("SOLD")) {
-                    stampHTML = '<div class="stamp stamp-sold">SOLD</div>';
+            // Convert to array and sort by Lot Number
+            const items = Object.values(data).sort((a, b) => a.lot - b.lot);
+
+            items.forEach(item => {
+                // Determine Status Badge
+                let statusBadge = "";
+                if (item.status_label && item.status_label.includes("SOLD")) {
+                    statusBadge = `<span class="status-badge status-sold">SOLD</span>`;
+                } else if (item.status_label && item.status_label.includes("LIVE")) {
+                    statusBadge = `<span class="status-badge status-live">LIVE NOW</span>`;
                 }
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.setAttribute('onclick', `showLotDetails('${item.key}')`);
-                card.innerHTML = `${stampHTML}<img src="${item.image_url}" alt="${item.title}"><div class="card-body"><div class="card-title">${item.title}</div><div class="card-lot"><strong>Lot #${item.lot}</strong></div></div>`;
+
+                // Create Card HTML
+                const card = document.createElement('a');
+                card.className = 'item-card';
+                card.href = 'auction.html'; // Clicking takes them to the live room
+                card.innerHTML = `
+                    <img src="${item.image_url}" class="card-img" alt="${item.title}" onerror="this.src='https://placehold.co/400x300?text=No+Image'">
+                    <div class="card-body">
+                        <div class="card-lot">Lot #${item.lot} ${statusBadge}</div>
+                        <div class="card-title">${item.title}</div>
+                        <div class="card-price">Est: $${item.start_price}</div>
+                    </div>
+                `;
                 grid.appendChild(card);
             });
-        }
-
-        window.showLotDetails = function(key) {
-            const item = inventoryData[key];
-            if (!item) return;
-            document.getElementById('detailTitle').innerText = item.title;
-            document.getElementById('detailLot').innerText = `Lot #${item.lot}`;
-            document.getElementById('detailDescription').innerText = item.description || "No description provided.";
-            document.getElementById('detailLoc').innerText = item.location || "N/A";
-            document.getElementById('detailPay').innerText = item.payment_methods || "N/A";
-            document.getElementById('detailDel').innerText = item.delivery_method || "N/A";
-            document.getElementById('lotDetailModal').style.display = 'flex';
-        }
-
-        window.toggleLocalFields = function(isLocal) {
-            const div = document.getElementById('nonLocalWarning');
-            const input = document.getElementById('pickupPlan');
-            if(isLocal) { div.style.display = 'none'; input.removeAttribute('required'); } 
-            else { div.style.display = 'block'; input.setAttribute('required', 'true'); }
-        }
-        window.switchTab = function(mode) {
-            document.getElementById('errorMsg').style.display = 'none';
-            if(mode === 'login') {
-                document.getElementById('loginForm').style.display = 'block';
-                document.getElementById('registerForm').style.display = 'none';
-                document.querySelectorAll('.tab')[0].classList.add('active');
-                document.querySelectorAll('.tab')[1].classList.remove('active');
-            } else {
-                document.getElementById('loginForm').style.display = 'none';
-                document.getElementById('registerForm').style.display = 'block';
-                document.querySelectorAll('.tab')[0].classList.remove('active');
-                document.querySelectorAll('.tab')[1].classList.add('active');
-            }
-        }
-        
-        window.handleLogin = function() {
-            const email = document.getElementById('loginEmail').value;
-            const pass = document.getElementById('loginPass').value;
-            const btn = document.querySelector('#loginForm button');
-            btn.disabled = true; btn.innerText = "Verifying...";
-            signInWithEmailAndPassword(auth, email, pass)
-            .then((userCredential) => { checkBanAndRedirect(userCredential.user.uid); })
-            .catch((error) => { 
-                const errDiv = document.getElementById('errorMsg');
-                errDiv.style.display = 'block';
-                errDiv.innerText = error.message.replace("Firebase: ", "").replace("auth/", "").replace(/-/g, " ");
-                btn.disabled = false; btn.innerText = "Log In"; 
-            });
-        }
-
-        window.handleRegister = function() {
-            const name = document.getElementById('regName').value;
-            const email = document.getElementById('regEmail').value;
-            const pass = document.getElementById('regPass').value;
-            const isLocal = document.querySelector('input[name="isLocal"]:checked').value === "yes";
-            const pickupPlan = document.getElementById('pickupPlan').value;
-            if(pass.length < 6) { 
-                document.getElementById('errorMsg').style.display = 'block';
-                document.getElementById('errorMsg').innerText = "Password must be at least 6 characters"; 
-                return; 
-            }
-            btn.disabled = true; btn.innerText = "Creating Account...";
-            createUserWithEmailAndPassword(auth, email, pass)
-            .then((userCredential) => {
-                const user = userCredential.user;
-                updateProfile(user, { displayName: name }).then(() => {
-                    set(ref(db, 'users/' + user.uid), {
-                        name: name, email: email, is_local: isLocal, pickup_plan: isLocal ? "Local" : pickupPlan,
-                        is_approved: isLocal ? true : false, joined_at: Date.now()
-                    }).then(() => { window.location.href = "auction.html"; });
-                });
-            })
-            .catch((error) => { 
-                const errDiv = document.getElementById('errorMsg');
-                errDiv.style.display = 'block';
-                errDiv.innerText = error.message.replace("Firebase: ", "").replace("auth/", "").replace(/-/g, " ");
-                btn.disabled = false; btn.innerText = "Create Account"; 
-            });
-        }
+        });
     </script>
+
 </body>
 </html>
