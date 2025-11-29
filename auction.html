@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Live Auction | Eastern Shore Auction House</title>
     <script src="https://download.agora.io/sdk/release/AgoraRTC_N-4.18.2.js"></script>
-    
     <style>
         /* --- CSS STYLES --- */
         :root { --primary-color: #2563eb; --urgent-color: #dc2626; --bg-color: #f3f4f6; --text-color: #1f2937; --border-color: #e5e7eb; --header-bg: #111827; --header-text: #f9fafb; --success-color: #16a34a; --gold-color: #f59e0b; }
@@ -103,7 +102,7 @@
         .description-block h3 { border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px; }
         .description-text { line-height: 1.6; color: #4b5563; }
 
-        /* TIP JAR STYLES */
+        /* TIP JAR */
         .tip-jar-box { margin-top: 30px; padding: 20px; background: #fffbeb; border: 1px solid #fcd34d; border-radius: 8px; text-align: center; }
         .tip-title { font-weight: bold; color: #92400e; margin-bottom: 10px; font-size: 0.95rem; }
         .tip-buttons { display: flex; gap: 10px; justify-content: center; }
@@ -126,6 +125,10 @@
         .public-avatar { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 10px; }
         .public-name { font-size: 1.5rem; font-weight: bold; }
         .public-rating { color: var(--gold-color); font-size: 1.2rem; margin: 5px 0; }
+        
+        /* Rating Text Size in Modal */
+        .public-rating span { font-size: 0.9rem; color: #6b7280; vertical-align: middle; }
+
         .public-email { color: var(--primary-color); font-weight: bold; margin-bottom: 10px; font-size: 0.9rem; }
         .public-bio { font-style: italic; color: #555; margin: 10px 0; background: #f9fafb; padding: 10px; border-radius: 6px; font-size: 0.9rem; }
         .public-tabs { display: flex; border-bottom: 1px solid #e5e7eb; margin-bottom: 15px; }
@@ -250,7 +253,9 @@
             <div class="public-profile-header">
                 <img id="ppAvatar" src="" class="public-avatar">
                 <div id="ppName" class="public-name">Loading...</div>
-                <div id="ppRating" class="public-rating">☆☆☆☆☆</div>
+                
+                <div id="ppRating" class="public-rating">☆☆☆☆☆ <span>(New)</span></div>
+                
                 <div id="ppEmail" class="public-email"></div>
                 <div id="ppBio" class="public-bio"></div>
             </div>
@@ -316,11 +321,10 @@
         let timerInterval = null;
         let currentPPUser = null;
         
-        // AGORA
         let agoraClient = null;
         let localAudioTrack = null;
         let isMicOn = false;
-        const AGORA_APP_ID = "0177f2708e8e4fdd9f97b71065c3cab6"; 
+        const AGORA_APP_ID = "YOUR_AGORA_APP_ID"; // <--- PASTE AGORA ID HERE
 
         // --- SAFETY TIMER ---
         setTimeout(() => {
@@ -328,7 +332,7 @@
             if(loader && loader.style.display !== 'none') loader.style.display = 'none';
         }, 3000);
 
-        // --- PRESENCE SYSTEM (LIVE VIEWERS) ---
+        // --- PRESENCE SYSTEM ---
         const connectedRef = ref(db, ".info/connected");
         const conListRef = ref(db, "connections");
 
@@ -344,7 +348,6 @@
             const count = snap.exists() ? Object.keys(snap.val()).length : 0;
             document.getElementById('liveViewers').innerText = `👁️ ${count} Viewing`;
         });
-
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
@@ -367,7 +370,6 @@
         window.logout = function() { signOut(auth).then(() => { window.location.href = "index.html"; }); }
         window.openAdminPanel = function() { window.location.href = 'admin.html'; }
 
-        // --- AGORA LOGIC ---
         async function initAgora(uid) {
             try {
                 agoraClient = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
@@ -409,7 +411,7 @@
         }
         function getAvatarUrlByName(name) { return (userCache[name] && userCache[name].profile_image_url) ? userCache[name].profile_image_url : "https://www.gravatar.com/avatar/?d=mp"; }
 
-        // --- PUBLIC PROFILE LOGIC ---
+        // --- PUBLIC PROFILE LOGIC (UPDATED RATING) ---
         window.openPublicProfile = function(name) {
             name = name.replace("Seller: ", "").trim();
             const userData = userCache[name];
@@ -418,17 +420,21 @@
             document.getElementById('ppName').innerText = userData.name;
             document.getElementById('ppAvatar').src = userData.profile_image_url || "https://www.gravatar.com/avatar/?d=mp";
             document.getElementById('ppBio').innerText = userData.bio || "No bio provided.";
+            
+            // RATING WITH REVIEW COUNT
             const avg = userData.rating_count > 0 ? (userData.rating_total / userData.rating_count).toFixed(1) : "New";
             let starStr = "☆☆☆☆☆";
             if(userData.rating_count > 0) {
                 const roundScore = Math.round(userData.rating_total / userData.rating_count);
                 starStr = "★".repeat(roundScore) + "☆".repeat(5 - roundScore);
             }
-            document.getElementById('ppRating').innerHTML = `${starStr} (${avg})`;
+            document.getElementById('ppRating').innerHTML = `${starStr} <span>(${avg} / 5 from ${userData.rating_count || 0} reviews)</span>`;
+
             document.getElementById('ppEmail').innerText = (userData.show_email_publicly && userData.email) ? userData.email : "";
             loadPPHistory(userData.email, 'sold');
             document.getElementById('publicProfileModal').style.display = 'flex';
         }
+        
         window.closePublicProfile = function(e) { if(e.target === document.getElementById('publicProfileModal')) document.getElementById('publicProfileModal').style.display='none'; }
         window.switchPPTab = function(mode) {
             document.querySelectorAll('.public-tab').forEach(t => t.classList.remove('active'));
@@ -481,7 +487,6 @@
             }
         });
 
-        // --- AUCTION LOGIC ---
         onValue(dbRef, (snapshot) => {
             const data = snapshot.val();
             if (data) {
@@ -537,8 +542,6 @@
                 document.getElementById('userMaxBidDisplay').innerHTML = `🎉 <strong>You are the highest bidder!</strong> <br>(Your max bid: $${data.high_bidder_max.toLocaleString()})`;
             } else {
                 document.getElementById('userMaxBidDisplay').style.display = 'none';
-                document.getElementById('userMaxBidDisplay').classList.remove('winning-bid-status');
-                document.getElementById('userMaxBidDisplay').innerHTML = '';
             }
         }
 
@@ -599,7 +602,6 @@
                     document.getElementById('timerBox').classList.add('timer-ended');
 
                     if (!auctionEndedProcessed) {
-                        // CHECK IF SOLD
                         const reserve = globalAuctionData.reserve_price || 0;
                         const currentBid = globalAuctionData.current_bid || 0;
                         const hasBidder = !!globalAuctionData.high_bidder_uid;
@@ -693,4 +695,4 @@
         };
     </script>
 </body>
-</html
+</html>
