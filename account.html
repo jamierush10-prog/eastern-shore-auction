@@ -67,13 +67,15 @@
         .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
         input[type="file"] { padding: 6px; background: #f9fafb; }
 
+        /* HELPER TEXT (NEW) */
+        .helper-text { font-size: 0.8rem; color: #6b7280; margin-top: 5px; display: block; font-style: italic; line-height: 1.4; }
+
         .pay-link { display: block; width: 100%; padding: 12px; margin-bottom: 10px; text-align: center; text-decoration: none; font-weight: bold; color: white; border-radius: 6px; }
         .pay-venmo { background: #008CFF; }
         .pay-cashapp { background: #00D632; }
         .invoice-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; font-size: 1rem; }
         .invoice-total { font-weight: bold; border-top: 2px solid #333; border-bottom: none; margin-top: 10px; padding-top: 15px; font-size: 1.1rem; }
 
-        /* NEW NOTICE BOXES */
         .review-notice { background-color: #fff7ed; border: 1px solid #fed7aa; color: #9a3412; padding: 12px; border-radius: 6px; margin-bottom: 20px; font-size: 0.9rem; text-align: center; line-height: 1.4; }
         .price-note { font-size: 0.85rem; color: #4b5563; background: #f3f4f6; padding: 10px; border-radius: 4px; margin-top: 5px; line-height: 1.4; }
 
@@ -165,14 +167,14 @@
             <div class="card">
                 <div class="section-title" style="color: var(--primary-color);">📦 Items Purchased (You Won)</div>
                 <table>
-                    <thead><tr><th>Date</th><th>Item</th><th>Seller</th><th>Price</th><th>Action</th></tr></thead>
+                    <thead><tr><th>Date</th><th>Item</th><th>Seller</th><th>Financials</th><th>Action</th></tr></thead>
                     <tbody id="purchaseList"><tr><td colspan="5">Loading...</td></tr></tbody>
                 </table>
             </div>
             <div class="card">
                 <div class="section-title" style="color: var(--success-color);">💰 Items Sold (You Sold)</div>
                 <table>
-                    <thead><tr><th>Date</th><th>Item</th><th>Buyer</th><th>Sold For</th><th>Action</th></tr></thead>
+                    <thead><tr><th>Date</th><th>Item</th><th>Buyer</th><th>Financial Breakdown</th><th>Action</th></tr></thead>
                     <tbody id="salesList"><tr><td colspan="5">Loading...</td></tr></tbody>
                 </table>
             </div>
@@ -207,10 +209,30 @@
                 
                 <div class="form-group"><label>Seller Name (You):</label><input type="text" id="listSeller" disabled></div>
                 <div class="form-group"><label>Item Title:</label><input type="text" id="listTitle" required></div>
-                <div class="form-group"><label>Subtitle:</label><input type="text" id="listSub" placeholder="Condition / Category"></div>
-                <div class="form-group" style="background:#f0f9ff; padding:10px; border-radius:6px; border:1px solid #bae6fd;"><label>📍 Item Location:</label><input type="text" id="listLoc" required></div>
-                <div class="form-group" style="background:#f0f9ff; padding:10px; border-radius:6px; border:1px solid #bae6fd;"><label>💵 Payment Accepted:</label><input type="text" id="listPay" required></div>
-                <div class="form-group" style="background:#f0f9ff; padding:10px; border-radius:6px; border:1px solid #bae6fd;"><label>🚚 Delivery Preference:</label><input type="text" id="listDel" required></div>
+                
+                <div class="form-group">
+                    <label>Subtitle:</label>
+                    <input type="text" id="listSub" placeholder="Condition / Category">
+                    <span class="helper-text">Specify condition (New/Used) or Category (Antiques, Tools, etc.)</span>
+                </div>
+                
+                <div class="form-group" style="background:#f0f9ff; padding:10px; border-radius:6px; border:1px solid #bae6fd;">
+                    <label>📍 Item Location:</label>
+                    <input type="text" id="listLoc" required>
+                    <span class="helper-text">General area (e.g., Daphne - Lake Forest, Fairhope - Downtown) so buyers know roughly where pickup is.</span>
+                </div>
+                
+                <div class="form-group" style="background:#f0f9ff; padding:10px; border-radius:6px; border:1px solid #bae6fd;">
+                    <label>💵 Payment Accepted:</label>
+                    <input type="text" id="listPay" required>
+                    <span class="helper-text">List accepted methods: Cash, Venmo, CashApp, Paypal, etc.</span>
+                </div>
+                
+                <div class="form-group" style="background:#f0f9ff; padding:10px; border-radius:6px; border:1px solid #bae6fd;">
+                    <label>🚚 Delivery Preference:</label>
+                    <input type="text" id="listDel" required>
+                    <span class="helper-text">Explain options: "Porch pickup", "Will meet at public location", "Delivery for fee", etc.</span>
+                </div>
                 
                 <div class="form-group">
                     <label>Starting Price ($):</label>
@@ -366,6 +388,7 @@
             });
         }
 
+        // --- HISTORY LOGIC ---
         function loadUserHistory(userEmail) {
             const historyRef = ref(db, 'sales_history');
             onValue(historyRef, (snapshot) => {
