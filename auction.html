@@ -25,9 +25,14 @@
 
         /* AUDIO & VIEWER CONTROLS */
         .viewer-count { font-size: 0.9rem; color: #9ca3af; display: flex; align-items: center; gap: 5px; font-weight: bold; }
-        .audio-status { font-size: 0.8rem; color: #10b981; display: none; align-items: center; gap: 5px; border: 1px solid #10b981; padding: 5px 10px; border-radius: 20px; }
-        .mic-btn { background-color: #374151; color: white; border: 1px solid #6b7280; padding: 8px 15px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; display: none; }
-        .mic-btn.active { background-color: var(--urgent-color); border-color: var(--urgent-color); animation: pulse-red 2s infinite; }
+        
+        /* NEW BUTTON STYLES */
+        .audio-btn { padding: 8px 15px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; border: none; color: white; font-weight: bold; display: flex; align-items: center; gap: 5px; }
+        .btn-listen { background-color: #10b981; } /* Green */
+        .btn-listen.active { background-color: #6b7280; } /* Gray when connected */
+        .btn-broadcast { background-color: #374151; display: none; } /* Hidden unless admin */
+        .btn-broadcast.active { background-color: var(--urgent-color); animation: pulse-red 2s infinite; }
+
         @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); } 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); } }
 
         /* LAYOUT */
@@ -93,6 +98,8 @@
         .chat-window { height: 200px; overflow-y: auto; background: white; border: 1px solid #e5e7eb; border-radius: 6px; padding: 10px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px; }
         .chat-msg { font-size: 0.9rem; line-height: 1.4; }
         .chat-msg strong { color: var(--primary-color); margin-right: 5px; }
+        .clickable-user { cursor: pointer; text-decoration: underline; text-decoration-style: dotted; }
+        .clickable-user:hover { color: var(--primary-color); }
         .chat-input-row { display: flex; gap: 10px; }
         #chatInput { padding: 10px; border: 1px solid #ccc; border-radius: 6px; flex: 1; font-size: 0.9rem; }
         .chat-btn { background-color: #374151; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; }
@@ -125,10 +132,7 @@
         .public-avatar { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 10px; }
         .public-name { font-size: 1.5rem; font-weight: bold; }
         .public-rating { color: var(--gold-color); font-size: 1.2rem; margin: 5px 0; }
-        
-        /* Rating Text Size in Modal */
         .public-rating span { font-size: 0.9rem; color: #6b7280; vertical-align: middle; }
-
         .public-email { color: var(--primary-color); font-weight: bold; margin-bottom: 10px; font-size: 0.9rem; }
         .public-bio { font-style: italic; color: #555; margin: 10px 0; background: #f9fafb; padding: 10px; border-radius: 6px; font-size: 0.9rem; }
         .public-tabs { display: flex; border-bottom: 1px solid #e5e7eb; margin-bottom: 15px; }
@@ -136,8 +140,6 @@
         .public-tab.active { border-bottom: 2px solid var(--primary-color); color: var(--primary-color); }
         .public-list { max-height: 200px; overflow-y: auto; list-style: none; padding: 0; margin: 0; }
         .public-item { padding: 8px; border-bottom: 1px solid #f3f4f6; font-size: 0.9rem; display: flex; justify-content: space-between; }
-        .clickable-user { cursor: pointer; text-decoration: underline; text-decoration-style: dotted; }
-        .clickable-user:hover { color: var(--primary-color); }
 
         #winnerIcon { font-size: 4rem; margin-bottom: 10px; }
         #winnerText { font-size: 1.8rem; font-weight: bold; margin: 10px 0; color: var(--text-color); }
@@ -170,8 +172,10 @@
         <div class="brand-name">The Auction House</div>
         <div class="header-right">
             <div id="liveViewers" class="viewer-count">👁️ 1 Viewing</div>
-            <div id="audioStatus" class="audio-status">🔊 Live Audio</div>
-            <button id="micBtn" class="mic-btn" onclick="toggleMic()">🎙️ Start Broadcast</button>
+            
+            <button id="listenBtn" class="audio-btn btn-listen" onclick="toggleListen()">🔊 Join Audio</button>
+            <button id="micBtn" class="audio-btn btn-broadcast" onclick="toggleMic()">🎙️ Start Broadcast</button>
+            
             <button id="adminPanelBtn" onclick="openAdminPanel()">ADMIN DASHBOARD</button>
         </div>
     </header>
@@ -253,9 +257,7 @@
             <div class="public-profile-header">
                 <img id="ppAvatar" src="" class="public-avatar">
                 <div id="ppName" class="public-name">Loading...</div>
-                
                 <div id="ppRating" class="public-rating">☆☆☆☆☆ <span>(New)</span></div>
-                
                 <div id="ppEmail" class="public-email"></div>
                 <div id="ppBio" class="public-bio"></div>
             </div>
@@ -295,7 +297,7 @@
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getDatabase, ref, onValue, set, get, push, update, child, query, limitToLast, remove, onDisconnect } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // --- PASTE KEYS HERE ---
+        // --- PASTE YOUR KEYS HERE ---
         const firebaseConfig = {
   apiKey: "AIzaSyCt0i8a7ZVRlNmSts9yM4uGwV7ghPU59rk",
   authDomain: "eastern-shore-auction.firebaseapp.com",
@@ -321,10 +323,12 @@
         let timerInterval = null;
         let currentPPUser = null;
         
+        // AGORA CONFIG
         let agoraClient = null;
         let localAudioTrack = null;
         let isMicOn = false;
-        const AGORA_APP_ID = "YOUR_AGORA_APP_ID"; // <--- PASTE AGORA ID HERE
+        let isListening = false; // Track listener state
+        const AGORA_APP_ID = "YOUR_AGORA_APP_ID_HERE"; // <--- PASTE APP ID
 
         // --- SAFETY TIMER ---
         setTimeout(() => {
@@ -335,7 +339,6 @@
         // --- PRESENCE SYSTEM ---
         const connectedRef = ref(db, ".info/connected");
         const conListRef = ref(db, "connections");
-
         onValue(connectedRef, (snap) => {
             if (snap.val() === true) {
                 const con = push(conListRef);
@@ -343,59 +346,68 @@
                 set(con, true);
             }
         });
-
         onValue(conListRef, (snap) => {
             const count = snap.exists() ? Object.keys(snap.val()).length : 0;
             document.getElementById('liveViewers').innerText = `👁️ ${count} Viewing`;
         });
 
         onAuthStateChanged(auth, (user) => {
-        if (user) {
-            // --- SECURITY CHECK ---
-            get(child(ref(db), `users/${user.uid}`)).then((snapshot) => {
-                if (snapshot.exists() && snapshot.val().is_approved === false) {
-                    alert("ACCESS DENIED: Your account has been suspended. You cannot bid.");
-                    signOut(auth).then(() => window.location.href = "index.html");
-                } else {
-                    // Allow Access
-                    currentUser = user;
-                    document.getElementById('displayUsername').innerText = user.displayName || "Bidder";
-                    preloadUserCache();
-                    
-                    // Admin Check
-                    get(child(ref(db), `admins/${user.uid}`)).then((adminSnap) => { 
-                        if (adminSnap.exists() && adminSnap.val() === true) {
-                            document.getElementById('adminPanelBtn').style.display = 'block';
-                            document.getElementById('clearChatBtn').style.display = 'block';
-                            document.getElementById('micBtn').style.display = 'block';
-                        }
-                    });
-                    
-                    document.getElementById('pageLoading').style.display = 'none';
-                    initAgora(user.uid);
-                }
-            });
-        } else { window.location.href = "index.html"; }
-    });
+            if (user) {
+                currentUser = user;
+                document.getElementById('displayUsername').innerText = user.displayName || "Bidder";
+                preloadUserCache();
+                
+                // Admin Check
+                get(child(ref(db), `admins/${user.uid}`)).then((snapshot) => { 
+                    if (snapshot.exists() && snapshot.val() === true) {
+                        document.getElementById('adminPanelBtn').style.display = 'block';
+                        document.getElementById('clearChatBtn').style.display = 'block';
+                        
+                        // Swap buttons for Admin: Show Mic, Hide Listen
+                        document.getElementById('micBtn').style.display = 'block';
+                        document.getElementById('listenBtn').style.display = 'none';
+                        
+                        // Admin joins Agora immediately to be ready to broadcast
+                        initAgora(user.uid, "host");
+                    } else {
+                        // Regular User: Show Listen Button
+                        document.getElementById('listenBtn').style.display = 'flex'; // Flex to align icon
+                    }
+                });
+
+                get(child(ref(db), `users/${user.uid}`)).then((snapshot) => { if(snapshot.exists()) { isUserApproved = snapshot.val().is_approved === true; } });
+                document.getElementById('pageLoading').style.display = 'none';
+
+            } else { window.location.href = "index.html"; }
+        });
 
         window.logout = function() { signOut(auth).then(() => { window.location.href = "index.html"; }); }
         window.openAdminPanel = function() { window.location.href = 'admin.html'; }
 
-        async function initAgora(uid) {
+        // --- AGORA AUDIO LOGIC (UPDATED) ---
+        
+        // 1. Init (Create Client only)
+        async function initAgora(uid, role = "audience") {
             try {
                 agoraClient = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
-                agoraClient.on("user-published", async (user, mediaType) => {
-                    await agoraClient.subscribe(user, mediaType);
-                    if (mediaType === "audio") {
-                        user.audioTrack.play();
-                        document.getElementById('audioStatus').style.display = 'flex';
-                    }
-                });
-                agoraClient.on("user-unpublished", () => { document.getElementById('audioStatus').style.display = 'none'; });
-                await agoraClient.join(AGORA_APP_ID, "auction_room", null, uid);
-            } catch(e) { console.error("Agora Error:", e); }
+                
+                if (role === "host") {
+                    // Hosts join immediately but publish later
+                    await agoraClient.join(AGORA_APP_ID, "auction_room", null, uid);
+                } else {
+                    // Listeners wait until button click
+                    // Setup event listener for WHEN they join
+                    agoraClient.on("user-published", async (user, mediaType) => {
+                        await agoraClient.subscribe(user, mediaType);
+                        if (mediaType === "audio") {
+                            user.audioTrack.play();
+                        }
+                    });
+                }
+            } catch(e) { console.error("Agora Init Error:", e); }
         }
 
+        // 2. Admin: Toggle Mic (Publish)
         window.toggleMic = async function() {
             if (!isMicOn) {
                 localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack();
@@ -412,6 +424,37 @@
             }
         }
 
+        // 3. User: Toggle Listen (Join/Leave Channel)
+        window.toggleListen = async function() {
+            const btn = document.getElementById('listenBtn');
+            
+            if (!isListening) {
+                // JOIN
+                // Initialize client if not already done (lazy load)
+                if (!agoraClient) agoraClient = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
+                
+                // Setup Listener
+                agoraClient.on("user-published", async (user, mediaType) => {
+                    await agoraClient.subscribe(user, mediaType);
+                    if (mediaType === "audio") { user.audioTrack.play(); }
+                });
+
+                await agoraClient.join(AGORA_APP_ID, "auction_room", null, currentUser.uid);
+                
+                btn.innerHTML = "🔇 Leave Audio";
+                btn.classList.remove('btn-listen');
+                btn.style.backgroundColor = "#6b7280"; // Gray
+                isListening = true;
+            } else {
+                // LEAVE
+                await agoraClient.leave();
+                btn.innerHTML = "🔊 Join Audio";
+                btn.classList.add('btn-listen');
+                btn.style.backgroundColor = ""; // Reset to Green class
+                isListening = false;
+            }
+        }
+
         function preloadUserCache() {
             get(ref(db, 'users')).then((snapshot) => {
                 if (snapshot.exists()) {
@@ -422,7 +465,7 @@
         }
         function getAvatarUrlByName(name) { return (userCache[name] && userCache[name].profile_image_url) ? userCache[name].profile_image_url : "https://www.gravatar.com/avatar/?d=mp"; }
 
-        // --- PUBLIC PROFILE LOGIC (UPDATED RATING) ---
+        // --- PUBLIC PROFILE LOGIC ---
         window.openPublicProfile = function(name) {
             name = name.replace("Seller: ", "").trim();
             const userData = userCache[name];
@@ -431,8 +474,6 @@
             document.getElementById('ppName').innerText = userData.name;
             document.getElementById('ppAvatar').src = userData.profile_image_url || "https://www.gravatar.com/avatar/?d=mp";
             document.getElementById('ppBio').innerText = userData.bio || "No bio provided.";
-            
-            // RATING WITH REVIEW COUNT
             const avg = userData.rating_count > 0 ? (userData.rating_total / userData.rating_count).toFixed(1) : "New";
             let starStr = "☆☆☆☆☆";
             if(userData.rating_count > 0) {
@@ -440,12 +481,10 @@
                 starStr = "★".repeat(roundScore) + "☆".repeat(5 - roundScore);
             }
             document.getElementById('ppRating').innerHTML = `${starStr} <span>(${avg} / 5 from ${userData.rating_count || 0} reviews)</span>`;
-
             document.getElementById('ppEmail').innerText = (userData.show_email_publicly && userData.email) ? userData.email : "";
             loadPPHistory(userData.email, 'sold');
             document.getElementById('publicProfileModal').style.display = 'flex';
         }
-        
         window.closePublicProfile = function(e) { if(e.target === document.getElementById('publicProfileModal')) document.getElementById('publicProfileModal').style.display='none'; }
         window.switchPPTab = function(mode) {
             document.querySelectorAll('.public-tab').forEach(t => t.classList.remove('active'));
@@ -553,6 +592,8 @@
                 document.getElementById('userMaxBidDisplay').innerHTML = `🎉 <strong>You are the highest bidder!</strong> <br>(Your max bid: $${data.high_bidder_max.toLocaleString()})`;
             } else {
                 document.getElementById('userMaxBidDisplay').style.display = 'none';
+                document.getElementById('userMaxBidDisplay').classList.remove('winning-bid-status');
+                document.getElementById('userMaxBidDisplay').innerHTML = '';
             }
         }
 
