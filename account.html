@@ -308,16 +308,25 @@
         let currentUser = null;
         let allUsersCache = []; 
 
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                currentUser = user;
-                preloadUsers();
-                loadUserProfile(user.uid);
-                loadUserListings(user.uid);
-            } else {
-                window.location.href = "index.html";
-            }
-        });
+       onAuthStateChanged(auth, (user) => {
+        if (user) {
+            // --- SECURITY CHECK ---
+            get(child(ref(db), `users/${user.uid}`)).then((snapshot) => {
+                if (snapshot.exists() && snapshot.val().is_approved === false) {
+                    alert("ACCESS DENIED: Your account has been suspended. You cannot list items.");
+                    signOut(auth).then(() => window.location.href = "index.html");
+                } else {
+                    // Allow Access
+                    currentUser = user;
+                    preloadUsers();
+                    loadUserProfile(user.uid);
+                    loadUserListings(user.uid);
+                }
+            });
+        } else {
+            window.location.href = "index.html";
+        }
+    });
 
         window.logout = function() { signOut(auth).then(() => window.location.href = "index.html"); }
 

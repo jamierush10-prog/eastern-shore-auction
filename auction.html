@@ -350,22 +350,33 @@
         });
 
         onAuthStateChanged(auth, (user) => {
-            if (user) {
-                currentUser = user;
-                document.getElementById('displayUsername').innerText = user.displayName || "Bidder";
-                preloadUserCache();
-                get(child(ref(db), `admins/${user.uid}`)).then((snapshot) => { 
-                    if (snapshot.exists() && snapshot.val() === true) {
-                        document.getElementById('adminPanelBtn').style.display = 'block';
-                        document.getElementById('clearChatBtn').style.display = 'block';
-                        document.getElementById('micBtn').style.display = 'block';
-                    }
-                });
-                get(child(ref(db), `users/${user.uid}`)).then((snapshot) => { if(snapshot.exists()) { isUserApproved = snapshot.val().is_approved === true; } });
-                document.getElementById('pageLoading').style.display = 'none';
-                initAgora(user.uid);
-            } else { window.location.href = "index.html"; }
-        });
+        if (user) {
+            // --- SECURITY CHECK ---
+            get(child(ref(db), `users/${user.uid}`)).then((snapshot) => {
+                if (snapshot.exists() && snapshot.val().is_approved === false) {
+                    alert("ACCESS DENIED: Your account has been suspended. You cannot bid.");
+                    signOut(auth).then(() => window.location.href = "index.html");
+                } else {
+                    // Allow Access
+                    currentUser = user;
+                    document.getElementById('displayUsername').innerText = user.displayName || "Bidder";
+                    preloadUserCache();
+                    
+                    // Admin Check
+                    get(child(ref(db), `admins/${user.uid}`)).then((adminSnap) => { 
+                        if (adminSnap.exists() && adminSnap.val() === true) {
+                            document.getElementById('adminPanelBtn').style.display = 'block';
+                            document.getElementById('clearChatBtn').style.display = 'block';
+                            document.getElementById('micBtn').style.display = 'block';
+                        }
+                    });
+                    
+                    document.getElementById('pageLoading').style.display = 'none';
+                    initAgora(user.uid);
+                }
+            });
+        } else { window.location.href = "index.html"; }
+    });
 
         window.logout = function() { signOut(auth).then(() => { window.location.href = "index.html"; }); }
         window.openAdminPanel = function() { window.location.href = 'admin.html'; }

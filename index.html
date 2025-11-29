@@ -47,7 +47,6 @@
         /* MODALS */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px rgba(0,0,0,0.2); position: relative; }
-        
         .close-modal-btn { position: absolute; top: 15px; right: 20px; font-size: 1.8rem; cursor: pointer; color: #9ca3af; }
 
         .info-list { text-align: left; line-height: 1.6; color: #4b5563; margin-bottom: 20px; padding-left: 20px; list-style: disc; }
@@ -84,6 +83,7 @@
     <div class="info-card">
         <div class="schedule-title">Next Live Auction Begins</div>
         <div class="schedule-time" id="scheduleDisplay">Loading schedule...</div>
+        
         <div id="announcementDisplay" class="announcement-text"></div>
 
         <p>Log in or Create an Account to bid.</p>
@@ -161,11 +161,11 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getDatabase, ref, onValue, set, get, child } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // --- PASTE YOUR KEYS HERE ---
-        const firebaseConfig = {
+        // --- PASTE KEYS HERE ---
+       const firebaseConfig = {
   apiKey: "AIzaSyCt0i8a7ZVRlNmSts9yM4uGwV7ghPU59rk",
   authDomain: "eastern-shore-auction.firebaseapp.com",
   databaseURL: "https://eastern-shore-auction-default-rtdb.firebaseio.com",
@@ -183,13 +183,30 @@
 
         window.openInfoModal = function() { document.getElementById('infoModal').style.display = 'flex'; }
 
-        // --- AUTH ENTRY LOGIC (DIRECT) ---
+        // --- AUTH ENTRY LOGIC (DIRECT & SECURITY) ---
         window.openAuthModal = function() { 
             if(auth.currentUser) { 
-                window.location.href = "auction.html"; // Go straight to auction
+                checkBanAndRedirect(auth.currentUser.uid);
             } else { 
                 document.getElementById('authModal').style.display = 'flex'; 
             } 
+        }
+
+        function checkBanAndRedirect(uid) {
+            get(child(ref(db), `users/${uid}`)).then((snapshot) => {
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    if (data.is_approved === false) {
+                        alert("ACCESS DENIED: Your account has been suspended. Please contact the administrator.");
+                        signOut(auth).then(() => { window.location.reload(); });
+                    } else {
+                        window.location.href = "auction.html";
+                    }
+                } else {
+                    // User exists in Auth but not DB (rare), allow entry to fix profile
+                    window.location.href = "auction.html";
+                }
+            });
         }
 
         onValue(ref(db, 'settings'), (snapshot) => {
@@ -246,7 +263,7 @@
             if (!item) return;
             document.getElementById('detailTitle').innerText = item.title;
             document.getElementById('detailLot').innerText = `Lot #${item.lot}`;
-            document.getElementById('detailDescription').innerText = item.description || "No description.";
+            document.getElementById('detailDescription').innerText = item.description || "No description provided.";
             document.getElementById('detailLoc').innerText = item.location || "N/A";
             document.getElementById('detailPay').innerText = item.payment_methods || "N/A";
             document.getElementById('detailDel').innerText = item.delivery_method || "N/A";
@@ -274,14 +291,18 @@
             }
         }
         
-        // --- DIRECT REDIRECTS ---
+        // --- LOGIN & CHECK BAN ---
         window.handleLogin = function() {
             const email = document.getElementById('loginEmail').value;
             const pass = document.getElementById('loginPass').value;
             const btn = document.querySelector('#loginForm button');
             btn.disabled = true; btn.innerText = "Verifying...";
+            
             signInWithEmailAndPassword(auth, email, pass)
-            .then(() => { window.location.href = "auction.html"; }) // Redirect to Auction
+            .then((userCredential) => {
+                // Check if banned before redirecting
+                checkBanAndRedirect(userCredential.user.uid);
+            })
             .catch((error) => { 
                 const errDiv = document.getElementById('errorMsg');
                 errDiv.style.display = 'block';
@@ -311,7 +332,10 @@
                     set(ref(db, 'users/' + user.uid), {
                         name: name, email: email, is_local: isLocal, pickup_plan: isLocal ? "Local" : pickupPlan,
                         is_approved: isLocal ? true : false, joined_at: Date.now()
-                    }).then(() => { window.location.href = "auction.html"; }); // Redirect to Auction
+                    }).then(() => { 
+                        // Auto-redirect to auction (New users aren't banned yet)
+                        window.location.href = "auction.html"; 
+                    });
                 });
             })
             .catch((error) => { 
