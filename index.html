@@ -44,15 +44,32 @@
         .stamp-sold { background-color: rgba(255, 255, 255, 0.9); color: var(--sold-color); border: 3px solid var(--sold-color); transform: rotate(-15deg); top: 40px; right: 20px; font-size: 1.2rem; padding: 5px 20px; border-radius: 8px; letter-spacing: 2px; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
-        /* INFO LIST */
+        /* MODALS */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px rgba(0,0,0,0.2); position: relative; }
+        
+        .close-modal-btn { position: absolute; top: 15px; right: 20px; font-size: 1.8rem; cursor: pointer; color: #9ca3af; }
+
         .info-list { text-align: left; line-height: 1.6; color: #4b5563; margin-bottom: 20px; padding-left: 20px; list-style: disc; }
         .info-list li { margin-bottom: 12px; }
         .info-list strong { color: #1f2937; }
 
-        /* MODAL */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-content { background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px rgba(0,0,0,0.2); position: relative; }
+        .logistics-box { background-color: #f9fafb; border: 1px solid #e5e7eb; padding: 15px; border-radius: 8px; margin-top: 20px; font-size: 0.9rem; color: #4b5563; text-align: left; }
+        .logistics-item { margin-bottom: 8px; display: flex; align-items: flex-start; gap: 10px; }
+        .log-icon { font-size: 1.1rem; min-width: 25px; }
+
+        /* AUTH STYLES */
+        .tabs { display: flex; margin-bottom: 20px; border-bottom: 2px solid #e5e7eb; }
+        .tab { flex: 1; padding: 10px; text-align: center; cursor: pointer; font-weight: bold; color: #6b7280; transition: color 0.2s; }
+        .tab.active { color: var(--primary-color); border-bottom: 2px solid var(--primary-color); }
+        .form-group { margin-bottom: 15px; text-align: left; }
+        .form-group input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
         .action-btn { width: 100%; padding: 12px; background: var(--header-bg); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1rem; }
+        .error-msg { color: #dc2626; font-size: 0.9rem; margin-bottom: 10px; display: none; text-align: center; background: #fee2e2; padding: 8px; border-radius: 4px; }
+        .close-reg { text-align: center; margin-top: 15px; cursor: pointer; color: #6b7280; font-size: 0.9rem; text-decoration: underline; display: block; }
+        .radio-group { display: flex; gap: 15px; margin-bottom: 15px; }
+        .radio-label { font-weight: normal; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+        #nonLocalWarning { display: none; background: #fff7ed; border: 1px solid #fed7aa; padding: 10px; border-radius: 6px; margin-bottom: 15px; font-size: 0.85rem; color: #9a3412; text-align: left; }
 
         @media (max-width: 600px) { .section-header { flex-direction: column; gap: 15px; text-align: center; } }
     </style>
@@ -67,11 +84,11 @@
     <div class="info-card">
         <div class="schedule-title">Next Live Auction Begins</div>
         <div class="schedule-time" id="scheduleDisplay">Loading schedule...</div>
-        
         <div id="announcementDisplay" class="announcement-text"></div>
 
         <p>Log in or Create an Account to bid.</p>
-        <a href="welcome.html" class="enter-btn">Enter Auction Room</a>
+        
+        <button onclick="openAuthModal()" class="enter-btn">Enter Auction Room</button>
         
         <button onclick="openInfoModal()" class="how-btn">ℹ️ How This Auction Works</button>
     </div>
@@ -98,12 +115,57 @@
         </div>
     </div>
 
+    <div id="lotDetailModal" class="modal-overlay" onclick="if(event.target===this) this.style.display='none'">
+        <div class="modal-content">
+            <span class="close-modal-btn" onclick="document.getElementById('lotDetailModal').style.display='none'">&times;</span>
+            <h2 id="detailTitle" style="margin-top: 0; color: var(--primary-color);">Item Title</h2>
+            <div style="margin-bottom: 15px; font-weight: bold; color: #6b7280;" id="detailLot">Lot #</div>
+            <div style="text-align: left;"><strong>Description:</strong><p id="detailDescription" style="white-space: pre-wrap; color: #4b5563; margin-top:5px;">...</p></div>
+            <div class="logistics-box">
+                <div class="logistics-item"><div class="log-icon">📍</div><div><strong>Location:</strong> <span id="detailLoc">...</span></div></div>
+                <div class="logistics-item"><div class="log-icon">💵</div><div><strong>Payment:</strong> <span id="detailPay">...</span></div></div>
+                <div class="logistics-item"><div class="log-icon">🚚</div><div><strong>Delivery:</strong> <span id="detailDel">...</span></div></div>
+            </div>
+            <button class="action-btn" style="margin-top: 20px;" onclick="document.getElementById('lotDetailModal').style.display='none'">Close</button>
+        </div>
+    </div>
+
+    <div id="authModal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 380px;">
+            <div class="tabs"><div class="tab active" onclick="switchTab('login')">Log In</div><div class="tab" onclick="switchTab('register')">Sign Up</div></div>
+            <div id="errorMsg" class="error-msg"></div>
+            
+            <form id="loginForm" onsubmit="event.preventDefault(); handleLogin();">
+                <div class="form-group"><input type="email" id="loginEmail" placeholder="Email Address" required></div>
+                <div class="form-group"><input type="password" id="loginPass" placeholder="Password" required></div>
+                <button type="submit" class="action-btn">Log In</button>
+            </form>
+            
+            <form id="registerForm" style="display:none;" onsubmit="event.preventDefault(); handleRegister();">
+                <div class="form-group"><input type="text" id="regName" placeholder="Username" required></div>
+                <div class="form-group"><input type="email" id="regEmail" placeholder="Email Address" required></div>
+                <div class="form-group"><input type="password" id="regPass" placeholder="Password (6+ chars)" required></div>
+                <div class="form-group">
+                    <label>Located in Baldwin County, AL?</label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="isLocal" value="yes" checked onchange="toggleLocalFields(true)"> Yes</label>
+                        <label><input type="radio" name="isLocal" value="no" onchange="toggleLocalFields(false)"> No</label>
+                    </div>
+                </div>
+                <div id="nonLocalWarning"><strong>Note:</strong> Non-local accounts require Admin approval.<div class="form-group" style="margin-top:10px;"><input type="text" id="pickupPlan" placeholder="Can you arrange local pickup?"></div></div>
+                <button type="submit" class="action-btn">Create Account</button>
+            </form>
+            <span class="close-reg" onclick="document.getElementById('authModal').style.display='none'">Cancel</span>
+        </div>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // --- PASTE KEYS HERE ---
-      const firebaseConfig = {
+        // --- PASTE YOUR KEYS HERE ---
+        const firebaseConfig = {
   apiKey: "AIzaSyCt0i8a7ZVRlNmSts9yM4uGwV7ghPU59rk",
   authDomain: "eastern-shore-auction.firebaseapp.com",
   databaseURL: "https://eastern-shore-auction-default-rtdb.firebaseio.com",
@@ -114,11 +176,22 @@
 };
 
         const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
         const db = getDatabase(app);
+        let inventoryData = null;
+        let activeAuctionKey = null;
 
         window.openInfoModal = function() { document.getElementById('infoModal').style.display = 'flex'; }
 
-        // 1. Load Schedule
+        // --- AUTH ENTRY LOGIC (DIRECT) ---
+        window.openAuthModal = function() { 
+            if(auth.currentUser) { 
+                window.location.href = "auction.html"; // Go straight to auction
+            } else { 
+                document.getElementById('authModal').style.display = 'flex'; 
+            } 
+        }
+
         onValue(ref(db, 'settings'), (snapshot) => {
             const data = snapshot.val() || {};
             document.getElementById('scheduleDisplay').innerText = data.schedule || "Schedule TBA";
@@ -127,15 +200,10 @@
             document.getElementById('announcementDisplay').innerHTML = text;
         });
 
-        // 2. Load Items
-        let activeAuctionKey = null;
-        let inventoryData = null;
-        let activeEndTime = 0;
-
         onValue(ref(db, 'active_auction'), (snapshot) => {
             const data = snapshot.val();
             activeAuctionKey = data ? data.inventory_key : null;
-            if(data) activeEndTime = data.end_time;
+            if(data) window.activeEndTime = data.end_time;
             renderGrid(); 
         });
 
@@ -160,15 +228,98 @@
 
             featuredItems.forEach(item => {
                 let stampHTML = "";
-                if (item.key === activeAuctionKey && activeEndTime > now) {
+                if (item.key === activeAuctionKey && window.activeEndTime > now) {
                     stampHTML = '<div class="stamp stamp-live">LIVE NOW</div>';
                 } else if (item.status_label && item.status_label.includes("SOLD")) {
                     stampHTML = '<div class="stamp stamp-sold">SOLD</div>';
                 }
                 const card = document.createElement('div');
                 card.className = 'card';
+                card.setAttribute('onclick', `showLotDetails('${item.key}')`);
                 card.innerHTML = `${stampHTML}<img src="${item.image_url}" alt="${item.title}"><div class="card-body"><div class="card-title">${item.title}</div><div class="card-lot"><strong>Lot #${item.lot}</strong></div></div>`;
                 grid.appendChild(card);
+            });
+        }
+
+        window.showLotDetails = function(key) {
+            const item = inventoryData[key];
+            if (!item) return;
+            document.getElementById('detailTitle').innerText = item.title;
+            document.getElementById('detailLot').innerText = `Lot #${item.lot}`;
+            document.getElementById('detailDescription').innerText = item.description || "No description.";
+            document.getElementById('detailLoc').innerText = item.location || "N/A";
+            document.getElementById('detailPay').innerText = item.payment_methods || "N/A";
+            document.getElementById('detailDel').innerText = item.delivery_method || "N/A";
+            document.getElementById('lotDetailModal').style.display = 'flex';
+        }
+
+        window.toggleLocalFields = function(isLocal) {
+            const div = document.getElementById('nonLocalWarning');
+            const input = document.getElementById('pickupPlan');
+            if(isLocal) { div.style.display = 'none'; input.removeAttribute('required'); } 
+            else { div.style.display = 'block'; input.setAttribute('required', 'true'); }
+        }
+        window.switchTab = function(mode) {
+            document.getElementById('errorMsg').style.display = 'none';
+            if(mode === 'login') {
+                document.getElementById('loginForm').style.display = 'block';
+                document.getElementById('registerForm').style.display = 'none';
+                document.querySelectorAll('.tab')[0].classList.add('active');
+                document.querySelectorAll('.tab')[1].classList.remove('active');
+            } else {
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('registerForm').style.display = 'block';
+                document.querySelectorAll('.tab')[0].classList.remove('active');
+                document.querySelectorAll('.tab')[1].classList.add('active');
+            }
+        }
+        
+        // --- DIRECT REDIRECTS ---
+        window.handleLogin = function() {
+            const email = document.getElementById('loginEmail').value;
+            const pass = document.getElementById('loginPass').value;
+            const btn = document.querySelector('#loginForm button');
+            btn.disabled = true; btn.innerText = "Verifying...";
+            signInWithEmailAndPassword(auth, email, pass)
+            .then(() => { window.location.href = "auction.html"; }) // Redirect to Auction
+            .catch((error) => { 
+                const errDiv = document.getElementById('errorMsg');
+                errDiv.style.display = 'block';
+                let cleanMsg = error.message.replace("Firebase: ", "").replace("auth/", "").replace(/-/g, " ");
+                errDiv.innerText = cleanMsg;
+                btn.disabled = false; btn.innerText = "Log In"; 
+            });
+        }
+
+        window.handleRegister = function() {
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+            const pass = document.getElementById('regPass').value;
+            const isLocal = document.querySelector('input[name="isLocal"]:checked').value === "yes";
+            const pickupPlan = document.getElementById('pickupPlan').value;
+            const btn = document.querySelector('#registerForm button');
+            if(pass.length < 6) { 
+                document.getElementById('errorMsg').style.display = 'block';
+                document.getElementById('errorMsg').innerText = "Password must be at least 6 characters"; 
+                return; 
+            }
+            btn.disabled = true; btn.innerText = "Creating Account...";
+            createUserWithEmailAndPassword(auth, email, pass)
+            .then((userCredential) => {
+                const user = userCredential.user;
+                updateProfile(user, { displayName: name }).then(() => {
+                    set(ref(db, 'users/' + user.uid), {
+                        name: name, email: email, is_local: isLocal, pickup_plan: isLocal ? "Local" : pickupPlan,
+                        is_approved: isLocal ? true : false, joined_at: Date.now()
+                    }).then(() => { window.location.href = "auction.html"; }); // Redirect to Auction
+                });
+            })
+            .catch((error) => { 
+                const errDiv = document.getElementById('errorMsg');
+                errDiv.style.display = 'block';
+                let cleanMsg = error.message.replace("Firebase: ", "").replace("auth/", "").replace(/-/g, " ");
+                errDiv.innerText = cleanMsg;
+                btn.disabled = false; btn.innerText = "Create Account"; 
             });
         }
     </script>
