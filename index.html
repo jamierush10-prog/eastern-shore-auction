@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Auction House | Baldwin County</title>
     <style>
+        /* --- LOBBY STYLES --- */
         :root { --primary-color: #2563eb; --header-bg: #111827; --header-text: #f9fafb; --bg-color: #f3f4f6; --text-color: #1f2937; --live-color: #dc2626; --sold-color: #b91c1c; --info-color: #0891b2; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
         
@@ -125,7 +126,7 @@
     </div>
 
     <div id="authModal" class="modal-overlay">
-        <div class="modal-content">
+        <div class="modal-content" style="max-width: 380px;">
             <div class="tabs"><div class="tab active" onclick="switchTab('login')">Log In</div><div class="tab" onclick="switchTab('register')">Sign Up</div></div>
             <div id="errorMsg" class="error-msg" style="color:red; display:none; margin-bottom:10px;"></div>
             
@@ -155,10 +156,10 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getDatabase, ref, onValue, set, child, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // --- PASTE FIREBASE KEYS HERE ---
+        // --- PASTE YOUR KEYS HERE ---
         const firebaseConfig = {
   apiKey: "AIzaSyCt0i8a7ZVRlNmSts9yM4uGwV7ghPU59rk",
   authDomain: "eastern-shore-auction.firebaseapp.com",
@@ -186,15 +187,18 @@
             } 
         }
 
+        // --- BAN CHECK & REDIRECT ---
         function checkBanAndRedirect(uid) {
             get(child(ref(db), `users/${uid}`)).then((snapshot) => {
                 if (snapshot.exists()) {
                     if (snapshot.val().is_approved === false) {
                         alert("ACCESS DENIED: Your account has been suspended.");
+                        signOut(auth).then(() => { window.location.reload(); });
                     } else {
                         window.location.href = "auction.html";
                     }
                 } else {
+                    // Allow rare case where Auth exists but DB record missing
                     window.location.href = "auction.html";
                 }
             });
@@ -254,7 +258,7 @@
             if (!item) return;
             document.getElementById('detailTitle').innerText = item.title;
             document.getElementById('detailLot').innerText = `Lot #${item.lot}`;
-            document.getElementById('detailDescription').innerText = item.description || "No description.";
+            document.getElementById('detailDescription').innerText = item.description || "No description provided.";
             document.getElementById('detailLoc').innerText = item.location || "N/A";
             document.getElementById('detailPay').innerText = item.payment_methods || "N/A";
             document.getElementById('detailDel').innerText = item.delivery_method || "N/A";
@@ -285,6 +289,9 @@
         window.handleLogin = function() {
             const email = document.getElementById('loginEmail').value;
             const pass = document.getElementById('loginPass').value;
+            const btn = document.querySelector('#loginForm button');
+            btn.disabled = true; btn.innerText = "Verifying...";
+            
             signInWithEmailAndPassword(auth, email, pass)
             .then((userCredential) => { checkBanAndRedirect(userCredential.user.uid); })
             .catch((error) => { 
@@ -292,6 +299,7 @@
                 errDiv.style.display = 'block';
                 let cleanMsg = error.message.replace("Firebase: ", "").replace("auth/", "").replace(/-/g, " ");
                 errDiv.innerText = cleanMsg;
+                btn.disabled = false; btn.innerText = "Log In"; 
             });
         }
 
@@ -306,6 +314,7 @@
                 document.getElementById('errorMsg').innerText = "Password must be at least 6 characters"; 
                 return; 
             }
+            btn.disabled = true; btn.innerText = "Creating Account...";
             createUserWithEmailAndPassword(auth, email, pass)
             .then((userCredential) => {
                 const user = userCredential.user;
@@ -313,7 +322,10 @@
                     set(ref(db, 'users/' + user.uid), {
                         name: name, email: email, is_local: isLocal, pickup_plan: isLocal ? "Local" : pickupPlan,
                         is_approved: isLocal ? true : false, joined_at: Date.now()
-                    }).then(() => { window.location.href = "auction.html"; });
+                    }).then(() => { 
+                        // Redirect to Auction Room
+                        window.location.href = "auction.html"; 
+                    });
                 });
             })
             .catch((error) => { 
@@ -321,6 +333,7 @@
                 errDiv.style.display = 'block';
                 let cleanMsg = error.message.replace("Firebase: ", "").replace("auth/", "").replace(/-/g, " ");
                 errDiv.innerText = cleanMsg;
+                btn.disabled = false; btn.innerText = "Create Account"; 
             });
         }
     </script>
